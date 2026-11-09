@@ -1,5 +1,6 @@
 package dev.winui.svelte
 
+import com.intellij.ide.trustedProjects.TrustedProjects
 import com.intellij.openapi.project.Project
 import java.awt.image.BufferedImage
 import java.io.File
@@ -28,9 +29,10 @@ internal sealed interface Picture {
     val byteSize: Long
   ) : Picture
 
-  /** A remote picture while the setting is off: nothing is fetched. */
+  /** A remote picture while the setting is off or the project is not trusted: nothing is fetched. */
   data class RemoteOff(
-    override val name: String
+    override val name: String,
+    val isUntrusted: Boolean
   ) : Picture
 
   data class RemotePending(
@@ -38,7 +40,8 @@ internal sealed interface Picture {
   ) : Picture
 
   data class RemoteFailed(
-    override val name: String
+    override val name: String,
+    val failure: RemoteFailure
   ) : Picture
 }
 
@@ -86,22 +89,23 @@ internal object PictureLoader {
     url: String,
     project: Project
   ): Picture {
-    if (!Settings.of(project).isRemotePicturesEnabled) {
-      return Picture.RemoteOff(url)
+    val isTrusted = TrustedProjects.isProjectTrusted(project)
+    if (!isTrusted || !Settings.of(project).isRemotePicturesEnabled) {
+      return Picture.RemoteOff(url, !isTrusted)
     }
 
     val cached = RemotePictures.cached(url)
-    if (cached == null) {
-      if (RemotePictures.hasFailed(url)) {
-        return Picture.RemoteFailed(url)
-      }
-
-      RemotePictures.fetchLater(url, project)
-      return Picture.RemotePending(url)
+    if (cached != null) {
+      return shown(url, cached.extension, cached.file.readBytes(), cached.file)
     }
 
-    val extension = PicturePaths.targetOf(url, "/", "/").extension
-    return shown(url, extension, cached.readBytes(), cached)
+    val failure = RemotePictures.failureOf(url)
+    if (failure != null) {
+      return Picture.RemoteFailed(url, failure)
+    }
+
+    RemotePictures.fetchLater(url, project)
+    return Picture.RemotePending(url)
   }
 
   private fun shown(

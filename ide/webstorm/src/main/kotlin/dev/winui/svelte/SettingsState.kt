@@ -5,7 +5,7 @@ internal class SettingsState {
   var isResourceHintsEnabled: Boolean = true
   var disabledPreviews: MutableList<String> = mutableListOf()
   var mediaTheme: String = Theme.DARK.id
-  var isRemotePicturesEnabled: Boolean = false
+  var isRemotePicturesEnabled: Boolean = true
   var isMediaReducedMotion: Boolean = false
   var mediaWidth: Int = MediaDefaults.WIDTH
   var mediaHeight: Int = MediaDefaults.HEIGHT

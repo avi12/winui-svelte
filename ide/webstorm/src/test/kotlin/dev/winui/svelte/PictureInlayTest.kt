@@ -59,10 +59,31 @@ class PictureInlayTest : BasePlatformTestCase() {
     assertEquals(emptyList<Int>(), inlayOffsets("<TrayMenuItem id=\"a\" label=\"A\" icon=\"Save\" />"))
   }
 
-  fun testARemotePictureShowsAMarkerAndFetchesNothingWhileTheSettingIsOff() {
-    val markup = "<TrayMenuItem id=\"a\" label=\"A\" icon=\"https://example.com/a.png\" />"
-    assertEquals(listOf(markup.indexOf("https")), inlayOffsets(markup))
-    assertEquals(null, RemotePictures.cached("https://example.com/a.png"))
+  fun testARemotePictureShowsAPlaceholderAndFetchesNothingWhileTheSettingIsOff() {
+    Settings.of(project).isRemotePicturesEnabled = false
+    try {
+      val markup = "<TrayMenuItem id=\"a\" label=\"A\" icon=\"https://example.com/a.png\" />"
+      assertEquals(listOf(markup.indexOf("https")), inlayOffsets(markup))
+      assertEquals(null, RemotePictures.cached("https://example.com/a.png"))
+    } finally {
+      Settings.of(project).isRemotePicturesEnabled = true
+    }
+  }
+
+  fun testAnImportedPictureGetsItsPictureAtTheNameWhereItIsUsed() {
+    val markup = "<script>import logo from \"$path\";</script>\n<TrayMenuItem id=\"a\" label=\"A\" icon={logo} />"
+    assertEquals(listOf(markup.indexOf("{logo}") + 1), inlayOffsets(markup))
+  }
+
+  fun testANewUrlConstantGetsItsPictureAtTheNameWhereItIsUsed() {
+    val markup =
+      "<script>const logo = new URL(\"$path\", import.meta.url);</script>\n<TrayMenuItem id=\"a\" label=\"A\" icon={logo.href} />"
+    assertEquals(listOf(markup.indexOf("{logo.href}") + 1), inlayOffsets(markup))
+  }
+
+  fun testANewUrlInAnAttributeExpressionGetsItsPictureBeforeTheString() {
+    val markup = "<TrayMenuItem id=\"a\" label=\"A\" icon={new URL(\"$path\", import.meta.url).href} />"
+    assertEquals(listOf(markup.indexOf(path)), inlayOffsets(markup))
   }
 
   fun testNothingIsDrawnWithThePreviewOff() {

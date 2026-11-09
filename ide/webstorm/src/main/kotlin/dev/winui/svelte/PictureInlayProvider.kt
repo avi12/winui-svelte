@@ -79,8 +79,20 @@ abstract class PictureInlayProviderBase(
         spot: PictureSpot,
         picture: Picture
       ) = when {
-        picture is Picture.Shown && picture.image != null -> factory.icon(iconOf(spot, picture.image))
-        else -> factory.smallText(MarkerText.of(picture))
+        picture is Picture.Shown && picture.image != null -> {
+          factory.icon(iconOf(spot, picture.image))
+        }
+
+        picture is Picture.Shown -> {
+          factory.smallText(MarkerText.of(picture))
+        }
+
+        else -> {
+          factory.withTooltip(
+            MarkerText.of(picture),
+            factory.icon(PlaceholderIcon(PictureSpec.limits.inlineSize))
+          )
+        }
       }
     }
   }

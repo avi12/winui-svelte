@@ -7,8 +7,8 @@ internal object MarkerText {
       is Picture.Shown -> "[${picture.extension} ${picture.size.width} x ${picture.size.height} px]"
       is Picture.Missing -> "[file not found]"
       is Picture.TooLarge -> "[too large to preview]"
-      is Picture.RemoteOff -> "[remote picture, previews are off]"
+      is Picture.RemoteOff -> "[remote picture, not fetched]"
       is Picture.RemotePending -> "[fetching]"
-      is Picture.RemoteFailed -> "[remote picture not fetched]"
+      is Picture.RemoteFailed -> "[remote picture not fetched: ${picture.failure.note}]"
     }
 }

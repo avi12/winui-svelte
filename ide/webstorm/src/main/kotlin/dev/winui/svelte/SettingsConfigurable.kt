@@ -77,7 +77,7 @@ class SettingsConfigurable(
       row {
         checkBox("Preview remote pictures")
           .comment(
-            "Fetches an http or https picture named in a prop, with a timeout, a size cap and a cache on disk; off, nothing is fetched"
+            "Fetches an http or https picture named in a prop in the background, with a timeout, a size cap, no credentials and a cache on disk, in a trusted project only; off, nothing is fetched"
           ).bindSelected(
             { Settings.of(project).isRemotePicturesEnabled },
             { Settings.of(project).isRemotePicturesEnabled = it }
