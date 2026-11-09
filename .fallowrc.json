@@ -192,6 +192,7 @@
     "examples/activation/main.ts",
     "examples/web/main.ts",
     "examples/web-bridge/main.ts",
+    "examples/parked-window/main.ts",
     "examples/window/main.ts",
     "examples/window-frame/main.ts",
     "examples/window-swap/main.ts",
