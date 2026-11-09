@@ -35,7 +35,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/runner` | `src/vite/runner.ts` | `createWindowModuleRunner()`, the window thread's side of the module server |
 | `winui-svelte/compile` | `src/vite/compile.ts` | `compileSvelte()` for bundlers (esbuild) and tests, `WINUI_COMPILE_OPTIONS`, `withElementAnimation()` |
 | `winui-svelte/testing` | `src/vite/loader.ts` | `svelteHooks()`: Node module hooks that run `.svelte` files, with Svelte's runtime read through the package's edits (pure tests) |
-| `winui-svelte/bootstrap` | `src/window/bootstrap.ts` | `initWindowsAppSdk()`; imports nothing of WinRT, safe on the host's main thread |
+| `winui-svelte/bootstrap` | `src/window/bootstrap.ts` | `initWindowsAppSdk()`, `processDpiAwareness()`, `DpiAwareness`; imports nothing of WinRT, safe on the host's main thread |
 | `winui-svelte/thread` | `src/window/thread.ts` | `runOnUiThread()`; imports only dynwinrt, so the apartment comes first |
 | `winui-svelte/window` | `src/window/index.ts` | `runWindow()`, `exitApplication()`, `createWindow()`, `startTimer()`, `systemSettings()`, the picker options (see App services) |
 | `winui-svelte/window/foreground` | `src/window/foreground.ts` | `trackForeground()`, `bringWindowToFront()`, `shouldRestore()` (opt-in; see Following the foreground app) |
@@ -717,7 +717,37 @@ function initWindowsAppSdk(options?: {
   minor?: number;
   folders?: string[];
   webViewUserDataFolder?: string;
+  dpiAwareness?: DpiAwareness | undefined;   // default "per-monitor-v2"; undefined leaves the process as it is
 }): void;
+
+// The process's DPI awareness. node.exe is unaware, so every window reads 96
+// DPI (`scaleOf` 1) and screen captures and monitor rectangles are virtualized
+// on a display above 100%. `initWindowsAppSdk` asks for per-monitor v2 first,
+// before WinUI starts: Windows allows it once per process and only before the
+// first window exists, so a library that creates a window before the call
+// keeps an unaware process. A refusal is success when the process already has
+// at least that awareness (a manifest set it); otherwise it throws
+// DpiAwarenessTooLow, naming both values.
+const DpiAwareness = {
+  unaware: "unaware", system: "system", perMonitor: "per-monitor", perMonitorV2: "per-monitor-v2"
+} as const;
+type DpiAwareness = (typeof DpiAwareness)[keyof typeof DpiAwareness];
+function processDpiAwareness(): DpiAwareness;   // from GetThreadDpiAwarenessContext
+
+initWindowsAppSdk();                            // per-monitor v2
+initWindowsAppSdk({ dpiAwareness: undefined }); // leave the process alone
+processDpiAwareness();                          // "per-monitor-v2"
+```
+
+An application manifest is the static route for a single executable: embed it
+as the `RT_MANIFEST` resource (id 1, type 24) with `<dpiAware>true/pm</dpiAware>`
+and `<dpiAwareness>PerMonitorV2,PerMonitor</dpiAwareness>` after the injection
+and before signing, with a PE resource editor (`postject` cannot write it);
+the call is then a no-op that reports success, and stays as the safety net for
+`pnpm dev` under plain `node.exe`; the repository has no single-executable
+build yet, so the embedding step belongs to that work
+
+```ts
 
 // thread (in the worker that owns the UI thread; WinUI's loop never gives its
 // thread back): enters the single-threaded apartment first, so everything

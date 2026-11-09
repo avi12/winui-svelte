@@ -1,3 +1,4 @@
+import { DpiAwareness, requestDpiAwareness } from "./dpi-awareness.ts";
 import { guardProcessExit } from "./host-exit.ts";
 import { initWinappsdk } from "@microsoft/dynwinrt";
 import { BOOTSTRAPPER_NAME, bootstrapperFolders } from "#src/runtime-files.js";
@@ -41,7 +42,19 @@ export interface WindowsAppSdkOptions {
    * per app, since two apps with different WebView2 settings cannot share one.
    */
   webViewUserDataFolder?: string;
+
+  /**
+   * The DPI awareness to ask for before anything else; `perMonitorV2` by
+   * default, `undefined` to leave the process as it is. Windows allows it once
+   * per process and only before the first window exists, so a library that
+   * creates a window before this call keeps an unaware process; a manifest that
+   * already set it makes the call a no-op. Throws `DpiAwarenessTooLow` when the
+   * process is refused and has less.
+   */
+  dpiAwareness?: DpiAwareness | undefined;
 }
+
+export { DpiAwareness, DpiAwarenessTooLow, processDpiAwareness } from "./dpi-awareness.ts";
 
 /**
  * The runtime is not installed (or not this version). The app installs the
@@ -87,6 +100,12 @@ function bootstrapPath(folders: string[]) {
  */
 export function initWindowsAppSdk(options: WindowsAppSdkOptions = {}) {
   assertSupportedPlatform();
+  const dpiAwareness = "dpiAwareness" in options ? options.dpiAwareness : DpiAwareness.perMonitorV2;
+  const isDpiAwarenessWanted = dpiAwareness !== undefined;
+  if (isDpiAwarenessWanted) {
+    requestDpiAwareness(dpiAwareness);
+  }
+
   const {
     major = WINDOWS_APP_SDK_MAJOR,
     minor = WINDOWS_APP_SDK_MINOR,
