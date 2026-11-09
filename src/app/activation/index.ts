@@ -8,3 +8,5 @@ export { getLaunchAtLogin, launchAtLogin, registerFileTypes, unregisterFileTypes
 export { installProtocolHandlers } from "./protocol-handlers.ts";
 export type { ActivationOptions } from "./receive.ts";
 export { startActivation } from "./receive.ts";
+export type { PackagedActivation } from "./packaged.ts";
+export { packagedActivation } from "./packaged.ts";
