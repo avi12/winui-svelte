@@ -1,5 +1,6 @@
+import { pictureOf } from "./menu/icon.ts";
 import type { ResolvedCheck, ResolvedCommand, ResolvedRadio } from "./menu/types.ts";
-import type { IconPixels } from "#src/win32-icons.js";
+import type { MenuIcon } from "./menu/types.ts";
 import { pathToFileURL } from "node:url";
 
 // What a WinUI MenuFlyout can say of a resolved line, as plain values, so that
@@ -29,12 +30,22 @@ export type PickableItem = ResolvedCommand | ResolvedCheck | ResolvedRadio;
 
 /**
  * The icon a flyout draws for the model's `icon`: a path to an `.ico` or
- * `.png` is the image, any other text is a glyph. Raw pixels are not drawn.
+ * `.png` is the image, any other text is a glyph. Raw pixels are not drawn; of a pair the light member is
+ * drawn, and a tinted glyph is drawn as its source.
  *
  * @param icon - The resolved line's icon.
  * @returns What to draw, or undefined for none.
  */
-export function flyoutIconOf(icon: string | IconPixels | undefined) {
+export function flyoutIconOf(menuIcon: MenuIcon | undefined) {
+  const hasIcon = menuIcon !== undefined;
+  if (!hasIcon) {
+    return undefined;
+  }
+
+  const { source: icon } = pictureOf({
+    icon: menuIcon,
+    isDark: false
+  });
   const isText = typeof icon === "string";
   if (!isText) {
     return undefined;

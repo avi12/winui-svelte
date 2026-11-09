@@ -1,6 +1,30 @@
 import type { PictureSource } from "#src/picture-source.js";
 import type { IconPixels } from "#src/win32-icons.js";
 
+/** One picture for each menu theme; `forLightMenu` is the picture drawn on a light menu (so a dark glyph). */
+export interface MenuIconPair {
+  /** Drawn while the menu is light. */
+  readonly forLightMenu: PictureSource<IconPixels>;
+
+  /** Drawn while the menu is dark. */
+  readonly forDarkMenu: PictureSource<IconPixels>;
+}
+
+/**
+ * A single-color glyph that the menu paints in its own text color, so one picture serves both themes: only
+ * the alpha channel of `tinted` is used.
+ */
+export interface MenuIconTinted {
+  readonly tinted: PictureSource<IconPixels>;
+}
+
+/**
+ * What a menu line's `icon` can be: a path to an `.ico` or `.png` (a glyph string on the renderers that draw
+ * glyphs), square BGRA pixels (`IconPixels`), a `{ forLightMenu, forDarkMenu }` pair, or `{ tinted }` for a
+ * monochrome glyph that takes the text color.
+ */
+export type MenuIcon = PictureSource<IconPixels | MenuIconPair | MenuIconTinted>;
+
 /** The kinds of line a tray menu holds. */
 export const MenuItemKind = {
   COMMAND: "command",
@@ -50,11 +74,8 @@ interface MenuItemBase<ItemId extends string = string> {
 interface MenuLabelledItem<ItemId extends string = string> extends MenuItemBase<ItemId> {
   readonly label: MenuValue<string>;
 
-  /**
-   * A path to an `.ico` or `.png`, a glyph string, or square BGRA pixels
-   * (`IconPixels`); each renderer decides what it can draw.
-   */
-  readonly icon?: PictureSource<IconPixels>;
+  /** The picture beside the label; each renderer decides what it can draw. */
+  readonly icon?: MenuIcon;
 
   /** Small trailing text, such as a count. */
   readonly badge?: MenuValue<string>;
@@ -183,7 +204,7 @@ interface ResolvedBase<ItemId extends string = string> {
 
 interface ResolvedLabelled<ItemId extends string = string> extends ResolvedBase<ItemId> {
   readonly label: string;
-  readonly icon?: string | IconPixels;
+  readonly icon?: MenuIcon;
   readonly badge?: string;
   readonly isEnabled: boolean;
   readonly isBold: boolean;
