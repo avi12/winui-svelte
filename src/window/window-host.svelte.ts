@@ -755,9 +755,10 @@ class WindowHost {
       return;
     }
 
-    const isToUnpark = !isParked && this.unparkedBounds !== null;
+    const { unparkedBounds } = this;
+    const isToUnpark = !isParked && unparkedBounds !== null;
     if (isToUnpark) {
-      appWindow.moveAndResize(this.unparkedBounds);
+      appWindow.moveAndResize(unparkedBounds);
       this.unparkedBounds = null;
     }
   }
