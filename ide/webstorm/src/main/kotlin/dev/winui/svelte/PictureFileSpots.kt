@@ -19,13 +19,15 @@ internal object PictureFileSpots {
   private fun compute(file: PsiFile): List<PictureSpot> {
     val names = WinuiIdeData.pictureNames
     val attributes = PsiTreeUtil.findChildrenOfType(file, XmlAttribute::class.java)
-    val inMarkup = attributes.flatMap { spotsOf(it, names) }
-    return PictureSpots.unique(inMarkup + PictureSpots.keys(file.text, names))
+    val bindings = PictureBindings.of(file.text)
+    val inMarkup = attributes.flatMap { spotsOf(it, names, bindings) }
+    return PictureSpots.unique(inMarkup + PictureSpots.keys(file.text, names, bindings))
   }
 
   private fun spotsOf(
     attribute: XmlAttribute,
-    names: PictureNames
+    names: PictureNames,
+    bindings: Map<String, String>
   ): List<PictureSpot> {
     val tag = attribute.parent ?: return emptyList()
     val isPicture = WinuiIdeData.isPictureProp(tag.name, attribute.name) || declaresPicture(attribute)
@@ -37,7 +39,7 @@ internal object PictureFileSpots {
     val text = valueElement.text
     val start = valueElement.textRange.startOffset
     if (text.startsWith(SvelteSyntax.MUSTACHE_START)) {
-      return PictureSpots.expression(attribute.name, text, start, names)
+      return PictureSpots.expression(attribute.name, text, start, names, bindings)
     }
 
     val value = attribute.value ?: return emptyList()
