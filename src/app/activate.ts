@@ -1,6 +1,7 @@
 import { currentUserSid, pipeNameFor } from "./instance-pipe.ts";
 import { encodeRedirect } from "./redirect.ts";
 import type { Activation } from "./redirect.ts";
+import { allowForeground } from "#src/win32-foreground.js";
 import { spawn } from "node:child_process";
 import net from "node:net";
 
@@ -25,6 +26,7 @@ export interface LaunchOptions {
  * @param options - The program, its arguments and its folder.
  */
 export function launchApp({ command, arguments: args = [], workingDirectory = process.cwd() }: LaunchOptions) {
+  allowForeground();
   const child = spawn(command, args, {
     cwd: workingDirectory,
     detached: true,
@@ -48,6 +50,7 @@ export function activateInstance({ key, activation }: {
   key: string;
   activation: Activation;
 }) {
+  allowForeground();
   const line = encodeRedirect(activation);
   const pipeName = pipeNameFor({
     key,
