@@ -360,6 +360,7 @@ export class FakeService {
 export class FakeTextBlock {
   readonly margin = null;
   text = "";
+  textWrapping = 1;
 }
 
 // By the class names a tag spells: <fake-panel> is FakePanel.

@@ -35,7 +35,7 @@ import type { ElementNode, FragmentNode, NativeHost, TreeNode } from "#src/rende
 import { createTreeRenderer, NodeType, parentElement } from "#src/renderer/tree/tree.js";
 import { isBackgroundRun } from "#src/window/background-mode.js";
 import type { FrameworkElement, UIElement } from "#src/winui.js";
-import { Run } from "#src/winui.js";
+import { Run, TextWrapping } from "#src/winui.js";
 
 // The renderer for WinUI: a .svelte component's elements are
 // WinUI's own controls, named in kebab case (<stack-panel>, <text-block>), so
@@ -1030,6 +1030,21 @@ function keepPopupInWindow(control: object) {
   }
 }
 
+// The web wraps text at the edge of its box; a TextBlock's WinUI default (NoWrap)
+// runs it past the window. A `textWrapping` prop, `white-space` or `text-wrap`
+// written later still wins.
+const WRAPPED_TEXT_TAGS = new Set(["text-block", "rich-text-block"]);
+
+function wrapTextLikeTheWeb({ control, name }: {
+  control: object;
+  name: string;
+}) {
+  const isText = WRAPPED_TEXT_TAGS.has(kebabCase(name));
+  if (isText) {
+    write(control, "textWrapping", TextWrapping.Wrap);
+  }
+}
+
 function createControl(name: string) {
   const type = controls.get(kebabCase(name));
   if (!isControlClass(type)) {
@@ -1038,6 +1053,10 @@ function createControl(name: string) {
 
   const control = new type();
   keepPopupInWindow(control);
+  wrapTextLikeTheWeb({
+    control,
+    name
+  });
   return control;
 }
 

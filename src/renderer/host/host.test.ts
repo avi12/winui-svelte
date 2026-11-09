@@ -17,6 +17,7 @@ import {
   FakeTransitionCollection
 } from "#src/renderer/testing/fake-controls.js";
 import { svelteHooks } from "#src/vite/loader.js";
+import { TextWrapping } from "#src/winui.js";
 import assert from "node:assert/strict";
 import { registerHooks } from "node:module";
 import { test } from "node:test";
@@ -36,6 +37,7 @@ const { default: CollectionsFixture } = await import("#src/renderer/testing/Coll
 const { default: PropertyFixture } = await import("#src/renderer/testing/Property.fixture.svelte");
 const { default: ReorderableFixture } = await import("#src/renderer/testing/Reorderable.fixture.svelte");
 const { default: TextFixture } = await import("#src/renderer/testing/Text.fixture.svelte");
+const { default: WrappingFixture } = await import("#src/renderer/testing/Wrapping.fixture.svelte");
 const placed = await import("#src/renderer/testing/Placed.fixture.svelte");
 
 interface TextProps extends Record<string, NativeValue> {
@@ -146,6 +148,19 @@ function textsOf(panel: FakePanel) {
 // The fixture's last block, as a browser shows it: its line breaks and
 // indentation collapse to single spaces, its no-break space stays.
 const WRAPPED_SENTENCE = "A sentence long enough to wrap over lines, indented.";
+
+test("a text block wraps at the edge of its box, as on the web, unless it chose otherwise", () => {
+  registerControls(Object.fromEntries([["TextBlock", FakeTextBlock]]));
+  const mounted = mountControl({
+    component: WrappingFixture,
+    props: {}
+  });
+  const root: object = mounted.root;
+  assert.ok(root instanceof FakePanel);
+  const wrappings = root.children.items.map(item => (item instanceof FakeTextBlock ? item.textWrapping : null));
+  assert.deepEqual(wrappings, [TextWrapping.Wrap, TextWrapping.NoWrap]);
+  mounted.unmount();
+});
 
 test("text written as children is a text block's text, and follows what it shows", () => {
   const mounted = mountControl<TextProps>({
