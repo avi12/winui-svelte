@@ -198,6 +198,7 @@
     "examples/parked-window/main.ts",
     "examples/web-requests/main.ts",
     "examples/web-profiles/main.ts",
+    "examples/web-recovery/main.ts",
     "examples/window/main.ts",
     "examples/window-frame/main.ts",
     "examples/window-swap/main.ts",
