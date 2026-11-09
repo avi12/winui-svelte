@@ -49,15 +49,15 @@ interface Point {
 // The helper reads the point while the call runs, so the memory only lives that long.
 function withPoint({ point, use }: {
   point: Point;
-  use: (address: bigint) => void;
+  use: (address: bigint) => boolean;
 }) {
-  withMemory({
+  return withMemory({
     size: POINT_BYTES,
     alignment: DWORD_BYTES,
     use(memory: DynComRawMemory) {
       memory.writeI32(0, point.x);
       memory.writeI32(DWORD_BYTES, point.y);
-      use(memory.pointer().address);
+      return use(memory.pointer().address);
     }
   });
 }
@@ -109,14 +109,19 @@ export function createDragHelper(hwnd: bigint) {
   }) {
     try {
       calls.method(slot).invokeAll(helper, values);
+      return true;
     } catch {
-      return;
+      return false;
     }
   }
 
+  // The helper hears of a drag only after it accepted the entry: told of a drag it refused, it
+  // keeps the window from receiving the next one when the cursor moves on to another window.
+  let isAccepted = false;
+
   return {
     enter({ data, point, effect }) {
-      withPoint({
+      isAccepted = withPoint({
         point,
         use: pointAddress => call({
           slot: DRAG_ENTER_SLOT,
@@ -130,6 +135,10 @@ export function createDragHelper(hwnd: bigint) {
       });
     },
     over({ point, effect }) {
+      if (!isAccepted) {
+        return;
+      }
+
       withPoint({
         point,
         use: pointAddress => call({
@@ -139,12 +148,22 @@ export function createDragHelper(hwnd: bigint) {
       });
     },
     leave() {
+      if (!isAccepted) {
+        return;
+      }
+
+      isAccepted = false;
       call({
         slot: DRAG_LEAVE_SLOT,
         values: []
       });
     },
     drop({ data, point, effect }) {
+      if (!isAccepted) {
+        return;
+      }
+
+      isAccepted = false;
       withPoint({
         point,
         use: pointAddress => call({
