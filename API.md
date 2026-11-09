@@ -58,6 +58,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/media` | `src/media/index.ts` | `bitmapImageOf()`, `svgImageSourceOf()`, `decodeDataUri()`, `createMediaPlayer()`, `mediaSourceOfBytes()`, `observePlayback()`, `PlaybackState` (opt-in; see Media) |
 | `winui-svelte/win2d` | `src/win2d/index.ts` | `Canvas`, the Win2D controls, the drawing helpers and Win2D classes, `applyEffect` (opt-in; see Win2D) |
 | `winui-svelte/enums` | `src/enums.ts` | every closed set a prop or option takes: WinUI's enums, `ThemeBrush`, `ColorKeyword`, `Backdrop`, `WindowTheme`, `TrayBalloonIcon` and the rest (see Closed sets) |
+| `winui-svelte/win2d/manifest` | `src/win2d/manifest.ts` | `win2dActivatableClasses`, `win2dClassNames`: the manifest fragment a packaged app needs for Win2D (see Packaged apps) |
 | `winui-svelte/win2d/context-2d` | `src/win2d/context-2d/index.ts` | `Canvas2D`, `createCanvas2D`, `CanvasElement`, `Context2D`, `Path2D` and the rest of the HTML Canvas 2D API over Win2D (opt-in; see Canvas 2D) |
 | `winui-svelte/tray` | `src/tray/index.ts` | `TrayIcon` (with its `menu`), `createTrayIcon()`, `placeMenuWindow()`, `hideToTray()`, `restoreFromTray()`, `toggleInTray()`, `removeAllTrayIcons()`, `TrayGesture` (opt-in; see System tray) |
 | `winui-svelte/progress/core` | `src/progress/core.ts` | `ProgressRegistry`, `defaultProgressRegistry()`, `ProgressOperation`, `trackOperation()`, `progressText()` and the types, with no Svelte component and no taskbar code, for a process with no window (opt-in; see Progress) |
@@ -6889,6 +6890,54 @@ element hides itself ([`src/css/API.md`](src/css/API.md#filters-blends-and-masks
 The effect graph is checked on pixels without a window
 (`src/win2d/effect-graph.test.ts`), and the effects in a real window through
 `PrintWindow` (`test/effects.test.ts`, with `examples/effects`)
+
+### Packaged apps
+
+A process with a package identity (an MSIX, or a registered loose layout) finds
+a class through its package's registration catalogue, which lists the classes
+of its framework packages and the `ActivatableClass` entries of its own
+manifest; the `PATH` that `initWindowsAppSdk` sets is not consulted
+Win2D ships no framework package, so every Win2D class fails there with
+`0x80040154` (class not registered) until the manifest names it, and CSS
+`filter: blur()` and every Win2D effect do nothing
+The same app unpackaged (`pnpm dev`) is fine
+
+`win2dActivatableClasses` writes the entries, one `ActivatableClass` of one
+`InProcessServer` per Win2D class the bindings hold; put the result in the
+package's own `<Extensions>` (a child of `<Package>`, after `<Capabilities>`,
+not the application's), with `Microsoft.Graphics.Canvas.dll` in the package at
+`libraryPath`, which `buildApp` writes to `bin/<architecture>`
+
+```ts
+import { win2dActivatableClasses } from "winui-svelte/win2d/manifest";
+
+const fragment = win2dActivatableClasses({
+  libraryPath: "bin/x64/Microsoft.Graphics.Canvas.dll"
+});
+```
+
+```xml
+<Extensions>
+  <Extension Category="windows.activatableClass.inProcessServer">
+    <InProcessServer>
+      <Path>bind\Microsoft.Graphics.Canvas.dll</Path>
+      <ActivatableClass ActivatableClassId="Microsoft.Graphics.Canvas.Effects.GaussianBlurEffect" ThreadingModel="both" />
+    </InProcessServer>
+  </Extension>
+</Extensions>
+```
+
+- `classes` limits the list (an app that only blurs needs a few); by default it
+  is every class the bindings activate by name (`win2dClassNames()`, which
+  reads them from the bindings; `bindings` names another folder)
+- `libraryPath` is per architecture: an x64 and an arm64 package each have
+  their own manifest, and the path is relative to the package root
+- Without the entries a packaged app writes one line to stderr that names this
+  fragment, not one per class
+- `test/win2d-packaged.test.ts` proves it in a real registered package
+  (`WINUI_SVELTE_PACKAGED_TEST=1`, `examples/win2d-packaged`): without the
+  entries the canvas never draws and `0x80040154` is reported; with them it
+  redraws and stderr is empty
 
 ### Canvas 2D (`winui-svelte/win2d/context-2d`)
 

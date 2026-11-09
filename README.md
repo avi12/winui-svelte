@@ -855,6 +855,7 @@ conditions on `exports`), which your Vite compiles (`winuiSvelte()`)
 | `winui-svelte/components` | every control as a component, and its props type; `xamlOf`, `goToState`, `installXaml` |
 | `winui-svelte/enums` | every closed set a prop or option takes (`HorizontalAlignment`, `Backdrop`, `ThemeBrush`...), each a value and a type of one name ([`API.md`](https://github.com/avi12/winui-svelte/blob/main/API.md#closed-sets-winui-svelteenums)) |
 | `winui-svelte/win2d`, `/win2d/context-2d` | `Canvas` and the Win2D helpers; `createCanvas2D` and `Canvas2D`, a `CanvasRenderingContext2D` over Win2D (both opt-in) |
+| `winui-svelte/win2d/manifest` | `win2dActivatableClasses`, the `AppxManifest.xml` fragment that lets a packaged app activate Win2D (a build-time helper) |
 | `winui-svelte/state` | the window's side of host state |
 | `winui-svelte/state/host` | a JavaScript host's side: `diff`, transports, message types |
 | `winui-svelte/messaging` | `defineMessaging`: typed request and response messages over a transport, loadable in plain Node |
