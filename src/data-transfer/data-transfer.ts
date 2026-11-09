@@ -1,4 +1,4 @@
-import type { DropEffect, EffectAllowed } from "./drag-effects.ts";
+import type { DropEffectName, EffectAllowedName } from "./drag-effects.ts";
 import { EffectAllowed as Allowed, DropEffect as Effects } from "./drag-effects.ts";
 import type { NativeFile } from "./native-file.ts";
 
@@ -114,9 +114,9 @@ export class DataTransferItemList {
  */
 export class DataTransfer {
   /** What the source lets a target do; a source sets it in `ondragstart`. */
-  effectAllowed: EffectAllowed = Allowed.uninitialized;
+  effectAllowed: EffectAllowedName = Allowed.uninitialized;
   /** What the target will do; a target sets it in `ondragenter` or `ondragover`. */
-  dropEffect: DropEffect = Effects.none;
+  dropEffect: DropEffectName = Effects.none;
   /** A picture to drag (a path or an in-memory file): WinUI shows its own preview of the data. */
   bitmap: NativeFile | undefined;
   private readonly strings = new Map<string, string>();

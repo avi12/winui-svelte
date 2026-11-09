@@ -27,6 +27,18 @@ export const EffectAllowed = {
 /** One of `EffectAllowed`'s values. */
 export type EffectAllowed = (typeof EffectAllowed)[keyof typeof EffectAllowed];
 
+/**
+ * A drop effect as a property takes it: one of `DropEffect`'s values, which an
+ * editor suggests, or any other string, which counts as `none`.
+ */
+export type DropEffectName = DropEffect | (string & Record<never, never>);
+
+/**
+ * An `effectAllowed` as a property takes it: one of `EffectAllowed`'s values,
+ * which an editor suggests, or any other string, which counts as `uninitialized`.
+ */
+export type EffectAllowedName = EffectAllowed | (string & Record<never, never>);
+
 const OPERATIONS = {
   [DropEffect.none]: DataPackageOperation.None,
   [DropEffect.copy]: DataPackageOperation.Copy,
@@ -57,8 +69,16 @@ const PREFERENCE = [DropEffect.copy, DropEffect.move, DropEffect.link] as const;
  * @param effect - The drop effect.
  * @returns The `DataPackageOperation` value.
  */
-export function operationOf(effect: DropEffect) {
-  return OPERATIONS[effect];
+export function operationOf(effect: DropEffectName) {
+  return isDropEffect(effect) ? OPERATIONS[effect] : DataPackageOperation.None;
+}
+
+function isDropEffect(value: string): value is DropEffect {
+  return Object.values<string>(DropEffect).includes(value);
+}
+
+function isEffectAllowed(value: string): value is EffectAllowed {
+  return Object.values<string>(EffectAllowed).includes(value);
 }
 
 /**
@@ -67,8 +87,8 @@ export function operationOf(effect: DropEffect) {
  * @param effectAllowed - What the source allows.
  * @returns The `DataPackageOperation` flags.
  */
-export function allowedOperationsOf(effectAllowed: EffectAllowed) {
-  return ALLOWED[effectAllowed];
+export function allowedOperationsOf(effectAllowed: EffectAllowedName) {
+  return isEffectAllowed(effectAllowed) ? ALLOWED[effectAllowed] : ALL_OPERATIONS;
 }
 
 /**

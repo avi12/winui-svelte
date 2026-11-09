@@ -6,6 +6,7 @@ export type { ClipboardContent, ClipboardReadOptions } from "./clipboard.ts";
 export { clipboard } from "./clipboard.ts";
 export type { DataTransferItem } from "./data-transfer.ts";
 export { DataTransfer, DataTransferItemList, FormatType } from "./data-transfer.ts";
+export type { DropEffectName, EffectAllowedName } from "./drag-effects.ts";
 export { DropEffect, EffectAllowed } from "./drag-effects.ts";
 export type { DragEventHandler, DragFeedback } from "./drag-event.ts";
 export { DragEvent } from "./drag-event.ts";

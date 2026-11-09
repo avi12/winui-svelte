@@ -5056,8 +5056,12 @@ pixels), `offsetX`/`offsetY` (the control), `altKey`, `ctrlKey`, `shiftKey`,
 `DataTransfer` has `types`, `files`, `items` (`DataTransferItemList`: `length`,
 `at`, `add`, iteration; items have `kind`, `type`, `getAsString`, `getAsFile`),
 `getData(type)`, `setData(type, value)`, `clearData(type?)`, `effectAllowed`
-(`EffectAllowed`), `dropEffect` (`DropEffect`), `setDragImage` (accepted, WinUI
-draws its own preview) and `bitmap` (a picture to drag)
+(`EffectAllowedName`), `dropEffect` (`DropEffectName`), `setDragImage` (accepted,
+WinUI draws its own preview) and `bitmap` (a picture to drag)
+`DropEffect` and `EffectAllowed` hold the names, so an editor suggests
+`DropEffect.link`; `DropEffectName` and `EffectAllowedName` are those names or
+any other string, and an unknown string counts as `none` for a drop effect and
+as `uninitialized` (everything allowed) for `effectAllowed`
 The standard formats are `text/plain` (Text), `text/html` (the fragment of the
 HTML format), `text/uri-list` (Uri), `Files` (StorageItems) and, for a picture,
 a `NativeFile` in `files`; any other format id is a custom text format, listed

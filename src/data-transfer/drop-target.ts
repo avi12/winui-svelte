@@ -1,8 +1,14 @@
 import type { Accept } from "./accept.ts";
 import { DataKind, isFileAccepted, isKindAccepted } from "./accept.ts";
 import { DataTransfer } from "./data-transfer.ts";
-import type { DropEffect } from "./drag-effects.ts";
-import { allowedOperationsOf, effectAllowedOf, effectOf, operationOf } from "./drag-effects.ts";
+import type { DropEffectName } from "./drag-effects.ts";
+import {
+  allowedOperationsOf,
+  DropEffect,
+  effectAllowedOf,
+  effectOf,
+  operationOf
+} from "./drag-effects.ts";
 import type { DragFeedback, Position } from "./drag-event.ts";
 import { DragEvent } from "./drag-event.ts";
 import type { DragEventHandler } from "./drag-event.ts";
@@ -111,7 +117,7 @@ class DropBinding {
     drop: new Set()
   };
   readonly zones = new Set<Dropzone>();
-  private lastEffect: DropEffect = "none";
+  private lastEffect: DropEffectName = DropEffect.none;
   private isOver = false;
   private readonly control: DropControl;
   private readonly stops: Array<() => void>;
