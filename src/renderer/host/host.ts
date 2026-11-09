@@ -6,6 +6,7 @@ import {
   vectorOf,
   write
 } from "./reflect.ts";
+import { duringStructureSync } from "./structure-sync.ts";
 import {
   autoLength,
   boxed,
@@ -544,23 +545,25 @@ function syncCollection({ element, collection, wanted = element.children.flatMap
   wanted?: object[];
 }) {
   const byKey = new Map(wanted.map(child => [keyOf(child), child]));
-  syncKeyed({
-    list: {
-      items: placedItems({
-        element,
-        collection
-      }),
-      keyOf,
-      create(key) {
-        const child = byKey.get(key);
-        if (!child) {
-          throw new RangeError(`no control has key ${key}`);
-        }
+  duringStructureSync(() => {
+    syncKeyed({
+      list: {
+        items: placedItems({
+          element,
+          collection
+        }),
+        keyOf,
+        create(key) {
+          const child = byKey.get(key);
+          if (!child) {
+            throw new RangeError(`no control has key ${key}`);
+          }
 
-        return child;
-      }
-    },
-    wantedKeys: [...byKey.keys()]
+          return child;
+        }
+      },
+      wantedKeys: [...byKey.keys()]
+    });
   });
 }
 
