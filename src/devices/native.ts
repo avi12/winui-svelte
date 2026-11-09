@@ -6,6 +6,7 @@ import {
   addressOf,
   bind,
   numberOf,
+  POINTER_BYTES,
   pointerOf,
   WIDE_CHAR_BYTES,
   wideMemory,
@@ -43,7 +44,6 @@ const ENUM_CONNECTIONS = 0x4;
 const INFO_LEVEL = 2;
 const INFO_SIZE = 136;
 const DWORD_BYTES = 4;
-const POINTER_BYTES = 8;
 const NAME_CHARS = 260;
 const OFFSET_SERVER = 0;
 const OFFSET_NAME = 8;

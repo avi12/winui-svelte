@@ -2,6 +2,7 @@ import { DynWinRtValue, WinGuid } from "@microsoft/dynwinrt";
 import { DynComMethodSig, DynComUnsafe } from "@microsoft/dynwinrt/com/unsafe";
 import { DynComRawMemory, DynComRawOwnedComPointer } from "@microsoft/dynwinrt/com/unsafe/raw";
 import { call } from "#src/renderer/host/reflect.js";
+import { POINTER_BYTES } from "#src/win32-calls.js";
 import {
   DataTransferManager,
   IID_DataTransferManager
@@ -17,7 +18,6 @@ const CLASS_NAME = "Windows.ApplicationModel.DataTransfer.DataTransferManager";
 const INTEROP = WinGuid.parse("3a3dcd6c-3eab-43dc-bcde-45671ce800c8");
 const GET_FOR_WINDOW_SLOT = 3;
 const SHOW_SHARE_UI_SLOT = 4;
-const POINTER_BYTES = 8;
 const FROM_NATIVE = "_fromNative";
 
 function interopOf() {
