@@ -1752,6 +1752,7 @@ const bridge = defineMessaging<AppProtocol>({ transport: createPageTransport() }
 | `openDevTools(control)` | opens the developer tools window |
 | `createWebView2Environment({ browserExecutableFolder, userDataFolder, additionalBrowserArguments, language })` | builds an environment: a profile folder and Chromium switches (an array, joined with spaces) |
 | `startWebView2({ control, environment, profileName, isInPrivateMode })` | starts the control's browser in that environment and resolves with its `CoreWebView2`; a second call on the control resolves with the same core |
+| `keepWebView2Alive({ control, setup, rebuild, maxCrashes, windowMilliseconds, onRecovering, onGaveUp })` | brings a control back after a browser crash (see below); resolves with a guard that has `retry()` and `dispose()` |
 | `getCookies`, `setCookie`, `deleteCookie` | the profile's cookies as plain data (`CookieSameSite`) |
 | `onPermissionRequested({ control, decide })` | answers permission requests with a `PermissionState` (`default`, `allow`, `deny`) for a `PermissionKind` |
 | `onDownloadStarting({ control, pathFor })` | sends a download to a path with no dialog, or cancels it with `null` |
@@ -1761,6 +1762,57 @@ const bridge = defineMessaging<AppProtocol>({ transport: createPageTransport() }
 | `callDevToolsMethod({ control, method, parameters })` | calls a DevTools protocol method, resolves with its result as checked JSON, rejects with the protocol's error |
 | `onDevToolsEvent({ control, event, handler })` | hands the parsed parameters of a protocol event to `handler`; the domain must be enabled first (`Network.enable`) |
 | `dispatchKey`, `dispatchMouseClick`, `typeText`, `keyEventParameters`, `KeyEventType`, `MouseButton` | trusted input through `Input.dispatchKeyEvent` and `Input.dispatchMouseEvent`; `typeText` takes a `TypeMode` (`keys`, or `insertAfterFirst`) |
+
+#### Crash recovery
+
+When Chromium's browser process dies the control is dead: every later call
+throws, and starting it again in place is not something to rely on
+`keepWebView2Alive` follows `CoreProcessFailed` and applies one policy
+
+```ts
+import { keepWebView2Alive } from "winui-svelte/messaging/web-view2";
+
+const guard = keepWebView2Alive({
+  control,
+  maxCrashes: 3,
+  windowMilliseconds: 30_000,
+  async setup(core) {
+    // runs for the first core and after every rebuild
+    await core.addScriptToExecuteOnDocumentCreatedAsync(bridgeScript);
+  },
+  onRecovering: ({ kind }) => status("reconnecting"),
+  onGaveUp: ({ reason }) => status("down"),
+  rebuild: async () => remount()
+});
+guard.dispose();
+```
+
+- `ProcessFailureKind` (`winui-svelte/enums`) is `BROWSER_EXITED`,
+  `RENDER_EXITED`, `UNRESPONSIVE` or `OTHER`, mapped from
+  `CoreWebView2ProcessFailedKind`
+- `BROWSER_EXITED` calls `rebuild`, which resolves with a new control that is
+  already started (`startWebView2`), then runs `setup` with its core; any other
+  kind calls `core.reload()` and keeps the core
+- More than `maxCrashes` failures within `windowMilliseconds` (3 within 30
+  seconds by default) call `onGaveUp` once and stop; `retry()` forgets the
+  failures and rebuilds
+- A failure while a recovery is running is ignored; a `rebuild` or `setup` that
+  throws gives up with the error's text as the reason
+- After a rebuild, redo in `setup` whatever is bound to the old core: scripts
+  from `addDocumentCreatedScript`, `onNavigationStarting`,
+  `onPermissionRequested`, `onWebResourceRequested`, the DevTools subscriptions
+  and a `webView2Transport` with its messaging; cookies and storage live in
+  the profile folder and survive; after a reload only the page's own state is
+  lost
+- In a Svelte app, key the component on a `$state` counter: `rebuild` bumps
+  it and resolves with the control that the new `WebView2` hands to
+  `oncorewebview2initialized`; `examples/web-recovery` shows it, and
+  `test/web-recovery.test.ts` kills its browser process and sees the page come
+  back
+- Several controls on one profile folder share a browser process, so one kill
+  fails all of them; each control has its own guard, and each rebuilds itself
+- Resuming what a page was doing (a live conversation) is the app's job;
+  `onRecovering` is its hook
 
 A profile folder and Chromium switches per control
 
