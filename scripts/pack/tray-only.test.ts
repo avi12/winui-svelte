@@ -1,78 +1,40 @@
-import { exportAliases, ExportTarget } from "#scripts/export-aliases.ts";
+import {
+  assertWithinBudget,
+  BUNDLE_TIMEOUT_MILLISECONDS,
+  bundleEntry,
+  IS_BUILT,
+  ownFilesOf,
+  TrayBudget
+} from "./bundle-support.ts";
 import assert from "node:assert/strict";
-import { existsSync } from "node:fs";
 import path from "node:path";
 import { test } from "node:test";
-import { build } from "vite";
 
 // What a tray-only process ships: the notification-area icon, its popup menu
 // and the call that starts or signals the app, and nothing of the component
 // barrel or the window runtime. Bundled the way a consumer's build would,
 // against the built package; dynwinrt stays external, as a native module.
 
-const PACKAGE_ROOT = path.join(import.meta.dirname, "..", "..");
 const APP_FOLDER = path.join(import.meta.dirname, "treeshake-app");
 const ENTRY = path.join(APP_FOLDER, "tray-main.ts");
 const TWO_TRAYS_ENTRY = path.join(APP_FOLDER, "tray-two-main.ts");
-const IS_BUILT = existsSync(path.join(PACKAGE_ROOT, "dist"));
-const BUNDLE_TIMEOUT_MILLISECONDS = 120_000;
-const externalModule = new RegExp(String.raw`^#winui/|dist[\/]bindings|@microsoft[\/]dynwinrt`, "u");
-
-// Measured: the whole bundle today. Lower it when the entry gets smaller;
-// never raise it to make a change pass (raised twice, by the dark menu theme
-// calls and by the icon hooks of the popup menu).
-const BUDGET_BYTES = 17_700;
 const WINDOW_RUNTIME_FOLDERS = ["components", "renderer", "window", "css"];
 const COMPONENT_NAMES = ["NavigationView", "ComboBox", "TextBlock", "ScrollViewer", "MenuFlyout", "ContentDialog"];
-
-// The paths Rollup reports use slashes; normalized so they compare with path.sep.
-function ownFilesOf(sourceFiles: readonly string[]) {
-  const distFolder = path.join(PACKAGE_ROOT, "dist") + path.sep;
-  return sourceFiles
-    .map(file => path.normalize(file))
-    .filter(file => file.startsWith(distFolder))
-    .map(file => file.slice(distFolder.length));
-}
-
-async function bundle(entry: string) {
-  const result = await build({
-    configFile: false,
-    root: path.dirname(entry),
-    logLevel: "warn",
-    resolve: {
-      alias: exportAliases(ExportTarget.BUILT)
-    },
-    build: {
-      write: false,
-      ssr: true,
-      minify: true,
-      rollupOptions: {
-        input: entry,
-        external: (id: string) => externalModule.test(id)
-      }
-    }
-  });
-  const outputs = Array.isArray(result) ? result : [result];
-  const chunks = outputs
-    .flatMap(output => "output" in output ? output.output : [])
-    .flatMap(item => item.type === "chunk" ? [item] : []);
-  return {
-    code: chunks.map(chunk => chunk.code).join("\n"),
-    sourceFiles: chunks.flatMap(chunk => Object.keys(chunk.modules))
-  };
-}
 
 test("a tray-only process bundles no component and no window runtime", {
   skip: !IS_BUILT,
   timeout: BUNDLE_TIMEOUT_MILLISECONDS
 }, async () => {
-  const { code, sourceFiles } = await bundle(ENTRY);
+  const { code, sourceFiles } = await bundleEntry(ENTRY);
   const bytes = Buffer.byteLength(code);
   console.log(`tray-only: ${bytes} bytes, ${sourceFiles.length} modules`);
-  assert.ok(bytes <= BUDGET_BYTES, `${bytes} bytes is over the ${BUDGET_BYTES} budget`);
+  assertWithinBudget({
+    bytes,
+    budget: TrayBudget.trayOnly
+  });
 
   const ownFiles = ownFilesOf(sourceFiles);
-  const heavy = ownFiles.filter(file => WINDOW_RUNTIME_FOLDERS.includes(file.split(path.sep)[0] ?? ""));
+  const heavy = ownFiles.filter(file => WINDOW_RUNTIME_FOLDERS.includes(file.split("/")[0] ?? ""));
   assert.deepEqual(heavy, [], "the window runtime or the components were bundled");
 
   const found = COMPONENT_NAMES.filter(name => code.includes(name));
@@ -81,21 +43,23 @@ test("a tray-only process bundles no component and no window runtime", {
 
 // Two icons in one process, each with its own color scheme, one of them
 // reading the progress registry in its menu: still no component, no window
-// runtime and no taskbar code. Measured: the whole bundle today.
-const TWO_TRAYS_BUDGET_BYTES = 19_980;
+// runtime and no taskbar code.
 const TASKBAR_NAMES = ["TaskbarProgress", "taskbar-calls", "ITaskbarList"];
 
 test("a tray-only process with two trays and the progress registry bundles no window runtime and no taskbar code", {
   skip: !IS_BUILT,
   timeout: BUNDLE_TIMEOUT_MILLISECONDS
 }, async () => {
-  const { code, sourceFiles } = await bundle(TWO_TRAYS_ENTRY);
+  const { code, sourceFiles } = await bundleEntry(TWO_TRAYS_ENTRY);
   const bytes = Buffer.byteLength(code);
   console.log(`two trays: ${bytes} bytes, ${sourceFiles.length} modules`);
-  assert.ok(bytes <= TWO_TRAYS_BUDGET_BYTES, `${bytes} bytes is over the ${TWO_TRAYS_BUDGET_BYTES} budget`);
+  assertWithinBudget({
+    bytes,
+    budget: TrayBudget.twoTrays
+  });
 
   const ownFiles = ownFilesOf(sourceFiles);
-  const heavy = ownFiles.filter(file => WINDOW_RUNTIME_FOLDERS.includes(file.split(path.sep)[0] ?? ""));
+  const heavy = ownFiles.filter(file => WINDOW_RUNTIME_FOLDERS.includes(file.split("/")[0] ?? ""));
   assert.deepEqual(heavy, [], "the window runtime or the components were bundled");
   assert.deepEqual(COMPONENT_NAMES.filter(name => code.includes(name)), [], "a component's name is in the bundle");
   assert.deepEqual(TASKBAR_NAMES.filter(name => code.includes(name)), [], "taskbar code is in the bundle");

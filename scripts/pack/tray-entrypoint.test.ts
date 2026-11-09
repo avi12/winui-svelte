@@ -1,3 +1,10 @@
+import {
+  assertWithinBudget,
+  BUNDLE_TIMEOUT_MILLISECONDS,
+  IS_BUILT,
+  PACKAGE_ROOT,
+  TrayBudget
+} from "./bundle-support.ts";
 import { exportAliases, ExportTarget } from "#scripts/export-aliases.ts";
 import { buildTray } from "#src/vite/entrypoints/build-tray.js";
 import assert from "node:assert/strict";
@@ -18,23 +25,14 @@ import { test } from "node:test";
 // example's entrypoints/tray.ts against the built package, so its size is
 // what an app's tray costs on disk.
 
-const PACKAGE_ROOT = path.join(import.meta.dirname, "..", "..");
 const EXAMPLE_ROOT = path.join(PACKAGE_ROOT, "examples", "tray-entrypoint");
 const TRAY_FILE = path.join(EXAMPLE_ROOT, "entrypoints", "tray.ts");
-const IS_BUILT = existsSync(path.join(PACKAGE_ROOT, "dist"));
-const BUILD_TIMEOUT_MILLISECONDS = 120_000;
 
-// Measured: tray.js of the example today. Lower it when the bundle gets
-// smaller; never raise it to make a change pass (raised twice: by the dark menu
-// theme calls the standalone tray now makes, and by 580 bytes of icon hooks in the popup menu).
-// About 85 000 of it is zod, which an app build bundles (the 15 000 byte
-// tray-only test leaves it external); the entry itself is the rest.
-const BUDGET_BYTES = 99_500;
 const FORBIDDEN_PATTERNS = [/(?<![-\w])svelte\//u, /NavigationView|ComboBox|ScrollViewer|ContentDialog/u];
 
 test("the tray entrypoint builds to a small tray.js, a manifest and the icon", {
   skip: !IS_BUILT,
-  timeout: BUILD_TIMEOUT_MILLISECONDS
+  timeout: BUNDLE_TIMEOUT_MILLISECONDS
 }, async () => {
   const outDirectory = mkdtempSync(path.join(tmpdir(), "tray-entrypoint-"));
   const files = await buildTray({
@@ -59,7 +57,10 @@ test("the tray entrypoint builds to a small tray.js, a manifest and the icon", {
 
   const bytes = statSync(path.join(outDirectory, "tray.js")).size;
   console.log(`tray.js: ${bytes} bytes`);
-  assert.ok(bytes <= BUDGET_BYTES, `${bytes} bytes is over the ${BUDGET_BYTES} budget`);
+  assertWithinBudget({
+    bytes,
+    budget: TrayBudget.entrypoint
+  });
   const code = readFileSync(path.join(outDirectory, "tray.js"), "utf8");
   assert.deepEqual(FORBIDDEN_PATTERNS.filter(pattern => pattern.test(code)), [], "the window runtime or a component is in tray.js");
   rmSync(outDirectory, {
