@@ -5,6 +5,7 @@ import type {
   DownloadArguments,
   NavigationArguments,
   PermissionArguments,
+  ProcessFailedArguments,
   WebMessageArguments,
   WebResourceRequestedArguments,
   WebView2Like
@@ -14,6 +15,7 @@ import { startWebView2 } from "./environment.ts";
 import { dispatchKey, dispatchMouseClick, TypeMode, typeText } from "./input.ts";
 import { onDownloadStarting, onNavigationStarting, onPermissionRequested, PermissionState } from "./policy.ts";
 import { callDevToolsMethod, onDevToolsEvent } from "./protocol.ts";
+import { keepWebView2Alive, ProcessFailureKind } from "./recovery.ts";
 import { ResourceContext, subscribeRequests } from "./requests.ts";
 import type { BodyStreams } from "./requests.ts";
 import { webView2Transport } from "./transport.ts";
@@ -53,6 +55,7 @@ function fakeCore() {
     navigation: new Set<(sender: unknown, args: NavigationArguments) => void>(),
     download: new Set<(sender: unknown, args: DownloadArguments) => void>(),
     permission: new Set<(sender: unknown, args: PermissionArguments) => void>(),
+    processFailed: new Set<(sender: unknown, args: ProcessFailedArguments) => void>(),
     resource: new Set<(sender: unknown, args: WebResourceRequestedArguments) => void>(),
     protocolEvent: new Set<(sender: unknown, args: {
       parameterObjectAsJson: string;
@@ -84,6 +87,7 @@ function fakeCore() {
     addScriptToExecuteOnDocumentCreatedAsync: () => Promise.resolve("script-1"),
     removeScriptToExecuteOnDocumentCreated: id => calls.push(`remove ${id}`),
     openDevToolsWindow: () => calls.push("devtools"),
+    reload: () => calls.push("reload"),
     browserProcessId: 1,
     environment: {
       userDataFolder: "folder",
@@ -158,12 +162,21 @@ function fakeControl({ isReady = true } = {}) {
 
   const control: WebView2Like = {
     coreWebView2: fake.core,
-    ensureCoreWebView2Async: () => gate.promise
+    ensureCoreWebView2Async: () => gate.promise,
+    onCoreProcessFailed(callback) {
+      fake.handlers.processFailed.add(callback);
+      return () => fake.handlers.processFailed.delete(callback);
+    }
   };
   return {
     ...fake,
     control,
-    finish: gate.resolve
+    finish: gate.resolve,
+    fail(processFailedKind: number) {
+      for (const handler of fake.handlers.processFailed) {
+        handler(undefined, { processFailedKind });
+      }
+    }
   };
 }
 
@@ -325,6 +338,7 @@ test("a browser that cannot start closes the link", async () => {
   const transport = webView2Transport({
     control: {
       coreWebView2: fakeCore().core,
+      onCoreProcessFailed: () => () => undefined,
       ensureCoreWebView2Async: () => Promise.reject(new Error("0x8007139F"))
     }
   });
@@ -692,6 +706,7 @@ test("startWebView2 passes the environment and the controller options, and start
   }> = [];
   const control: WebView2Like = {
     coreWebView2: core,
+    onCoreProcessFailed: () => () => undefined,
     ensureCoreWebView2Async(environment?: unknown, options?: {
       profileName: string;
       isInPrivateModeEnabled: boolean;
@@ -728,6 +743,7 @@ test("startWebView2 names both causes of 0x8007139F and lets a later call retry"
   let attempts = 0;
   const control: WebView2Like = {
     coreWebView2: core,
+    onCoreProcessFailed: () => () => undefined,
     ensureCoreWebView2Async() {
       attempts += 1;
       return attempts === 1 ? Promise.reject(new Error("HRESULT 0x8007139F")) : Promise.resolve();
@@ -745,4 +761,114 @@ test("startWebView2 names both causes of 0x8007139F and lets a later call retry"
       environment: core.environment
     }), core
   );
+});
+
+function guarded(options: { maxCrashes?: number } = {}) {
+  const first = fakeControl();
+  const rebuilt: Array<ReturnType<typeof fakeControl>> = [];
+  const log: string[] = [];
+  const guard = keepWebView2Alive({
+    control: first.control,
+    ...options,
+    setup(core) {
+      log.push(core === first.core ? "setup first" : "setup next");
+    },
+    rebuild() {
+      log.push("rebuild");
+      const next = fakeControl();
+      rebuilt.push(next);
+      return Promise.resolve(next.control);
+    },
+    onRecovering: ({ kind }) => log.push(`recovering ${kind}`),
+    onGaveUp: ({ reason }) => log.push(`gave up ${reason}`)
+  });
+  return {
+    first,
+    rebuilt,
+    log,
+    guard
+  };
+}
+
+test("keepWebView2Alive sets up the first core, then rebuilds and sets up again when the browser exits", async () => {
+  const { first, rebuilt, log } = guarded();
+  await tick();
+  first.fail(0);
+  await tick();
+  assert.deepEqual(log, ["setup first", `recovering ${ProcessFailureKind.BROWSER_EXITED}`, "rebuild", "setup next"]);
+  assert.equal(first.handlers.processFailed.size, 0);
+  assert.equal(rebuilt[0]?.handlers.processFailed.size, 1);
+});
+
+test("keepWebView2Alive reloads in place for any other failure", async () => {
+  const { first, log } = guarded();
+  await tick();
+  first.fail(1);
+  await tick();
+  assert.deepEqual(first.calls, ["reload"]);
+  assert.deepEqual(log, ["setup first", `recovering ${ProcessFailureKind.RENDER_EXITED}`]);
+  first.fail(2);
+  await tick();
+  first.fail(6);
+  await tick();
+  assert.deepEqual(log.slice(2), [`recovering ${ProcessFailureKind.UNRESPONSIVE}`, `recovering ${ProcessFailureKind.OTHER}`]);
+});
+
+test("keepWebView2Alive gives up once on a streak and tries again on retry", async () => {
+  const { first, log, guard } = guarded();
+  await tick();
+  for (let i = 0; i < 5; i++) {
+    first.fail(1);
+    await tick();
+  }
+
+  const gaveUp = log.filter(line => line.startsWith("gave up"));
+  assert.equal(gaveUp.length, 1);
+  assert.equal(first.calls.length, 3);
+  await guard.retry();
+  assert.deepEqual(log.slice(-3), [`recovering ${ProcessFailureKind.BROWSER_EXITED}`, "rebuild", "setup next"]);
+});
+
+test("keepWebView2Alive ignores a failure while a rebuild is running", async () => {
+  const first = fakeControl();
+  const gate = Promise.withResolvers<WebView2Like>();
+  let rebuilds = 0;
+  keepWebView2Alive({
+    control: first.control,
+    setup: () => undefined,
+    rebuild() {
+      rebuilds += 1;
+      return gate.promise;
+    }
+  });
+  await tick();
+  first.fail(0);
+  first.fail(0);
+  await tick();
+  assert.equal(rebuilds, 1);
+  gate.resolve(fakeControl().control);
+  await tick();
+});
+
+test("keepWebView2Alive stops listening when disposed, and gives up when a rebuild throws", async () => {
+  const { first, log, guard } = guarded();
+  await tick();
+  guard.dispose();
+  assert.equal(first.handlers.processFailed.size, 0);
+  first.fail(0);
+  await tick();
+  assert.deepEqual(log, ["setup first"]);
+
+  const failing = fakeControl();
+  const reasons: string[] = [];
+  keepWebView2Alive({
+    control: failing.control,
+    setup: () => undefined,
+    rebuild: () => Promise.reject(new Error("no browser")),
+    onGaveUp: ({ reason }) => reasons.push(reason)
+  });
+  await tick();
+  failing.fail(0);
+  await tick();
+  assert.deepEqual(reasons, ["no browser"]);
 });

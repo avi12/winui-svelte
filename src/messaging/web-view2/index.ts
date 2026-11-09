@@ -5,6 +5,7 @@ export type {
   ControllerOptionsLike,
   CoreWebView2Like,
   EnvironmentLike,
+  ProcessFailedArguments,
   WebView2Like
 } from "./core.ts";
 export { addDocumentCreatedScript, executeScript, openDevTools, waitForCoreWebView2 } from "./core.ts";
@@ -20,3 +21,5 @@ export type { RequestFilter, WebRequest, WebResponse } from "./requests.ts";
 export { blockRequests, onWebResourceRequested, ResourceContext, StatusCode } from "./requests.ts";
 export { callDevToolsMethod, onDevToolsEvent } from "./protocol.ts";
 export { dispatchKey, dispatchMouseClick, keyEventParameters, KeyEventType, MouseButton, TypeMode, typeText } from "./input.ts";
+export type { WebView2Guard } from "./recovery.ts";
+export { keepWebView2Alive, ProcessFailureKind } from "./recovery.ts";

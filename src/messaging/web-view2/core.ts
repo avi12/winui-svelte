@@ -97,6 +97,12 @@ export interface CookieManagerLike {
   deleteAllCookies(): void;
 }
 
+/** What `CoreProcessFailed` hands over. */
+export interface ProcessFailedArguments {
+  /** A `CoreWebView2ProcessFailedKind`; 0 is the browser process. */
+  readonly processFailedKind: number;
+}
+
 /** What the helpers use of `CoreWebView2`; every `on...` returns its unsubscribe. */
 export interface CoreWebView2Like {
   readonly cookieManager: CookieManagerLike;
@@ -110,6 +116,7 @@ export interface CoreWebView2Like {
   addScriptToExecuteOnDocumentCreatedAsync(javaScript: string): Promise<string>;
   removeScriptToExecuteOnDocumentCreated(id: string): void;
   openDevToolsWindow(): void;
+  reload(): void;
   addWebResourceRequestedFilter(uri: string, resourceContext: number): void;
   removeWebResourceRequestedFilter(uri: string, resourceContext: number): void;
   callDevToolsProtocolMethodAsync(methodName: string, parametersAsJson: string): Promise<string>;
@@ -129,6 +136,7 @@ export function messageOf(error: unknown) {
 /** What the helpers use of the `WebView2` control. */
 export interface WebView2Like {
   readonly coreWebView2: CoreWebView2Like;
+  onCoreProcessFailed(callback: (sender: unknown, args: ProcessFailedArguments) => void): () => void;
   ensureCoreWebView2Async(): Promise<void>;
   ensureCoreWebView2Async(environment: EnvironmentLike): Promise<void>;
   ensureCoreWebView2Async(environment: EnvironmentLike, controllerOptions: ControllerOptionsLike): Promise<void>;

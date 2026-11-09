@@ -16,6 +16,7 @@ export { MoveDirection } from "./components/hand-written/items/reorder.ts";
 export { NavigationCacheMode, NavigationMode } from "./components/hand-written/navigation/navigation-stack.ts";
 export { CookieSameSite } from "./messaging/web-view2/cookies.ts";
 export { PermissionKind, PermissionState } from "./messaging/web-view2/policy.ts";
+export { ProcessFailureKind } from "./messaging/web-view2/recovery.ts";
 export { ColorKeyword } from "./components/values.ts";
 export { XamlKind } from "./components/xaml-source.ts";
 export { ConnectedAnimationKind } from "./renderer/host/connected-configuration.ts";
