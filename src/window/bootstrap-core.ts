@@ -40,8 +40,10 @@ export interface WindowsAppSdkOptions {
    * option wins, then the `WEBVIEW2_USER_DATA_FOLDER` variable, then
    * `%LOCALAPPDATA%\winui-svelte\<the app's main script>\WebView2`, one folder
    * per app, since two apps with different WebView2 settings cannot share one.
+   * `false` leaves the variable alone: set, it overrides the folder of an
+   * environment made with `createWebView2Environment`.
    */
-  webViewUserDataFolder?: string;
+  webViewUserDataFolder?: string | false;
 
   /**
    * The DPI awareness to ask for before anything else; `perMonitorV2` by
@@ -128,7 +130,12 @@ export function startWindowsAppSdk({ options, runtimeProcess }: {
     webViewUserDataFolder,
     bootstrap = BootstrapMode.auto
   } = options;
-  process.env[USER_DATA_VARIABLE] = webViewUserDataFolder ?? process.env[USER_DATA_VARIABLE] ?? defaultUserDataFolder();
+  const isUserDataFolderWanted = webViewUserDataFolder !== false;
+  if (isUserDataFolderWanted) {
+    const existing = process.env[USER_DATA_VARIABLE];
+    process.env[USER_DATA_VARIABLE] = webViewUserDataFolder ?? existing ?? defaultUserDataFolder();
+  }
+
   const isPackageRuntime = bootstrap === BootstrapMode.never
     || (bootstrap === BootstrapMode.auto && runtimeProcess.hasWindowsAppRuntimeDependency());
   const candidates = [...folders, ...runtimeProcess.bootstrapperFolders()];
