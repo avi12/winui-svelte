@@ -7,6 +7,11 @@ import { blockingConstraint, nearestMode, supportedConstraints, wishesOf } from 
 import { windowsMediaDevicesBackend } from "./media-devices-source.ts";
 import type { PermissionStateName } from "./permissions.ts";
 import { PermissionStateName as PermissionState, registerPermission } from "./permissions.ts";
+import { CropTarget, DisplayCapture, framesPerSecondOf, ImageCapture } from "./screen-capture.ts";
+import type { DisplayVideoConstraints } from "./screen-capture.ts";
+import type { FrameSource } from "#src/capture/frame.js";
+import type { ResolvedMonitor } from "#src/capture/monitors.js";
+import { parseMonitor } from "#src/capture/schema.js";
 import type { MediaCapture } from "#winui/windows/media/capture/MediaCapture";
 
 const ID_PENALTY = 4;
@@ -101,12 +106,21 @@ export interface DisplaySurface {
   /** The `GraphicsCaptureItem`; absent in a fake. */
   readonly native: unknown;
   readonly cursor: "always" | "never";
+
+  /** The surface's frames, for `ImageCapture` and `cropTo`; absent in a fake that has none. */
+  readonly frames?: FrameSource;
   close(): void;
 }
 
 /** What the backend is asked to show a picker for. */
 export interface DisplayRequest {
   readonly cursor: "always" | "never";
+
+  /** A monitor to open without the picker; the picker is shown when it is absent. */
+  readonly monitor: ResolvedMonitor | undefined;
+
+  /** The rate Windows is first asked to deliver frames at; the track's constraints change it later. */
+  readonly targetFramesPerSecond: number;
 }
 
 /** What `navigator.mediaDevices` works with: Windows' capture classes in the app, a fake in the tests. */
@@ -136,14 +150,24 @@ export interface MediaStreamConstraints extends MediaStreamConstraintExtras {
 
 /** What Windows adds to `getDisplayMedia`'s options. */
 export interface DisplayMediaExtras {
-  /** Whether the mouse cursor is drawn in the capture; `always` by default. */
+  /** Whether the mouse cursor is drawn; `always` by default. `video.cursor` is the standard way and wins. */
   readonly cursor?: "always" | "never";
 }
 
-/** The `getDisplayMedia` options, with the extras. */
+/**
+ * The `getDisplayMedia` options, with the extras. `monitorTypeSurfaces`,
+ * `selfBrowserSurface`, `surfaceSwitching`, `systemAudio` and
+ * `preferCurrentTab` are read and ignored: the Windows picker cannot filter by
+ * kind, and an app has no browser tab to share.
+ */
 export interface DisplayMediaStreamOptions extends DisplayMediaExtras {
-  readonly video?: boolean | MediaTrackConstraints;
+  readonly video?: boolean | DisplayVideoConstraints;
   readonly audio?: boolean;
+  readonly monitorTypeSurfaces?: "include" | "exclude";
+  readonly selfBrowserSurface?: "include" | "exclude";
+  readonly surfaceSwitching?: "include" | "exclude";
+  readonly systemAudio?: "include" | "exclude";
+  readonly preferCurrentTab?: boolean;
 }
 
 /** `OverconstrainedError`: no device or format meets the constraints. */
@@ -254,6 +278,9 @@ export interface MediaTrackCapabilities {
 interface CaptureSource {
   readonly capture: OpenedCapture | undefined;
   readonly surface: DisplaySurface | undefined;
+
+  /** What a screen track adds: the crop, the limits and the frames. */
+  readonly display: DisplayCapture | undefined;
   liveTracks: number;
 }
 
@@ -354,6 +381,54 @@ export class MediaStreamTrack extends HandlerEventTarget {
     return this.source.surface?.native;
   }
 
+  /** What a screen track delivers frames through; WinUI-only, absent on a camera and a microphone. */
+  get displayCapture() {
+    return this.source.display;
+  }
+
+  /**
+   * Region Capture: shows only the part of the screen the target names, from
+   * the next frame on, or all of it again for `null`. Clones of a track share
+   * the crop.
+   *
+   * @param target - A `CropTarget` (`CropTarget.fromRect` is the one that exists here), or null.
+   * @throws {DOMException} `InvalidStateError` for a track that has ended;
+   *     `NotSupportedError` for a track that is not a screen
+   * @throws {TypeError} for anything that is not a `CropTarget` or null
+   */
+  cropTo(target: CropTarget | null) {
+    const display = this.source.display;
+    const isEnded = this.state !== "live";
+    if (isEnded) {
+      return Promise.reject(
+        domException({
+          name: DomErrorName.INVALID_STATE,
+          message: "The track has ended"
+        })
+      );
+    }
+
+    const isScreen = display !== undefined;
+    if (!isScreen) {
+      return Promise.reject(
+        domException({
+          name: DomErrorName.NOT_SUPPORTED,
+          message: "Only a screen track can be cropped"
+        })
+      );
+    }
+
+    const isReset = target === null;
+    const isTarget = target instanceof CropTarget;
+    const isInvalid = !isReset && !isTarget;
+    if (isInvalid) {
+      return Promise.reject(new TypeError("cropTo takes a CropTarget or null"));
+    }
+
+    this.source.display?.cropTo(isTarget ? target.rectangle : null);
+    return Promise.resolve();
+  }
+
   /** What the track is now. */
   getSettings() {
     const { device, mode } = this;
@@ -367,11 +442,13 @@ export class MediaStreamTrack extends HandlerEventTarget {
       return base;
     }
 
-    const size = mode ?? surface;
+    const shown = this.source.display?.settings;
+    const size = shown ?? mode ?? surface;
     const settings: MediaTrackSettings = {
       ...base,
       ...(size === undefined ? {} : sizeSettingsOf(size)),
       ...(mode === undefined ? {} : { frameRate: mode.frameRate }),
+      ...(shown === undefined ? {} : { frameRate: shown.frameRate }),
       ...(device === undefined ? {} : facingSettingsOf(device.panel)),
       ...(surface === undefined ? {} : {
         displaySurface: surface.surface,
@@ -422,6 +499,7 @@ export class MediaStreamTrack extends HandlerEventTarget {
    * @throws {OverconstrainedError} When no format meets them.
    */
   async applyConstraints(constraints: MediaTrackConstraints = {}) {
+    this.source.display?.applyConstraints(constraints);
     const isVideo = this.kind === "video" && this.source.capture !== undefined;
     if (isVideo) {
       const mode = nearestMode({
@@ -741,6 +819,7 @@ export class MediaDevices extends HandlerEventTarget {
     const source: CaptureSource = {
       capture,
       surface: undefined,
+      display: undefined,
       liveTracks: 0
     };
     const tracks: MediaStreamTrack[] = [];
@@ -783,14 +862,23 @@ export class MediaDevices extends HandlerEventTarget {
   }
 
   /**
-   * Asks the user which screen or window to share. Frames are not delivered
-   * yet: the stream carries the chosen surface (`track.captureItem`) and its
-   * size.
+   * Asks the user which screen or window to share, or, with
+   * `video.monitor` (an extra), opens that monitor with no picker. The track
+   * delivers frames: `new ImageCapture(track).grabFrame()`; it crops with
+   * `track.cropTo`, and `applyConstraints({ width, height, frameRate })`
+   * limits the size of a frame and the rate.
    *
    * @throws {DOMException} `NotAllowedError` when the user cancels the picker.
+   * @throws {TypeError} for a `video.monitor` that is not a rectangle or a display id.
    */
   async getDisplayMedia(options: DisplayMediaStreamOptions = {}) {
-    const surface = await this.backend.pickDisplay({ cursor: options.cursor ?? "always" });
+    const constraints = typeof options.video === "object" ? options.video : {};
+    const hasMonitor = constraints.monitor !== undefined;
+    const surface = await this.backend.pickDisplay({
+      cursor: constraints.cursor === "never" ? "never" : options.cursor ?? "always",
+      monitor: hasMonitor ? parseMonitor(constraints.monitor) : undefined,
+      targetFramesPerSecond: framesPerSecondOf(constraints)
+    });
     const isCanceled = surface === undefined;
     if (isCanceled) {
       throw domException({
@@ -810,6 +898,10 @@ export class MediaDevices extends HandlerEventTarget {
         source: {
           capture: undefined,
           surface,
+          display: surface.frames === undefined ? undefined : new DisplayCapture({
+            source: surface.frames,
+            constraints
+          }),
           liveTracks: 0
         }
       })
@@ -1004,6 +1096,14 @@ export function installMediaDevices(options: MediaDevicesInstallOptions = {}) {
     defineProperty({
       name: "MediaDeviceInfo",
       value: MediaDeviceInfo
+    }),
+    defineProperty({
+      name: "ImageCapture",
+      value: ImageCapture
+    }),
+    defineProperty({
+      name: "CropTarget",
+      value: CropTarget
     }),
     defineProperty({
       name: "OverconstrainedError",
