@@ -5609,6 +5609,7 @@ needs
 | `EyeDropper` | `winui-svelte/web-apis/eye-dropper` | web plus extras | none | done |
 | `FontFace`, `document.fonts` (font files of the app) | `winui-svelte/web-apis/fonts` | web plus extras | none | done |
 | `createImageBitmap`, `ImageBitmap`, `ImageDecoder`, canvas `toBlob`, `convertToBlob`, `toDataURL` (PNG, JPEG, GIF, BMP, TIFF) | `winui-svelte/web-apis/images` | web plus extras | none | done |
+| `BarcodeDetector` (QR code, EAN-13, EAN-8, UPC-A, Code 128) | `winui-svelte/web-apis/shape-detection` | web plus extras | none | done |
 | `navigator.contacts` (Contact Picker) | `winui-svelte/web-apis/contacts` | web plus extras | for most apps, package identity | done |
 | `TextDetector`, `DetectedText` (words with their own boxes, recognizer languages, a region) | `winui-svelte/web-apis/shape-detection` | web plus extras | none (needs an OCR recognizer language, Settings, Time and language) | done |
 
@@ -6698,7 +6699,7 @@ window and no package identity
   and the tests implement; `ImageMimeType`, `ImageOrientation` and
   `ResizeQuality` are in `winui-svelte/enums`
 
-#### Shape detection (`winui-svelte/web-apis/shape-detection`)
+#### Text detection (`winui-svelte/web-apis/shape-detection`)
 
 The Shape Detection API's `TextDetector` over the OCR that ships with Windows
 (`Windows.Media.Ocr`); it needs no window and no package identity, only a
@@ -6758,6 +6759,43 @@ for (const { rawValue, boundingBox, cornerPoints, words } of texts) {
   Chrome's `TextDetector` runs unchanged
 - The `shape-detection` folder holds one file per detector; `index.ts` exports
   them all
+
+#### Barcode detection (`winui-svelte/web-apis/shape-detection`)
+
+`new BarcodeDetector({ formats? })` and `await detector.detect(image)` read
+QR codes and the common linear codes in pixels; it is pure TypeScript, with no
+native code and no package identity, and it never writes to the image
+`installBarcodeDetector()` defines the global `BarcodeDetector`
+
+```ts
+import { BarcodeDetector } from "winui-svelte/web-apis/shape-detection";
+
+const detector = new BarcodeDetector({ formats: ["qr_code", "ean_13"] });
+const [code] = await detector.detect(await createImageBitmap(screenshot));
+console.log(code?.rawValue, code?.boundingBox, code?.cornerPoints);
+```
+
+- `BarcodeDetector.getSupportedFormats()` resolves with `qr_code`, `ean_13`,
+  `ean_8`, `upc_a` and `code_128`; a `formats` list that is empty or names
+  another format (`pdf417`, `aztec`, and so on) throws `TypeError`, as on the
+  web
+- `detect(image)` takes the same sources as `createImageBitmap` (a `Blob`,
+  `File` or `NativeFile` of an image file, `ImageData`, an `ImageBitmap` or a
+  canvas) and resolves with `{ boundingBox, cornerPoints, format, rawValue }`
+  for each code, an empty array for none; an image file needs
+  `installImageCodecs()` to decode, and a source that is not an image rejects
+  with `TypeError`
+- QR codes: model 2, every version, Reed-Solomon error correction, rotated,
+  mirrored and light on dark; read at one pixel a module or more
+- EAN and UPC need their check digit to agree; a UPC-A symbol is reported as
+  `upc_a` when that format is asked for, otherwise as `ean_13` with a leading
+  zero; linear codes are read horizontal or vertical, in either direction, but
+  not at other angles
+- Extra: `new BarcodeDetector({ region })` searches only that rectangle (a
+  Circle to Search crop) and still reports the whole image's pixels
+- Not covered: the other formats of the standard (`aztec`, `data_matrix`,
+  `pdf417`, `code_39`, `code_93`, `codabar`, `itf`, `upc_e`), and `FaceDetector`
+  (`TextDetector` is in its own section)
 
 #### Contacts (`winui-svelte/web-apis/contacts`)
 
