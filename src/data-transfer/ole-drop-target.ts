@@ -12,9 +12,14 @@ import type { DynWinRTValue } from "@microsoft/dynwinrt/com/unsafe";
 
 // WinUI 3 registers no OLE drop target on its window (no `OleDropTargetInterface`
 // property on any window of its tree), so Windows answers a drag from another
-// app with the forbidden sign. This registers one on the top-level window and
-// on the child window that holds its content, with `RegisterDragDrop`, as every
-// classic window that takes drops does, and hands its four calls to a handler.
+// app with the forbidden sign. This registers one on the child window that holds
+// the content (the top-level when there is none), with `RegisterDragDrop`, as
+// every classic window that takes drops does, and hands its four calls to a handler.
+// Windows asks only the window under the cursor, and WinUI's content is a child
+// window of its own. The same target on both windows is a dead end: a drag that
+// enters over the top-level's resize border and moves onto the content gets a
+// `DragLeave` and never a new `DragEnter`, so the content never hears of it.
+// A drag over the border or title bar shows the forbidden sign; no zone lives there.
 
 const CONTENT_WINDOW_CLASS = "Microsoft.UI.Content.DesktopChildSiteBridge";
 const NO_WINDOW = BigInt(0);
@@ -177,7 +182,13 @@ export function registerOleDropTarget({ hwnd, handler }: {
   readonly handler: OleDropHandler;
 }) {
   enterOle();
-  const helper = createDragHelper(hwnd);
+  const content = findChildWindow({
+    hwnd,
+    className: CONTENT_WINDOW_CLASS
+  });
+  const hasContentWindow = content !== NO_WINDOW;
+  const targetWindow = hasContentWindow ? content : hwnd;
+  const helper = createDragHelper(targetWindow);
   const target = DynCom.createComObject([dropTargetInterface()], (_iid, slot, ...args) => {
     const isLeaving = slot === DRAG_LEAVE_SLOT;
     if (isLeaving) {
@@ -209,35 +220,19 @@ export function registerOleDropTarget({ hwnd, handler }: {
   DynCom.bindComObject(target);
   const view = target.cast(WinGuid.parse(DROP_TARGET_IID));
   const hresult = registerDropTarget({
-    hwnd,
+    hwnd: targetWindow,
     target: view,
     iid: DROP_TARGET_IID
   });
   const isRegistered = hresult === SUCCESS;
   if (!isRegistered) {
     view.release();
+    helper?.release();
     return null;
   }
 
-  // Windows asks only the window under the cursor, and WinUI's content is a child window of its own
-  // (never the top-level), so the same target goes on it or a drag over the content finds none.
-  const content = findChildWindow({
-    hwnd,
-    className: CONTENT_WINDOW_CLASS
-  });
-  const hasContentWindow = content !== NO_WINDOW;
-  const isContentRegistered = hasContentWindow && registerDropTarget({
-    hwnd: content,
-    target: view,
-    iid: DROP_TARGET_IID
-  }) === SUCCESS;
   return () => {
-    revokeDropTarget(hwnd);
-
-    if (isContentRegistered) {
-      revokeDropTarget(content);
-    }
-
+    revokeDropTarget(targetWindow);
     view.release();
     target.release();
     helper?.release();

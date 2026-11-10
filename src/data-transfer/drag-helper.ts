@@ -85,7 +85,7 @@ export interface DragHelper {
 /**
  * Makes the shell's drag helper for a window.
  *
- * @param hwnd - The top-level window the drags are over.
+ * @param hwnd - The window the drop target is registered on.
  * @returns The helper; null when the shell could not make it (the drag then works without a picture).
  */
 export function createDragHelper(hwnd: bigint) {
