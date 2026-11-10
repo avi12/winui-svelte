@@ -1,5 +1,5 @@
-import type { OcrBox } from "./geometry.ts";
-import { sourceBox, unionOf } from "./geometry.ts";
+import type { OcrBox } from "./text-geometry.ts";
+import { sourceBox, unionOf } from "./text-geometry.ts";
 
 // Which engines to try, in which order, who wins, and what the result looks
 // like. Pure: the engines are handed in, so a fake one tests all of it.

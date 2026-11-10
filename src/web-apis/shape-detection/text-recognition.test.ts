@@ -1,5 +1,5 @@
-import type { RawLine, RecognizingEngine } from "./recognition.ts";
-import { candidatesOf, firstRecognition, linesInSource, OcrCandidateKind } from "./recognition.ts";
+import type { RawLine, RecognizingEngine } from "./text-recognition.ts";
+import { candidatesOf, firstRecognition, linesInSource, OcrCandidateKind } from "./text-recognition.ts";
 import assert from "node:assert/strict";
 import { test } from "node:test";
 

@@ -212,10 +212,6 @@
       "types": "./dist/downloads/index.d.ts",
       "default": "./dist/downloads/index.js"
     },
-    "./ocr": {
-      "types": "./dist/ocr/index.d.ts",
-      "default": "./dist/ocr/index.js"
-    },
     "./input": {
       "types": "./dist/input/index.d.ts",
       "svelte": "./dist/input/index.js",
@@ -634,6 +630,10 @@
     "./web-apis/share": {
       "types": "./dist/web-apis/share.d.ts",
       "default": "./dist/web-apis/share.js"
+    },
+    "./web-apis/shape-detection": {
+      "types": "./dist/web-apis/shape-detection/index.d.ts",
+      "default": "./dist/web-apis/shape-detection/index.js"
     },
     "./web-apis/speech": {
       "types": "./dist/web-apis/speech.d.ts",

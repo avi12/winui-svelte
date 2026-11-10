@@ -175,6 +175,30 @@ export function sourceBox({ box, crop, read }: {
   } satisfies OcrBox;
 }
 
+/** The four corners of a box, clockwise from the top left. */
+export function cornerPointsOf(box: OcrBox) {
+  const right = box.x + box.width;
+  const bottom = box.y + box.height;
+  return [
+    {
+      x: box.x,
+      y: box.y
+    },
+    {
+      x: right,
+      y: box.y
+    },
+    {
+      x: right,
+      y: bottom
+    },
+    {
+      x: box.x,
+      y: bottom
+    }
+  ];
+}
+
 /** The smallest box that holds every box given (an empty box for none). */
 export function unionOf(boxes: readonly OcrBox[]) {
   const [first, ...rest] = boxes;

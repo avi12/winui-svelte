@@ -6,7 +6,7 @@ import {
   fittedSize,
   sourceBox,
   unionOf
-} from "./geometry.ts";
+} from "./text-geometry.ts";
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
