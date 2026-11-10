@@ -60,6 +60,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/media` | `src/media/index.ts` | `bitmapImageOf()`, `svgImageSourceOf()`, `decodeDataUri()`, `createMediaPlayer()`, `mediaSourceOfBytes()`, `observePlayback()`, `PlaybackState` (opt-in; see Media) |
 | `winui-svelte/win2d` | `src/win2d/index.ts` | `Canvas`, the Win2D controls, the drawing helpers and Win2D classes, `applyEffect` (opt-in; see Win2D) |
 | `winui-svelte/enums` | `src/enums.ts` | every closed set a prop or option takes: WinUI's enums, `ThemeBrush`, `ColorKeyword`, `Backdrop`, `WindowTheme`, `TrayBalloonIcon` and the rest (see Closed sets) |
+| `winui-svelte/capture` | `src/capture/index.ts` | `captureMonitor`, `createMonitorCaptureFeed`, `encodeJpeg`, `CaptureFormat`: a frame or a live feed of a monitor or a region of it, over Windows.Graphics.Capture and Win2D (opt-in; see Screen capture) |
 | `winui-svelte/win2d/manifest` | `src/win2d/manifest.ts` | `win2dActivatableClasses`, `win2dClassNames`: the manifest fragment a packaged app needs for Win2D (see Packaged apps) |
 | `winui-svelte/win2d/context-2d` | `src/win2d/context-2d/index.ts` | `Canvas2D`, `createCanvas2D`, `CanvasElement`, `Context2D`, `Path2D` and the rest of the HTML Canvas 2D API over Win2D (opt-in; see Canvas 2D) |
 | `winui-svelte/tray` | `src/tray/index.ts` | `TrayIcon` (with its `menu`), `createTrayIcon()`, `placeMenuWindow()`, `hideToTray()`, `restoreFromTray()`, `toggleInTray()`, `removeAllTrayIcons()`, `TrayGesture` (opt-in; see System tray) |
@@ -7191,6 +7192,170 @@ target and checks the pixels
 The working example is `examples/win2d` (`test/win2d.test.ts` runs it in a real
 window and checks the redraw; `src/win2d/win2d.test.ts` draws on a render
 target and checks the pixels)
+
+## Screen capture (`winui-svelte/capture`)
+
+Pictures of a monitor, or of a rectangle of one, through
+Windows.Graphics.Capture and Win2D: one frame to freeze, or a live feed whose
+rectangle moves and resizes while it runs
+Opt-in, and nothing runs at import time; the first call touches Windows
+
+```ts
+import {
+  captureMonitor,
+  createMonitorCaptureFeed,
+  encodeJpeg
+} from "winui-svelte/capture";
+
+// Freeze a monitor, or a part of it, then send only that part
+const frame = await captureMonitor({
+  monitor: { displayId: area.displayId.value },
+  region: { x: 120, y: 80, width: 800, height: 600 },
+  maxEdge: 1280
+});
+const { bytes } = await encodeJpeg({ frame, quality: 0.7 });
+
+// Show a live preview of a region that the person drags
+const feed = createMonitorCaptureFeed({
+  monitor: area.outerBounds,
+  targetFramesPerSecond: 30,
+  size: { width: 240, height: 135 },
+  onFrame: ({ width, height, pixels }) => setBitmapPixels({ source, width, height, pixels })
+});
+feed.setRegion({ x: 200, y: 100, width: 640, height: 360 });
+feed.setRegion(null);
+feed.dispose();
+```
+
+```ts
+type CaptureMonitor = Rectangle | { displayId: bigint | string };
+
+interface CaptureFrame {
+  width: number;
+  height: number;
+  pixels: Uint8Array;
+  format: CaptureFormat;
+  region: Rectangle;
+  scale: number;
+}
+
+function captureMonitor(options: {
+  monitor: CaptureMonitor;
+  region?: Rectangle;
+  maxEdge?: number;
+  format?: CaptureFormat;
+  isSoftwareRenderer?: boolean;
+  timeoutMilliseconds?: number;
+}): Promise<CaptureFrame>;
+
+function createMonitorCaptureFeed(options: {
+  monitor: CaptureMonitor;
+  region?: Rectangle;
+  targetFramesPerSecond: number;
+  size: Size;
+  isSoftwareRenderer?: boolean;
+  format?: CaptureFormat;
+  onFrame(frame: CaptureFrame): void;
+  onError?(error: unknown): void;
+}): {
+  setRegion(region: Rectangle | null): void;
+  setSize(size: Size): void;
+  setTargetFramesPerSecond(framesPerSecond: number): void;
+  dispose(): void;
+};
+
+function encodeJpeg(options: {
+  frame: { width: number; height: number; pixels: Uint8Array };
+  quality?: number;
+  maxEdge?: number;
+}): Promise<{ bytes: Uint8Array; width: number; height: number; scale: number }>;
+```
+
+- A monitor is its rectangle in physical pixels of the virtual screen (what
+  `DisplayArea.outerBounds` and `displays()` report), or a display id
+  (`DisplayArea.displayId.value`, a `bigint` or its decimal string); the
+  process has to be per-monitor DPI aware, which `initWindowsAppSdk` makes it
+  by default, or a rectangle names the wrong monitor on a scaled display
+- A `region` is in the monitor's own physical pixels from its top left, and is
+  not clipped to the monitor: the part outside is black, so the picture keeps
+  the region's size (a share border that sits outside the edge, a circle that
+  was drawn past it)
+- `pixels` is `width * height * 4` bytes, rows from the top, no padding, in
+  the `format`: `CaptureFormat.RGBA` (the default, what `ImageData` and
+  `setBitmapPixels` take) or `CaptureFormat.BGRA` (Windows' own order, no swap)
+- `scale` is output pixels per monitor pixel across, so a point the model names
+  at `x` in the picture is at `region.x + x / scale` on the monitor; `region`
+  is the whole monitor when none was asked for
+- `captureMonitor` starts a capture, takes the first frame, crops and shrinks
+  it on the GPU (`maxEdge` shrinks the longest edge, never enlarges, with a
+  cubic filter) and ends the capture, about 40 ms for a region after the first
+  call; it throws when Windows delivers no frame in `timeoutMilliseconds`
+- `encodeJpeg` shrinks on the CPU (bilinear, each output pixel the area
+  weighted mean of the source pixels it covers) when the frame is longer than
+  `maxEdge`; give `maxEdge` to `captureMonitor` instead when the frame is only
+  being sent, which shrinks on the GPU and reads back less; the encoder is
+  Windows' own, so the bytes are not another encoder's at the same quality;
+  `quality` is 0 to 1, 0.7 by default
+- The feed's frames are all `size` (the region, or the monitor, is stretched to
+  fill it; `setSize` changes it); choose a `size` of the region's proportions,
+  or change it with the region, to avoid stretching
+- The feed polls `tryGetNextFrame` on the thread that made it, on a timer that
+  corrects its drift, because `FrameArrived` on a free-threaded pool never
+  fires through dynwinrt; frames are dropped, never queued: the newest one is
+  kept and the older ones are given back to the pool
+- Windows delivers a frame only when the screen changes, so the newest frame is
+  kept: `setRegion`, `setSize` and `setTargetFramesPerSecond` take effect at the
+  next tick even over a screen that is still, and a still screen delivers
+  nothing between changes; an app that must send a frame every so often asks
+  `captureMonitor` or keeps the last `onFrame`
+- `targetFramesPerSecond` (1 to 240) is the most frames a second delivered;
+  Windows is asked for no more (`minUpdateInterval`) and a monitor delivers
+  no more than its refresh rate
+- The session has no border (`isBorderRequired = false`) and no cursor
+- `dispose` is safe more than once, stops the timer and ends the capture; when
+  the monitor goes away or Windows stops the capture the feed disposes itself
+  and `onError` hears why; a `ZodError` is thrown at once for a region, size,
+  rate or monitor that is not valid, and the feed goes on with the old values
+- `isSoftwareRenderer` draws with Windows' software renderer (WARP) for a
+  machine with no usable GPU: slower, but it does not fail
+- The app's own windows are in the picture unless they are excluded from
+  capture (the `isExcludedFromCapture` window prop)
+
+### Packaged apps
+
+The capture item is made with `IGraphicsCaptureItemInterop.CreateForMonitor`
+(from an `HMONITOR` that `MonitorFromPoint` returns), not with
+`GraphicsCaptureItem.TryCreateFromDisplayId`, which Windows refuses with
+"access denied" in a packaged app even when the consent is on; the interop call
+works and needs only the borderless-capture capability
+A packaged app declares in `AppxManifest.xml`, under `<Capabilities>`:
+
+```xml
+<Package
+  xmlns:uap6="http://schemas.microsoft.com/appx/manifest/uap/windows10/6"
+  xmlns:uap11="http://schemas.microsoft.com/appx/manifest/uap/windows10/11"
+  IgnorableNamespaces="uap6 uap11">
+  <Capabilities>
+    <uap6:Capability Name="graphicsCaptureProgrammatic" />
+    <uap11:Capability Name="graphicsCaptureWithoutBorder" />
+  </Capabilities>
+</Package>
+```
+
+- Win2D needs its own entries in the same manifest (`win2dActivatableClasses`,
+  see Win2D, "Packaged apps"): the render target and the device are Win2D
+- An unpackaged app needs neither
+
+### Checked
+
+`test/capture.test.ts` (in `pnpm test:windows`) opens a bright green window and
+reads it back through a real capture: a whole monitor, a display id, a region,
+a region that reaches past the edge (black outside), `maxEdge`, BGRA against
+RGBA, a JPEG that decodes to the same colour, a feed whose region moves,
+resizes and returns to the whole monitor over a screen that does not change,
+and 25 feeds started and disposed in a row; `src/capture` has unit tests for
+the arithmetic (`region.ts`), the shrinking filter (`resample.ts`) and the
+feed's loop (`feed-controller.ts`, with a fake source and timer)
 
 ## UI Automation client (`winui-svelte/automation`)
 
