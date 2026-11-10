@@ -6679,6 +6679,8 @@ window and no package identity
   `InvalidStateError`
 - `ImageBitmap` has `width`, `height` and `close()`; `drawImage` and
   `createPattern` take it; extra: `toImageData()` (RGBA, not premultiplied)
+- Extra: `imageDataOf(source)` gives the RGBA pixels of any
+  `ImageBitmapSource` (a file is decoded with its own rotation applied)
 - `new ImageDecoder({ data, type })` takes bytes or a stream; `tracks` (an
   `ImageTrackList` of one `ImageTrack`), `complete`, `completed`, `decode({ frameIndex })`, `reset()`,
   `close()` and `ImageDecoder.isTypeSupported(type)`; `image` is an
