@@ -226,6 +226,22 @@ function imageOf({ source, isOrientationApplied }: {
   });
 }
 
+/**
+ * Extra: the RGBA pixels of any `ImageBitmapSource`, as `createImageBitmap`
+ * would read it (an image file is decoded with its own rotation applied).
+ *
+ * @param source - A `Blob`, `File`, `NativeFile`, `ImageData`, `ImageBitmap` or canvas.
+ * @returns The pixels; do not change them.
+ * @throws {TypeError} For anything else.
+ * @throws {DOMException} `InvalidStateError` when a file cannot be decoded.
+ */
+export function imageDataOf(source: ImageBitmapSource) {
+  return imageOf({
+    source,
+    isOrientationApplied: true
+  });
+}
+
 function sizeOfResize({ image, options }: {
   image: ImageData;
   options: ImageBitmapOptions;
