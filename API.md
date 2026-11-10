@@ -48,6 +48,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/data-transfer` | `src/data-transfer/index.ts` | `enableDragEvents()`, `dropzone`, `draggable`, `filePicker`, `pickFiles`, `pickSaveFile`, `clipboard`, `launchUri` / `launchFile` / `openFolder` / `revealInExplorer`, `share`, `NativeFile`, `DataTransfer`, `DragEvent` (opt-in; see Data transfer) |
 | `winui-svelte/incremental` | `src/incremental/index.ts` | `createIncrementalSource()`, `IncrementalSource`, `IncrementalStatus`, `IncrementalState` (opt-in; see Incremental loading) |
 | `winui-svelte/downloads` | `src/downloads/index.ts` | `Downloads` (`chrome.downloads`), `fetchToFile()`, `markOfTheWeb()`, `DownloadError` (opt-in; see Downloads) |
+| `winui-svelte/ocr` | `src/ocr/index.ts` | `recognizeText()`, `availableOcrLanguages()` (opt-in; see Recognizing text) |
 | `winui-svelte/security` | `src/security/index.ts` | `protectData()`, `unprotectData()`, `wipe()`, `ProtectionScope`, `DataProtectionError`: Windows DPAPI, compatible with .NET `ProtectedData` (opt-in; see Security) |
 | `winui-svelte/chrome/runtime` | `src/chrome/runtime/index.ts` | `Runtime` (`chrome.runtime`), `Port`, `InstallReason`, the native messaging codec (opt-in; see Chrome runtime) |
 | `winui-svelte/chrome/notifications` | `src/chrome/notifications/index.ts` | `ChromeNotifications` (`chrome.notifications`), `NotificationTemplateType`, `NotificationPermissionLevel` (opt-in; see Chrome notifications) |
@@ -4343,6 +4344,61 @@ const lines = menus.menu(ContextMenuSurface.TRAY);
 - Public exports: `ChromeContextMenus`, `ContextItemType`,
   `ContextMenuSurface`, `ContextType`, `ChromeEvent`, and the types
   `CreateProperties`, `OnClickData` and `UpdateProperties`
+
+## Recognizing text (`winui-svelte/ocr`)
+
+The OCR that ships with Windows (`Windows.Media.Ocr`), for an app that freezes
+the screen and lets the user pick words off it
+Opt-in: nothing is bundled until an app imports it, and importing does no work;
+it needs no window and no package identity, only a started WinRT apartment
+
+```ts
+import { availableOcrLanguages, recognizeText } from "winui-svelte/ocr";
+
+const installed = availableOcrLanguages(); // ["en-GB", "en-US"]
+
+const { lines, language } = await recognizeText({
+  pixels: bgra, // blue, green, red, alpha per pixel, row by row
+  width: 1920,
+  height: 1080,
+  region: { x: 40, y: 80, width: 600, height: 200 }, // optional
+  languages: ["he", "en"] // optional
+});
+// lines: [{ text, bounds, words: [{ text, bounds }] }]
+// bounds: { x, y, width, height } in the 1920 x 1080 image's pixels
+```
+
+- The image is `{ pixels, width, height }` (raw BGRA, a `Uint8Array` or a
+  `Uint8ClampedArray`; alpha is ignored) or `{ jpeg }` (encoded bytes: JPEG,
+  and anything else Windows has a decoder for, such as PNG, BMP, GIF or TIFF;
+  `width` and `height` are optional there, the decoder knows them); an encoded
+  image is read as stored, its EXIF orientation is not applied
+- `region` crops in the source image's pixels; it is widened to whole pixels and
+  clipped to the image
+- Every box is in the **source** image's pixels, as `{ x, y, width, height }`:
+  already offset by the region, and mapped back when the crop was larger than
+  the engine's `maxImageDimension` and was scaled down first; a line's `bounds`
+  is the union of its words
+- Words keep the order Windows returns them; for a right-to-left line (Hebrew)
+  that is right to left, and each word still has its own box
+- Engines are tried until one finds a line: with `languages` (BCP 47 tags), the
+  ones the machine supports, in the order given; without, the user's profile
+  languages first, then one engine per installed recognizer language; `language`
+  in the result is the recognizer that found the lines
+- `recognizeText` never throws: no text, no recognizer language installed, a
+  language that is not installed, a region outside the image, bytes Windows
+  cannot decode and options that fail validation all give
+  `{ lines: [], language: "" }`; `availableOcrLanguages()` lists the installed
+  recognizers, so an app can tell the user to add a language pack
+- Recognizer languages are a property of the machine and the user's profile
+  (Settings, Time and language, Language and region); a screen in a language
+  with no pack yields no lines
+- The raw route copies the region once into a `SoftwareBitmap`; crop to the
+  region you need rather than passing the whole screen when you can
+
+Tested by really recognizing sentences drawn with Win2D (`src/ocr`), from raw
+pixels and from JPEG and PNG, whole and by region; the right-to-left test runs
+only where a Hebrew recognizer is installed
 
 ## Security (`winui-svelte/security`)
 
