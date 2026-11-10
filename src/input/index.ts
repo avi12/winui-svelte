@@ -3,6 +3,8 @@ export { activeElement } from "./active-element.svelte.ts";
 export type { DomEvent, FocusEvent, InputEventMap, InputEventType, KeyboardEvent, PointerEvent, WheelEvent } from "./dom-event.ts";
 export { enableInputEvents } from "./events.ts";
 export type { KeyboardFields } from "./keyboard-fields.ts";
+export type { ModifierKeys } from "./modifier-keys.ts";
+export { modifierKeysHeld } from "./modifier-keys.ts";
 export { moveFocus } from "./move-focus.ts";
 export type { CaptureControl } from "./pointer-capture.ts";
 export { hasPointerCapture, releasePointerCapture, setPointerCapture } from "./pointer-capture.ts";

@@ -56,7 +56,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/chrome/action` | `src/chrome/action/index.ts` | `ChromeAction` (`chrome.action`), `createChromeAction()` (opt-in; see Chrome action) |
 | `winui-svelte/chrome/i18n` | `src/chrome/i18n/index.ts` | `ChromeI18n` (`chrome.i18n`), `installLanguageDefaults()` (opt-in; see Chrome i18n) |
 | `winui-svelte/chrome/install` | `src/chrome/install.ts` | `installChromeApis()`, `ChromeGlobal`, `ChromeAlarms`, `ChromeSystem` (opt-in; see Chrome global) |
-| `winui-svelte/input` | `src/input/index.ts` | `enableInputEvents()`, `setPointerCapture` / `releasePointerCapture` / `hasPointerCapture`, `activeElement()`, `moveFocus()`, `trapFocus()`, `PointerType`, `PointerEvent` / `WheelEvent` / `KeyboardEvent` / `FocusEvent` (opt-in; see Input events and focus) |
+| `winui-svelte/input` | `src/input/index.ts` | `enableInputEvents()`, `setPointerCapture` / `releasePointerCapture` / `hasPointerCapture`, `activeElement()`, `modifierKeysHeld()`, `moveFocus()`, `trapFocus()`, `PointerType`, `PointerEvent` / `WheelEvent` / `KeyboardEvent` / `FocusEvent` (opt-in; see Input events and focus) |
 | `winui-svelte/media` | `src/media/index.ts` | `bitmapImageOf()`, `svgImageSourceOf()`, `decodeDataUri()`, `createMediaPlayer()`, `mediaSourceOfBytes()`, `observePlayback()`, `PlaybackState` (opt-in; see Media) |
 | `winui-svelte/win2d` | `src/win2d/index.ts` | `Canvas`, the Win2D controls, the drawing helpers and Win2D classes, `applyEffect` (opt-in; see Win2D) |
 | `winui-svelte/enums` | `src/enums.ts` | every closed set a prop or option takes: WinUI's enums, `ThemeBrush`, `ColorKeyword`, `Backdrop`, `WindowTheme`, `TrayBalloonIcon` and the rest (see Closed sets) |
@@ -5474,6 +5474,10 @@ Everything runs on the UI thread
   <text-block>Draw here</text-block>
 </border>
 ```
+
+`modifierKeysHeld()` reads which of Shift, Control and Alt are held right now, as
+`{ shiftKey, ctrlKey, altKey }`, for an action that carries no key state of its
+own (a form submitted with the keyboard, a file picker's result)
 
 `enableInputEvents()` adds the eleven names to the renderer's event-alias table
 (`src/renderer/host/event-adapters.ts`, the one `enableDragEvents()` fills), so a
