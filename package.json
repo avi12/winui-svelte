@@ -212,6 +212,10 @@
       "types": "./dist/downloads/index.d.ts",
       "default": "./dist/downloads/index.js"
     },
+    "./ocr": {
+      "types": "./dist/ocr/index.d.ts",
+      "default": "./dist/ocr/index.js"
+    },
     "./input": {
       "types": "./dist/input/index.d.ts",
       "svelte": "./dist/input/index.js",
