@@ -4,12 +4,15 @@ import type {
   CameraAxis,
   CameraControls,
   CaptureDevice,
+  DisplayRequest,
   DisplaySurface,
   MediaDeviceKind,
   MediaDevicesBackend,
   OpenedCapture,
   OpenRequest
 } from "./media-devices.ts";
+import { openFrameSource } from "#src/capture/frame-source.js";
+import { monitorItemOf } from "#src/capture/monitors.js";
 import { DeviceClass, DeviceInformation } from "#src/devices/bindings.js";
 import { deviceChanges } from "#src/devices/device-changes.js";
 import { resolvedQuery } from "#src/devices/device-query.js";
@@ -236,14 +239,29 @@ async function open(request: OpenRequest) {
   return opened;
 }
 
-async function pickDisplay(request: { readonly cursor: "always" | "never" }) {
-  const item = await new GraphicsCapturePicker().pickSingleItemAsync();
+async function itemOf(request: DisplayRequest) {
+  const { monitor } = request;
+  const isKnown = monitor !== undefined;
+  if (isKnown) {
+    return monitorItemOf(monitor);
+  }
+
+  return new GraphicsCapturePicker().pickSingleItemAsync();
+}
+
+async function pickDisplay(request: DisplayRequest) {
+  const item = await itemOf(request);
   const isCanceled = item == null;
   if (isCanceled) {
     return undefined;
   }
 
-  const isMonitor = MONITOR_NAME_PATTERN.test(item.displayName);
+  const isMonitor = request.monitor !== undefined || MONITOR_NAME_PATTERN.test(item.displayName);
+  const frames = openFrameSource({
+    item,
+    targetFramesPerSecond: request.targetFramesPerSecond,
+    isCursorCaptured: request.cursor === "always"
+  });
   const surface = {
     name: item.displayName,
     width: item.size.width,
@@ -251,8 +269,9 @@ async function pickDisplay(request: { readonly cursor: "always" | "never" }) {
     surface: isMonitor ? "monitor" as const : "window" as const,
     native: item,
     cursor: request.cursor,
+    frames,
     close() {
-      return undefined;
+      frames.close();
     }
   } satisfies DisplaySurface;
   return surface;

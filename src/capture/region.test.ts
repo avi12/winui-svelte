@@ -1,96 +1,71 @@
-import {
-  capturePlan,
-  isSameRectangle,
-  overlapOf,
-  sizeWithin,
-  wholeOf
-} from "./region.ts";
+import { capturePlan, fitWithin, overlapOf, wholeOf } from "./region.ts";
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
-const MONITOR = {
+const SURFACE = {
   width: 3840,
   height: 2160
 };
 
-describe("isSameRectangle", () => {
-  const rectangle = {
-    x: 1,
-    y: 2,
-    width: 3,
-    height: 4
-  };
-
-  it("is true for equal rectangles and for two nulls", () => {
-    assert.equal(
-      isSameRectangle({
-        first: rectangle,
-        second: {
-          ...rectangle
-        }
-      }), true
-    );
-    assert.equal(
-      isSameRectangle({
-        first: null,
-        second: null
-      }), true
-    );
-  });
-
-  it("is false when any side differs, or only one is null", () => {
-    assert.equal(
-      isSameRectangle({
-        first: rectangle,
-        second: {
-          ...rectangle,
-          height: 5
-        }
-      }), false
-    );
-    assert.equal(
-      isSameRectangle({
-        first: rectangle,
-        second: null
-      }), false
-    );
-  });
-});
-
-describe("sizeWithin", () => {
+describe("fitWithin", () => {
   it("keeps a picture that already fits", () => {
     assert.deepEqual(
-      sizeWithin({
-        size: MONITOR,
-        maxEdge: 4000
-      }), MONITOR
+      fitWithin({
+        size: SURFACE,
+        limits: {
+          width: 4000,
+          height: 4000
+        }
+      }), SURFACE
     );
   });
 
-  it("keeps the size when there is no limit", () => {
-    assert.deepEqual(sizeWithin({ size: MONITOR }), MONITOR);
+  it("keeps the size when there are no limits", () => {
+    assert.deepEqual(
+      fitWithin({
+        size: SURFACE,
+        limits: {}
+      }), SURFACE
+    );
   });
 
-  it("shrinks the longest edge to the limit and keeps the proportions", () => {
+  it("shrinks to the tighter limit and keeps the proportions", () => {
     assert.deepEqual(
-      sizeWithin({
-        size: MONITOR,
-        maxEdge: 1280
+      fitWithin({
+        size: SURFACE,
+        limits: {
+          width: 1280,
+          height: 1000
+        }
       }), {
         width: 1280,
         height: 720
       }
     );
+    assert.deepEqual(
+      fitWithin({
+        size: SURFACE,
+        limits: {
+          width: 3000,
+          height: 540
+        }
+      }), {
+        width: 960,
+        height: 540
+      }
+    );
   });
 
-  it("shrinks a tall picture by its height", () => {
+  it("limits one side alone", () => {
     assert.deepEqual(
-      sizeWithin({
+      fitWithin({
         size: {
           width: 500,
           height: 1000
         },
-        maxEdge: 100
+        limits: {
+          height: 100
+        }
       }), {
         width: 50,
         height: 100
@@ -100,12 +75,14 @@ describe("sizeWithin", () => {
 
   it("never makes a side less than one pixel", () => {
     assert.deepEqual(
-      sizeWithin({
+      fitWithin({
         size: {
           width: 10_000,
           height: 2
         },
-        maxEdge: 100
+        limits: {
+          width: 100
+        }
       }), {
         width: 100,
         height: 1
@@ -118,7 +95,7 @@ describe("overlapOf", () => {
   it("is the shared part", () => {
     assert.deepEqual(
       overlapOf({
-        first: wholeOf(MONITOR),
+        first: wholeOf(SURFACE),
         second: {
           x: -100,
           y: 50,
@@ -155,47 +132,43 @@ describe("overlapOf", () => {
 });
 
 describe("capturePlan", () => {
-  it("maps the whole monitor onto the whole output", () => {
+  it("maps the whole surface onto the whole output", () => {
     const output = {
       width: 240,
       height: 135
     };
     const plan = capturePlan({
-      monitor: MONITOR,
-      region: wholeOf(MONITOR),
+      surface: SURFACE,
+      region: wholeOf(SURFACE),
       output
     });
-    assert.deepEqual(plan.source, wholeOf(MONITOR));
+    assert.deepEqual(plan.source, wholeOf(SURFACE));
     assert.deepEqual(plan.destination, wholeOf(output));
   });
 
-  it("maps a region inside the monitor onto the whole output", () => {
+  it("maps a region inside the surface onto the whole output", () => {
     const output = {
       width: 400,
       height: 300
     };
-    const plan = capturePlan({
-      monitor: MONITOR,
-      region: {
-        x: 120,
-        y: 80,
-        width: 800,
-        height: 600
-      },
-      output
-    });
-    assert.deepEqual(plan.source, {
+    const region = {
       x: 120,
       y: 80,
       width: 800,
       height: 600
+    };
+    const plan = capturePlan({
+      surface: SURFACE,
+      region,
+      output
     });
+    assert.deepEqual(plan.source, region);
     assert.deepEqual(plan.destination, wholeOf(output));
   });
 
-  it("leaves the part of the output past the monitor's edge blank, not stretched", () => {
+  it("leaves the part of the output past the surface's edge blank, not stretched", () => {
     const plan = capturePlan({
-      monitor: MONITOR,
+      surface: SURFACE,
       region: {
         x: -100,
         y: -50,
@@ -221,9 +194,9 @@ describe("capturePlan", () => {
     });
   });
 
-  it("has nothing to draw for a region wholly off the monitor", () => {
+  it("has nothing to draw for a region wholly off the surface", () => {
     const plan = capturePlan({
-      monitor: MONITOR,
+      surface: SURFACE,
       region: {
         x: 4000,
         y: 0,

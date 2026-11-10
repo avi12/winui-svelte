@@ -17,7 +17,6 @@ export { NavigationCacheMode, NavigationMode } from "./components/hand-written/n
 export { CookieSameSite } from "./messaging/web-view2/cookies.ts";
 export { PermissionKind, PermissionState } from "./messaging/web-view2/policy.ts";
 export { ProcessFailureKind } from "./messaging/web-view2/recovery.ts";
-export { CaptureFormat } from "./capture/format.ts";
 export { ColorKeyword } from "./components/values.ts";
 export { XamlKind } from "./components/xaml-source.ts";
 export { ConnectedAnimationKind } from "./renderer/host/connected-configuration.ts";

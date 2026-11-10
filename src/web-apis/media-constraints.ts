@@ -66,7 +66,7 @@ const defaults = {
 } satisfies VideoMode;
 
 /** Turns a number constraint into its bounds; a plain number is an ideal. */
-function boundsOf(constraint: ConstrainNumber | undefined) {
+export function boundsOf(constraint: ConstrainNumber | undefined) {
   const isIdeal = typeof constraint === "number";
   if (isIdeal) {
     return { ideal: constraint } satisfies NumberBounds;

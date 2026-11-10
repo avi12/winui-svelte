@@ -1,4 +1,3 @@
-import { CaptureFormat } from "./format.ts";
 import type { CapturePlan, Size } from "./region.ts";
 import { clear } from "#src/win2d/draw.js";
 import { CanvasAlphaMode } from "#winui/microsoft/graphics/canvas/CanvasAlphaMode";
@@ -21,15 +20,9 @@ const BLACK = {
   b: 0
 };
 
-const PIXEL_FORMATS = {
-  [CaptureFormat.RGBA]: DirectXPixelFormat.R8G8B8A8UIntNormalized,
-  [CaptureFormat.BGRA]: DirectXPixelFormat.B8G8R8A8UIntNormalized
-} as const;
-
 /** What `createRegionRenderer` is given. */
 export interface RegionRendererOptions {
   readonly device: CanvasDevice;
-  readonly format: CaptureFormat;
   readonly interpolation: CanvasImageInterpolation;
 }
 
@@ -37,10 +30,10 @@ export interface RegionRendererOptions {
  * A render target that is kept between frames while the output size stays the
  * same, and made again when it changes.
  *
- * @param options - The device, the byte order of the result and how to resample.
+ * @param options - The device and how to resample.
  * @returns `render` and `close`.
  */
-export function createRegionRenderer({ device, format, interpolation }: RegionRendererOptions) {
+export function createRegionRenderer({ device, interpolation }: RegionRendererOptions) {
   let target: CanvasRenderTarget | undefined = undefined;
   let targetSize: Size | undefined = undefined;
 
@@ -57,7 +50,7 @@ export function createRegionRenderer({ device, format, interpolation }: RegionRe
       size.width,
       size.height,
       TARGET_DPI,
-      PIXEL_FORMATS[format],
+      DirectXPixelFormat.R8G8B8A8UIntNormalized,
       CanvasAlphaMode.Ignore
     );
     target = created;
@@ -70,7 +63,7 @@ export function createRegionRenderer({ device, format, interpolation }: RegionRe
      * Draws what the plan says and reads it back.
      *
      * @param options - The captured bitmap, the plan and the output size.
-     * @returns A fresh array of `size.width * size.height * 4` bytes.
+     * @returns A fresh array of `size.width * size.height * 4` bytes, RGBA.
      */
     render({ bitmap, plan, size }: {
       bitmap: CanvasBitmap;

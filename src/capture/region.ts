@@ -18,8 +18,8 @@ export interface Size {
 
 /** What `capturePlan` is given. */
 export interface CapturePlanOptions {
-  /** The monitor as the capture sees it. */
-  readonly monitor: Size;
+  /** The captured surface as the capture sees it. */
+  readonly surface: Size;
 
   /** The part to show, in the monitor's pixels; it may reach past the monitor. */
   readonly region: Rectangle;
@@ -38,24 +38,6 @@ export interface CapturePlan {
 }
 
 /**
- * Whether two rectangles are the same one; two nulls are.
- *
- * @param options - The two rectangles, either may be null.
- * @returns True when they have the same position and size.
- */
-export function isSameRectangle({ first, second }: {
-  readonly first: Rectangle | null;
-  readonly second: Rectangle | null;
-}) {
-  const isEitherNull = first === null || second === null;
-  if (isEitherNull) {
-    return first === second;
-  }
-
-  return first.x === second.x && first.y === second.y && first.width === second.width && first.height === second.height;
-}
-
-/**
  * The whole of a monitor as a region.
  *
  * @param monitor - The monitor's size.
@@ -70,19 +52,25 @@ export function wholeOf(monitor: Size) {
   } satisfies Rectangle;
 }
 
+/** The most width and height a picture may have; a side left out is not limited. */
+export interface SizeLimits {
+  readonly width?: number | undefined;
+  readonly height?: number | undefined;
+}
+
 /**
- * The size of a picture shrunk until its longest edge fits a limit, keeping
- * its proportions. It never enlarges.
+ * The size of a picture shrunk until it fits inside the limits, keeping its
+ * proportions. It never enlarges.
  *
- * @param options - The picture's size, and the longest edge allowed (none keeps the size).
+ * @param options - The picture's size and the limits.
  * @returns The size; at least one pixel each way.
  */
-export function sizeWithin({ size, maxEdge }: {
+export function fitWithin({ size, limits }: {
   readonly size: Size;
-  readonly maxEdge?: number | undefined;
+  readonly limits: SizeLimits;
 }) {
-  const longest = Math.max(size.width, size.height);
-  const isWithin = maxEdge === undefined || longest <= maxEdge;
+  const ratio = Math.min(1, (limits.width ?? Infinity) / size.width, (limits.height ?? Infinity) / size.height);
+  const isWithin = ratio === 1;
   if (isWithin) {
     return {
       width: size.width,
@@ -90,7 +78,6 @@ export function sizeWithin({ size, maxEdge }: {
     } satisfies Size;
   }
 
-  const ratio = maxEdge / longest;
   return {
     width: Math.max(1, Math.round(size.width * ratio)),
     height: Math.max(1, Math.round(size.height * ratio))
@@ -132,9 +119,9 @@ export function overlapOf({ first, second }: {
  * @param options - The monitor, the region and the output size.
  * @returns The source and destination rectangles.
  */
-export function capturePlan({ monitor, region, output }: CapturePlanOptions) {
+export function capturePlan({ surface, region, output }: CapturePlanOptions) {
   const source = overlapOf({
-    first: wholeOf(monitor),
+    first: wholeOf(surface),
     second: region
   });
   const isOffMonitor = source === undefined;

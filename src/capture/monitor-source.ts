@@ -1,11 +1,10 @@
-import { captureItemOfMonitor } from "./capture-item.ts";
-import { framePeriodMilliseconds } from "./feed-controller.ts";
 import type { Size } from "./region.ts";
 import { read } from "#src/renderer/host/reflect.js";
 import { CanvasBitmap } from "#winui/microsoft/graphics/canvas/CanvasBitmap";
 import type { CanvasDevice } from "#winui/microsoft/graphics/canvas/CanvasDevice";
 import type { Direct3D11CaptureFrame } from "#winui/windows/graphics/capture/Direct3D11CaptureFrame";
 import { Direct3D11CaptureFramePool } from "#winui/windows/graphics/capture/Direct3D11CaptureFramePool";
+import type { GraphicsCaptureItem } from "#winui/windows/graphics/capture/GraphicsCaptureItem";
 import type { GraphicsCaptureSession } from "#winui/windows/graphics/capture/GraphicsCaptureSession";
 import { IDirect3DDevice } from "#winui/windows/graphics/direct-x/direct3-d11/IDirect3DDevice";
 import { DirectXPixelFormat } from "#winui/windows/graphics/direct-x/DirectXPixelFormat";
@@ -33,9 +32,16 @@ export interface GrabbedFrame {
 export interface MonitorSourceOptions {
   readonly device: CanvasDevice;
 
-  /** The monitor's `HMONITOR`. */
-  readonly monitor: bigint;
+  /** The monitor or window to capture. */
+  readonly item: GraphicsCaptureItem;
   readonly targetFramesPerSecond: number;
+  readonly isCursorCaptured: boolean;
+}
+
+const MILLISECONDS_PER_SECOND = 1000;
+
+function framePeriodMilliseconds(framesPerSecond: number) {
+  return MILLISECONDS_PER_SECOND / framesPerSecond;
 }
 
 function direct3DDeviceOf(device: CanvasDevice) {
@@ -67,21 +73,20 @@ function newestFrameOf(pool: Direct3D11CaptureFramePool) {
 }
 
 /**
- * Starts capturing a monitor, with no border and no cursor.
+ * Starts capturing a monitor or window, with no border.
  *
- * @param options - The Win2D device, the monitor and the rate.
+ * @param options - The Win2D device, the item, the rate and the cursor.
  * @returns `size`, `nextFrame`, `setTargetFramesPerSecond` and `close`.
  * @throws {Error} when Windows refuses the capture (no capability, no consent)
  */
-export function openMonitorSource({ device, monitor, targetFramesPerSecond }: MonitorSourceOptions) {
-  const item = captureItemOfMonitor(monitor);
+export function openMonitorSource({ device, item, targetFramesPerSecond, isCursorCaptured }: MonitorSourceOptions) {
   const direct3D = direct3DDeviceOf(device);
   const format = DirectXPixelFormat.B8G8R8A8UIntNormalized;
   let poolSize: Size = item.size;
   const pool = Direct3D11CaptureFramePool.createFreeThreaded(direct3D, format, POOL_BUFFER_COUNT, poolSize);
   const session = pool.createCaptureSession(item);
   session.isBorderRequired = false;
-  session.isCursorCaptureEnabled = false;
+  session.isCursorCaptureEnabled = isCursorCaptured;
   configure({
     session,
     framesPerSecond: targetFramesPerSecond
