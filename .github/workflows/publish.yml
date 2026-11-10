@@ -1,13 +1,14 @@
 name: Publish
 
-# Publishes to npm when a version tag is pushed (git tag v0.1.0 && git push --tags).
+# Publishes to npm when a GitHub release is published, so creating the release is the one step that ships
+# a version (gh release create v0.1.0 --notes-file notes.md, with the tag already pushed or created by it).
 # Lint and tests are ci.yml's, which must be green on the tagged commit; this builds and publishes.
 # npm trusted publishing: the workflow signs in to npm with its GitHub OIDC identity
 # (id-token: write), so no token is stored anywhere. The package's npm settings name
 # this repository, this workflow file and the environment "npm" as its trusted publisher.
 on:
-  push:
-    tags: ['v*']
+  release:
+    types: [published]
 
 permissions:
   contents: read
@@ -20,6 +21,8 @@ jobs:
     environment: npm
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.release.tag_name }}
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v7
         with:
@@ -34,9 +37,18 @@ jobs:
           key: winapp-${{ hashFiles('winapp.yaml', 'package.json') }}
       - run: pnpm restore
       - run: pnpm build
-      - name: The tag must match package.json
+      - name: The release tag must match package.json
+        shell: pwsh
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          $version = (Get-Content package.json -Raw | ConvertFrom-Json).version
+          if ($env:RELEASE_TAG -ne "v$version") { throw "Tag $env:RELEASE_TAG does not match version $version" }
+      - name: Publish, unless this version is already on npm
         shell: pwsh
         run: |
           $version = (Get-Content package.json -Raw | ConvertFrom-Json).version
-          if ($env:GITHUB_REF_NAME -ne "v$version") { throw "Tag $env:GITHUB_REF_NAME does not match version $version" }
-      - run: pnpm publish --provenance --access public --no-git-checks
+          $published = npm view "winui-svelte@$version" version 2>$null
+          if ($published) { Write-Host "winui-svelte@$version is already on npm"; exit 0 }
+          pnpm publish --provenance --access public --no-git-checks
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

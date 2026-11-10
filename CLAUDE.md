@@ -160,7 +160,8 @@ After anything that removes or rewires code, run the dead-code audit (`pnpm fall
 # Commits and releases
 - Digestible commits: one self-contained logical change each, with a message saying what and why; large work lands as a sequence
 - `main` is the default branch
-- Releases go out only when asked: bump the version, `pnpm build`, `pnpm pack --dry-run` (check the file list and size), then `pnpm publish`
-- Every published version also gets a GitHub release on its `vX.Y.Z` tag (`gh release create`): the notes list the highlights of the change log, grouped by what a user of the package sees, and link the commit range (`vPREVIOUS...vX.Y.Z`) for the rest
-  Create it in the same step as the publish, never leave a published version without one
+- Releases go out only when asked: bump the version, `pnpm build`, `pnpm pack --dry-run` (check the file list and size), commit `chore(release): X.Y.Z` and push `main`, then create the GitHub release; never a local `pnpm publish`
+- Creating the GitHub release is what publishes to npm: `.github/workflows/publish.yml` runs on `release: published`, checks the tag equals `package.json`'s version and runs `pnpm publish --provenance` (npm trusted publishing; a version already on npm is skipped)
+  `gh release create vX.Y.Z --target main --title X.Y.Z --notes-file <notes>`: the notes list the highlights of the change log, grouped by what a user of the package sees, and link the commit range (`vPREVIOUS...vX.Y.Z`) for the rest
+  Every published version has its release, since the release is what publishes it
 - Release gate: no release until every WinUI 3 component is fully operational from Svelte (the coverage guard in `scripts/codegen/coverage.ts` shows 0 gaps and each remaining exclusion is justified) and the user explicitly asks
