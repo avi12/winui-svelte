@@ -17,6 +17,8 @@ import { previewOf, snapshotOf } from "./package-io.ts";
 import { joinWindow } from "./window-drop.ts";
 import type { WindowControl } from "./window-drop.ts";
 import { dataPackageOf, sourceOf } from "./winrt-package.ts";
+import { projectAs } from "#winui/lifetime";
+import { DragEventArgs } from "#winui/microsoft/ui/xaml/DragEventArgs";
 import type { DataPackageView } from "#winui/windows/application-model/data-transfer/DataPackageView";
 
 /** The drop events of the web. */
@@ -92,6 +94,11 @@ function isDropArgs(value: unknown): value is DropArgs {
   return isObject && ("dataView" in value || "source" in value) && "getDeferral" in value;
 }
 
+// WinUI hands its own drag events (a drag from a WinRT source such as Explorer's address bar) over as raw values.
+function projectedArgs(args: unknown) {
+  return isDropArgs(args) ? args : projectAs(args, DragEventArgs);
+}
+
 function reportError(error: unknown) {
   queueMicrotask(() => {
     throw error;
@@ -137,16 +144,16 @@ class DropBinding {
     });
     this.stops = [
       control.onDragEnter((_sender, args) => this.onOver({
-        args,
+        args: projectedArgs(args),
         type: DropEventType.dragenter
       })),
       control.onDragOver((_sender, args) => this.onOver({
-        args,
+        args: projectedArgs(args),
         type: DropEventType.dragover
       })),
-      control.onDragLeave((_sender, args) => this.leave(args)),
+      control.onDragLeave((_sender, args) => this.leave(projectedArgs(args))),
       control.onDrop((_sender, args) => {
-        this.drop(args).catch(reportError);
+        this.drop(projectedArgs(args)).catch(reportError);
       })
     ];
   }
