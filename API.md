@@ -5610,6 +5610,7 @@ needs
 | `FontFace`, `document.fonts` (font files of the app) | `winui-svelte/web-apis/fonts` | web plus extras | none | done |
 | `createImageBitmap`, `ImageBitmap`, `ImageDecoder`, canvas `toBlob`, `convertToBlob`, `toDataURL` (PNG, JPEG, GIF, BMP, TIFF) | `winui-svelte/web-apis/images` | web plus extras | none | done |
 | `navigator.contacts` (Contact Picker) | `winui-svelte/web-apis/contacts` | web plus extras | for most apps, package identity | done |
+| `TextDetector`, `DetectedText` (words with their own boxes, recognizer languages, a region) | `winui-svelte/web-apis/shape-detection` | web plus extras | none (needs an OCR recognizer language, Settings, Time and language) | done |
 
 Every row is built and tested; the timers (`setTimeout`, `setInterval`,
 `setImmediate`) and `fetch` need no install, because the window thread has them
@@ -6696,6 +6697,67 @@ window and no package identity
 - `ImageCodec` is the one interface the Windows codec (`windowsImageCodec`)
   and the tests implement; `ImageMimeType`, `ImageOrientation` and
   `ResizeQuality` are in `winui-svelte/enums`
+
+#### Shape detection (`winui-svelte/web-apis/shape-detection`)
+
+The Shape Detection API's `TextDetector` over the OCR that ships with Windows
+(`Windows.Media.Ocr`); it needs no window and no package identity, only a
+started WinRT apartment
+`installTextDetector()` defines `globalThis.TextDetector` (and
+`DOMRectReadOnly`, where the realm has none); the classes are also exported
+Opt-in: nothing is bundled until an app imports it, and importing does no work
+
+```ts
+import { installImageCodecs } from "winui-svelte/web-apis/images";
+import { TextDetector } from "winui-svelte/web-apis/shape-detection";
+
+installImageCodecs();
+const detector = new TextDetector({
+  languages: ["he", "en"], // extra
+  region: { x: 40, y: 80, width: 600, height: 200 } // extra
+});
+const texts = await detector.detect(imageBitmap);
+for (const { rawValue, boundingBox, cornerPoints, words } of texts) {
+  console.log(rawValue, boundingBox.x, boundingBox.y, words.length);
+}
+```
+
+- `detect(image)` takes what `createImageBitmap` takes: an `ImageBitmap`,
+  `ImageData`, a canvas, or a `Blob` (`File`, `NativeFile`) of an encoded image
+  (PNG, JPEG, BMP, GIF, TIFF; a `Blob` needs `installImageCodecs()`)
+  It resolves with one `DetectedText` per recognized line, in the order Windows
+  returns them: `rawValue`, `boundingBox` (a `DOMRectReadOnly`) and
+  `cornerPoints` (four points, clockwise from the top left)
+  No text, or a region outside the image, resolves with `[]`; an error inside
+  the recognizer does too
+- Every box is in the **source** image's pixels: already offset by the region,
+  and mapped back when the image was larger than the engine's
+  `maxImageDimension` and was scaled down first
+- Extra: `DetectedText.words`, the line's words, each with `rawValue`,
+  `boundingBox` and `cornerPoints`; for a right-to-left line (Hebrew) they are
+  right to left, each with its own box, so an overlay can pick words off a
+  frozen screen
+- Extra, constructor options (the web's constructor takes none): `languages`
+  (BCP 47 tags) are tried in the order given and the ones the machine does not
+  support are skipped; without them the user's profile languages come first,
+  then one engine per installed recognizer language, and the first engine that
+  finds a line wins; `region` is the part of every source to read, in the
+  source's pixels
+- Extra: `TextDetector.availableOcrLanguages()` lists the installed recognizer
+  tags (`["en-GB", "en-US"]`), so an app can tell the user to add a language
+  pack (Settings, Time and language, Language and region); packs belong to the
+  machine and the user's profile, and a screen in a language with no pack
+  yields no lines
+- Errors follow the web: the constructor throws `TypeError` for an option of
+  the wrong type or an unknown one, and `NotSupportedError` when no recognizer
+  language is installed or none of the named `languages` is; `detect` rejects
+  with `TypeError` for something that is not an image source and with
+  `InvalidStateError` for a closed `ImageBitmap` or an image Windows cannot
+  decode
+- A `DetectedText` has no `words` or other extras on the web; code written for
+  Chrome's `TextDetector` runs unchanged
+- The `shape-detection` folder holds one file per detector; `index.ts` exports
+  them all
 
 #### Contacts (`winui-svelte/web-apis/contacts`)
 

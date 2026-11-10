@@ -631,6 +631,10 @@
       "types": "./dist/web-apis/share.d.ts",
       "default": "./dist/web-apis/share.js"
     },
+    "./web-apis/shape-detection": {
+      "types": "./dist/web-apis/shape-detection/index.d.ts",
+      "default": "./dist/web-apis/shape-detection/index.js"
+    },
     "./web-apis/speech": {
       "types": "./dist/web-apis/speech.d.ts",
       "default": "./dist/web-apis/speech.js"
