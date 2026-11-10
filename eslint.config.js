@@ -307,6 +307,7 @@ const testFiles = [
   "**/*.fixture.svelte",
   "src/state/test-support/**",
   "src/devices/test-support/**",
+  "src/barcode/test-support/**",
   "src/renderer/testing/**"
 ];
 const sourceFiles = ["src/**/*.ts", "src/**/*.svelte"];
