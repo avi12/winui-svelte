@@ -7,7 +7,7 @@ import {
   DropEffect,
   effectAllowedOf,
   effectOf,
-  operationOf
+  grantedOperationOf
 } from "./drag-effects.ts";
 import type { DragFeedback, Position } from "./drag-event.ts";
 import { DragEvent } from "./drag-event.ts";
@@ -289,7 +289,10 @@ class DropBinding {
     const isAcceptedByPage = event.defaultPrevented || !hasExplicitHandler || hasZones;
     const isAccepted = this.isDragAccepted(source) && isAcceptedByPage;
     this.lastEffect = transfer.dropEffect;
-    args.acceptedOperation = isAccepted ? operationOf(this.lastEffect) : 0;
+    args.acceptedOperation = isAccepted ? grantedOperationOf({
+      effect: this.lastEffect,
+      allowed: args.allowedOperations
+    }) : 0;
     args.handled = isAccepted || hasZones;
   }
 
@@ -347,7 +350,10 @@ class DropBinding {
         args,
         transfer
       });
-      args.acceptedOperation = operationOf(transfer.dropEffect);
+      args.acceptedOperation = grantedOperationOf({
+        effect: transfer.dropEffect,
+        allowed: args.allowedOperations
+      });
       args.handled = true;
     } finally {
       deferral.complete();

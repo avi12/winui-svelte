@@ -102,6 +102,30 @@ export function effectOf(operation: number) {
 }
 
 /**
+ * The operation a drop gets: the effect the target chose, or, when the source
+ * does not allow it (a folder from Explorer's address bar allows fewer than a
+ * file does), the preferred one the source does allow. A target that chose
+ * `none` refuses the drag whatever the source allows.
+ *
+ * @param options - The effect the target chose and the `DataPackageOperation` flags the source allows.
+ * @returns The `DataPackageOperation` flags to answer with.
+ */
+export function grantedOperationOf({ effect, allowed }: {
+  effect: DropEffectName;
+  allowed: number;
+}) {
+  const requested = operationOf(effect);
+  const isRefusing = requested === DataPackageOperation.None;
+  const isAllowed = (requested & allowed) !== 0;
+  const isGranted = isRefusing || isAllowed;
+  if (isGranted) {
+    return requested;
+  }
+
+  return operationOf(effectOf(allowed));
+}
+
+/**
  * The `effectAllowed` a set of WinUI operation flags is.
  *
  * @param operations - The `DataPackageOperation` flags a source allows.
