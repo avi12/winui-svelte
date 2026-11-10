@@ -69,6 +69,7 @@ export interface CssWinui {
 // the runtime targets the element's own brush by its Color, whatever the element's type.
 const BRUSH_COLOR_PATH = /^(\w)(\w*)\.\(SolidColorBrush\.Color\)$/u;
 const BRUSH_COLOR = "Color";
+const XAML_ELEMENT_NAME = /^<\w+/u;
 
 function subscribeToEvent({ control, event, handler }: {
   control: object;
@@ -85,6 +86,33 @@ function subscribeToEvent({ control, event, handler }: {
 
   const unsubscribe = subscribe.call(control, handler);
   return typeof unsubscribe === "function" ? () => unsubscribe() : null;
+}
+
+// Runs `run` now on a loaded control, else when it loads; returns what stops waiting.
+function whenLoaded({ control, run }: {
+  control: object;
+  run: () => void;
+}) {
+  const isLoaded = readMember({
+    target: control,
+    key: "isLoaded"
+  }) === true;
+  if (isLoaded) {
+    run();
+    return () => undefined;
+  }
+
+  const unsubscribe = subscribeToEvent({
+    control,
+    event: "Loaded",
+    handler: run
+  });
+  return () => unsubscribe?.();
+}
+
+// A WinUI property's name as its projected member (`OpacityTransition` is `opacityTransition`).
+function memberOf(property: string) {
+  return `${property.charAt(0).toLowerCase()}${property.slice(1)}`;
 }
 
 function isRecord(value: NativeValue): value is Record<string, NativeValue> {
@@ -267,8 +295,20 @@ export function createCssNative(winui: CssWinui) {
         definitions.append(definition);
       }
     },
+    setTransition({ control, property, xaml }) {
+      const key = memberOf(property);
+      const transition = winui.XamlReader.load(xaml.replace(XAML_ELEMENT_NAME, `$& ${XAML_NAMESPACES}`));
+      const unsubscribe = whenLoaded({
+        control,
+        run: () => Object.assign(control, { [key]: transition })
+      });
+      return () => {
+        unsubscribe();
+        Object.assign(control, { [key]: null });
+      };
+    },
     setComposition({ control, property, value }) {
-      const key = `${property.charAt(0).toLowerCase()}${property.slice(1)}`;
+      const key = memberOf(property);
       const [horizontal = 0, vertical = 0, depth = 0] = value.split(",").map(Number);
       const isRotation = property === "Rotation";
       const resting = property === "Scale" ? 1 : 0;
@@ -282,31 +322,16 @@ export function createCssNative(winui: CssWinui) {
         isPlaced = true;
       }
 
-      const isLoaded = readMember({
-        target: control,
-        key: "isLoaded"
-      }) === true;
-      if (isLoaded) {
-        place({
+      const unsubscribe = whenLoaded({
+        control,
+        run: () => place({
           x: horizontal,
           y: vertical,
           z: depth
-        });
-      }
-
-      const unsubscribe = isLoaded ? null : subscribeToEvent({
-        control,
-        event: "Loaded",
-        handler() {
-          place({
-            x: horizontal,
-            y: vertical,
-            z: depth
-          });
-        }
+        })
       });
       return () => {
-        unsubscribe?.();
+        unsubscribe();
 
         if (isPlaced) {
           place({

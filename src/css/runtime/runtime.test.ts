@@ -185,6 +185,10 @@ const fakeNative: CssNative = {
     fake(control).composed[property] = value;
     return () => delete fake(control).composed[property];
   },
+  setTransition({ control, property, xaml }) {
+    fake(control).composed[property] = xaml;
+    return () => delete fake(control).composed[property];
+  },
   assign(target, values) {
     Object.assign(fake(target).assigned, values);
   },

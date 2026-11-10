@@ -405,12 +405,6 @@ const rows: Array<[string, string | null, string, Array<[string, string]>]> = [
     ["HorizontalScrollBarVisibility", "Disabled"],
     ["VerticalScrollBarVisibility", "Auto"]
   ]],
-  ["transition on opacity", null, "transition: opacity 200ms", [["OpacityTransition", "<ScalarTransition Duration=\"0:0:0.200\"/>"]]],
-  ["transitions in a list", null, "transition: opacity 0.2s, translate 100ms, background-color 1s", [
-    ["OpacityTransition", "<ScalarTransition Duration=\"0:0:0.200\"/>"],
-    ["TranslationTransition", "<Vector3Transition Duration=\"0:0:0.100\"/>"],
-    ["BackgroundTransition", "<BrushTransition Duration=\"0:0:1.000\"/>"]
-  ]],
   ["user-select none", null, "user-select: none", [["IsTextSelectionEnabled", "False"]]],
   ["user-select text", null, "user-select: text", [["IsTextSelectionEnabled", "True"]]],
   ["object-fit cover", null, "object-fit: cover", [["Stretch", "UniformToFill"]]],
@@ -642,6 +636,34 @@ test("a gradient warns where WinUI cannot keep it exact, and when it replaces a 
   assert.deepEqual(result.setters.map(([property]) => property), ["Background"]);
 });
 
+test("an implicit transition is written to each element, never shared through its Style", () => {
+  const result = lower({
+    elementType: null,
+    declarations: "transition: opacity 0.2s, translate 100ms, background-color 1s"
+  });
+  assert.deepEqual(result.errors, []);
+  assert.deepEqual(result.setters, []);
+  assert.deepEqual(result.writes, [
+    ["OpacityTransition", "<ScalarTransition Duration=\"0:0:0.200\"/>"],
+    ["TranslationTransition", "<Vector3Transition Duration=\"0:0:0.100\"/>"],
+    ["BackgroundTransition", "<BrushTransition Duration=\"0:0:1.000\"/>"]
+  ]);
+});
+
+test("a later transition of one property wins", () => {
+  assert.deepEqual(
+    lower({
+      elementType: null,
+      declarations: "transition: all 1s, opacity 200ms"
+    }).writes, [
+      ["TranslationTransition", "<Vector3Transition Duration=\"0:0:1.000\"/>"],
+      ["ScaleTransition", "<Vector3Transition Duration=\"0:0:1.000\"/>"],
+      ["RotationTransition", "<ScalarTransition Duration=\"0:0:1.000\"/>"],
+      ["OpacityTransition", "<ScalarTransition Duration=\"0:0:0.200\"/>"]
+    ]
+  );
+});
+
 test("a transition WinUI cannot animate warns and is dropped", () => {
   const result = lower({
     elementType: null,
@@ -649,7 +671,7 @@ test("a transition WinUI cannot animate warns and is dropped", () => {
   });
   assert.deepEqual(result.errors, []);
   assert.equal(result.warnings.length, 2);
-  assert.deepEqual(result.setters.map(([property]) => property), ["OpacityTransition"]);
+  assert.deepEqual(result.writes.map(([property]) => property), ["OpacityTransition"]);
 });
 
 test("a box-shadow transition animates the Z of Translation, a shadow's depth", () => {
@@ -658,7 +680,7 @@ test("a box-shadow transition animates the Z of Translation, a shadow's depth", 
     declarations: "transition: box-shadow 150ms"
   });
   assert.deepEqual(result.errors, []);
-  assert.deepEqual(result.setters, [["TranslationTransition", "<Vector3Transition Duration=\"0:0:0.150\"/>"]]);
+  assert.deepEqual(result.writes, [["TranslationTransition", "<Vector3Transition Duration=\"0:0:0.150\"/>"]]);
 });
 
 test("a border-color transition is a write the runtime animates, with the colors written out", () => {

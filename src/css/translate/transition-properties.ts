@@ -511,25 +511,58 @@ function entryOutputs({ input, reader, entry }: {
 
   for (const [target, type] of targets) {
     outputs.push({
-      kind: "content",
-      property: target,
-      xaml: `<${type} Duration="${duration(milliseconds)}"/>`
+      kind: "write",
+      target,
+      value: `<${type} Duration="${duration(milliseconds)}"/>`
     });
   }
 
   return outputs;
 }
 
+// One transition per WinUI property: a later entry (`all, opacity 1s`) wins.
+function lastPerTarget(outputs: Output[]) {
+  return outputs.filter((output, iOutput) => {
+    const isOverridden = output.kind === "write" && outputs
+      .slice(iOutput + 1)
+      .some(later => later.kind === "write" && later.target === output.target);
+    return !isOverridden;
+  });
+}
+
+/**
+ * An implicit transition is written to each element, not set by its Style: a
+ * Setter's value is one object that every element of the Style shares, and
+ * WinUI crashes when that shared transition animates (a ListView row restyled
+ * before it loads).
+ */
+function setImplicitTransition(property: string) {
+  return (context: WriteContext) => context.native.setTransition({
+    control: context.control,
+    property,
+    xaml: context.value
+  });
+}
+
+const implicitHandlers = Object.fromEntries(
+  [...new Set([...TRANSITION_TARGETS.values()].flat().map(([target]) => target))].map(target => [
+    target,
+    setImplicitTransition(target)
+  ])
+);
+
 /** `transition`: WinUI's implicit transition for each animatable property named, and a border color's Storyboard. */
 function transition(input: GroupInput) {
   const reader = input.reading("transition");
-  return splitCommas(reader.declaration.value)
-    .filter(entry => (splitWords(entry)[0] ?? "").toLowerCase() !== "none")
-    .flatMap(entry => entryOutputs({
-      input,
-      reader,
-      entry
-    }));
+  return lastPerTarget(
+    splitCommas(reader.declaration.value)
+      .filter(entry => (splitWords(entry)[0] ?? "").toLowerCase() !== "none")
+      .flatMap(entry => entryOutputs({
+        input,
+        reader,
+        entry
+      }))
+  );
 }
 
 const storyboardHandlers = Object.fromEntries(
@@ -558,6 +591,7 @@ export function transitionProperty() {
     members: ["transition"],
     lower: transition,
     writes: {
+      ...implicitHandlers,
       ...storyboardHandlers,
       ...discreteHandlers
     }

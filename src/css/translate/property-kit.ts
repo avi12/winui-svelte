@@ -61,6 +61,15 @@ export interface WriteSeam {
     property: string;
     value: string;
   }): () => void;
+  /**
+   * Gives the control an implicit transition of its own (`OpacityTransition`),
+   * made from its XAML, once the control has loaded; returns what takes it off.
+   */
+  setTransition(input: {
+    control: object;
+    property: string;
+    xaml: string;
+  }): () => void;
   /** Assigns properties of the control (`{ centerPoint: ... }`). */
   assign(control: object, values: Readonly<Record<string, unknown>>): void;
   /** Calls `handler` on a WinUI event (PointerEntered...); null if the control has no such event. */
