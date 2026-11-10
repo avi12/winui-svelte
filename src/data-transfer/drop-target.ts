@@ -232,13 +232,20 @@ class DropBinding {
     return sourceOf(dataView);
   }
 
+  // A drag inside the app (a ListView reordering its rows) carries no data: the
+  // control it is over answers it, and a zone around that control must not
+  // overwrite the answer, highlight or tell its handlers.
+  private carriesData(source: PackageSource) {
+    return ALL_KINDS.some(kind => source.has(kind)) || source.formats().length > 0;
+  }
+
   // The kinds the data holds are all a drag can be judged by; the files' names come with the drop.
   private isDragAccepted(source: PackageSource) {
-    const kinds = ALL_KINDS.filter(kind => source.has(kind));
-    const hasData = kinds.length > 0 || source.formats().length > 0;
-    if (!hasData) {
+    if (!this.carriesData(source)) {
       return false;
     }
+
+    const kinds = ALL_KINDS.filter(kind => source.has(kind));
 
     const hasZones = this.zones.size > 0;
     if (!hasZones) {
@@ -274,6 +281,10 @@ class DropBinding {
     }
 
     const source = this.sourceFor(args);
+    if (!this.carriesData(source)) {
+      return;
+    }
+
     const transfer = previewOf(source);
     transfer.effectAllowed = effectAllowedOf(args.allowedOperations);
     transfer.dropEffect = effectOf(args.allowedOperations);
@@ -310,7 +321,12 @@ class DropBinding {
       return;
     }
 
-    const transfer = previewOf(this.sourceFor(args));
+    const source = this.sourceFor(args);
+    if (!this.carriesData(source)) {
+      return;
+    }
+
+    const transfer = previewOf(source);
     void this.dispatch({
       type: DropEventType.dragleave,
       event: this.makeEvent({
@@ -331,6 +347,10 @@ class DropBinding {
     const deferral = args.getDeferral();
     try {
       const source = this.sourceFor(args);
+      if (!this.carriesData(source)) {
+        return;
+      }
+
       const customFormats = [...this.zones].flatMap(zone => zone.formats ?? []);
       const snapshot = await snapshotOf({
         source,

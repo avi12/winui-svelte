@@ -2,7 +2,7 @@ import { DataKind } from "./accept.ts";
 import type { DragEvent } from "./drag-event.ts";
 import { addDragHandler } from "./drag-source.ts";
 import type { DragControl } from "./drag-source.ts";
-import { addDropHandler, addDropzone } from "./drop-target.ts";
+import { addDropHandler, addDropzone, DropEventType } from "./drop-target.ts";
 import type { DropArgs, DropControl } from "./drop-target.ts";
 import { htmlFormatOf } from "./html-format.ts";
 import { nativeFileOfBytes } from "./native-file.ts";
@@ -65,7 +65,7 @@ function fakeView() {
 }
 
 class FakeArgs implements DropArgs {
-  acceptedOperation = DataPackageOperation.None;
+  acceptedOperation: number = DataPackageOperation.None;
   // eslint-disable-next-line @typescript-eslint/naming-convention -- WinUI's Handled
   handled = false;
   isCompleted = false;
@@ -252,6 +252,46 @@ test("a zone owns its area: it marks the drag handled even when it refuses, so a
   });
   assert.equal(args.acceptedOperation, DataPackageOperation.None);
   assert.equal(args.handled, true);
+});
+
+test("a drag that carries no data (a ListView reordering its rows) is left to the control under it", () => {
+  const control = new FakeControl();
+  const states: boolean[] = [];
+  const heard: string[] = [];
+  addDropzone({
+    control,
+    zone: {
+      accept: "directory",
+      onDragStateChange: isOver => states.push(isOver),
+      sourceOf: () => fakeSource({ kinds: [] })
+    }
+  });
+  for (const type of Object.values(DropEventType)) {
+    addDropHandler({
+      control,
+      type,
+      handler(event) {
+        heard.push(event.type);
+      }
+    });
+  }
+  const args = new FakeArgs();
+  args.acceptedOperation = DataPackageOperation.Move;
+  for (const name of ["enter", "over", "drop"]) {
+    control.raise({
+      name,
+      args
+    });
+  }
+  control.raise({
+    name: "leave",
+    args
+  });
+  assert.equal(args.acceptedOperation, DataPackageOperation.Move, "the list's own answer stays");
+  assert.equal(args.handled, false);
+  assert.deepEqual(states, []);
+  assert.deepEqual(heard, []);
+  assert.equal(args.isCompleted, true);
 });
 
 test("a drop reads the data, passes only what accept takes, and completes the deferral", async () => {
