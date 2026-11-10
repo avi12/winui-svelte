@@ -109,6 +109,7 @@ After anything that removes or rewires code, run the dead-code audit (`pnpm fall
 
 - `pnpm lint` runs every step even when an earlier one fails, so one run lists everything: `build`, oxlint (type-aware), ESLint, stylelint, `check` (tsc and `svelte-check`), `check:editor` (the VS Code Svelte language server's diagnostics), `check:webstorm` (WebStorm's own inspections, see below), fallow, `gen:components:check` and `check:package` (publint and are-the-types-wrong on the packed tarball)
   It exits 1 if any failed
+- Type-aware oxlint rules run through `tsrs-lint` (tsrs, a Rust port of TypeScript 7), never Go's tsgolint: `scripts/lint/type-aware-environment.ts` is the one place that points oxlint at it, and `pnpm lint:oxlint`, `pnpm lint:fix` and `pnpm lint:summary` all go through it; run `oxlint --type-aware` by hand only with that environment
 - `pnpm lint:fix` runs the fixers over the whole tree (ESLint `--fix`, which also removes unused imports, then oxlint `--fix`)
   The pre-commit hook (simple-git-hooks, installed by `pnpm install`, config in `lint-staged.config.js`) runs the same fixers and `pnpm fallow:audit` on the staged files; never skip it
 - `pnpm lint:summary [eslint|oxlint|tsc|svelte-check ...] [--folder src/css]` counts the violations per rule and per top-level folder (and lists the files of one folder)

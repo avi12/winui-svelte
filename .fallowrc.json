@@ -232,7 +232,7 @@
   // server as a process.
   "ignoreDependencies": [
     "@winapp/bindings",
-    "oxlint-tsgolint",
+    "tsrs",
     "@sveltejs/package",
     "svelte-language-server",
     "publint",

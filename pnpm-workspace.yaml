@@ -5,5 +5,15 @@ allowBuilds:
   esbuild: true
   # Its postinstall installs the hook; the prepare script does that, once.
   simple-git-hooks: false
+# tsrs is a beta that ships often; its packages are newer than the minimum release age.
+minimumReleaseAgeExclude:
+  - '@tsrs/darwin-arm64@0.24.0-ts7.1.0-beta'
+  - '@tsrs/darwin-x64@0.24.0-ts7.1.0-beta'
+  - '@tsrs/linux-arm64-gnu@0.24.0-ts7.1.0-beta'
+  - '@tsrs/linux-arm64-musl@0.24.0-ts7.1.0-beta'
+  - '@tsrs/linux-x64-gnu@0.24.0-ts7.1.0-beta'
+  - '@tsrs/linux-x64-musl@0.24.0-ts7.1.0-beta'
+  - '@tsrs/win32-x64@0.24.0-ts7.1.0-beta'
+  - tsrs@0.24.0-ts7.1.0-beta
 patchedDependencies:
   svelte-language-server@0.18.5: patches/svelte-language-server@0.18.5.patch

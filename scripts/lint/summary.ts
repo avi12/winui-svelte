@@ -1,3 +1,4 @@
+import { typeAwareEnvironment } from "./type-aware-environment.ts";
 import { spawnSync } from "node:child_process";
 import path from "node:path";
 
@@ -64,13 +65,15 @@ interface Counted {
   count: number;
 }
 
-function run({ binary, argumentList }: {
+function run({ binary, argumentList, environment = process.env }: {
   binary: string;
   argumentList: string[];
+  environment?: NodeJS.ProcessEnv;
 }) {
   const script = path.join(PACKAGE_ROOT, "node_modules", binary);
   const result = spawnSync(process.execPath, [script, ...argumentList], {
     cwd: PACKAGE_ROOT,
+    env: environment,
     encoding: "utf8",
     maxBuffer: MAX_OUTPUT_BYTES
   });
@@ -122,7 +125,8 @@ function eslintViolations() {
 function oxlintViolations() {
   const output = run({
     binary: "oxlint/bin/oxlint",
-    argumentList: ["--type-aware", "--format", "json"]
+    argumentList: ["--type-aware", "--format", "json"],
+    environment: typeAwareEnvironment()
   });
   const report: { diagnostics: OxlintDiagnostic[] } = JSON.parse(output);
   return report.diagnostics.map(diagnostic => ({
