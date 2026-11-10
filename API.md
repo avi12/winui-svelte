@@ -1256,6 +1256,8 @@ Items come in two forms
 keep a row only for each item the control has realized; a `TreeView` also takes
 `children` (the items under an item) and `bind:expandedKeys`, and a `ListView`
 or `GridView` can show its items in groups (`groupBy`, `groupHeader`)
+A hot update of a component an `item` snippet uses shows in the rows already
+realized, with no restart
 A
 control whose items are controls takes them as Svelte's own blocks: `{#each}`
 in the children of `ComboBox`, `FlipView` and `ListBox`, or in the snippet of

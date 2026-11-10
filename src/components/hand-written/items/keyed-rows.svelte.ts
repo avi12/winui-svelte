@@ -49,6 +49,12 @@ export function mountSnippetRow<Value>({ slot, snippet, value }: {
     }
   });
   slot.content = mounted.root;
+  // A hot update, or an {#if} in the snippet, makes a new root; the control
+  // the container made around the slot is not a place a swap can find the old
+  // root's parent in (that is the container's presenter, not the slot).
+  mounted.onRootChange(root => {
+    slot.content = root;
+  });
   const row: LiveRow<Value> = {
     // Untracked: the effect that brings the rows up to date must not depend on
     // what a row shows, or a value that is new on every sync (a group) would
