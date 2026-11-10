@@ -117,24 +117,57 @@ export function createDragHelper(hwnd: bigint) {
 
   // The helper hears of a drag only after it accepted the entry: told of a drag it refused, it
   // keeps the window from receiving the next one when the cursor moves on to another window.
+  // A drag that enters where nothing takes it (the window's border) is not told either, and is
+  // told once the cursor moves over something that does.
   let isAccepted = false;
+  let waiting: DynWinRTValue | null = null;
+
+  function begin({ data, point, effect }: {
+    data: DynWinRTValue;
+    point: Point;
+    effect: number;
+  }) {
+    isAccepted = withPoint({
+      point,
+      use: pointAddress => call({
+        slot: DRAG_ENTER_SLOT,
+        values: [
+          DynWinRtValue.u64(hwnd),
+          data,
+          DynWinRtValue.u64(pointAddress),
+          DynWinRtValue.u32(effect)
+        ]
+      })
+    });
+  }
 
   return {
     enter({ data, point, effect }) {
-      isAccepted = withPoint({
+      waiting = data;
+      const isRefused = effect === 0;
+      if (isRefused) {
+        isAccepted = false;
+        return;
+      }
+
+      begin({
+        data,
         point,
-        use: pointAddress => call({
-          slot: DRAG_ENTER_SLOT,
-          values: [
-            DynWinRtValue.u64(hwnd),
-            data,
-            DynWinRtValue.u64(pointAddress),
-            DynWinRtValue.u32(effect)
-          ]
-        })
+        effect
       });
     },
     over({ point, effect }) {
+      const pending = waiting;
+      const canBegin = !isAccepted && pending !== null && effect !== 0;
+      if (canBegin) {
+        begin({
+          data: pending,
+          point,
+          effect
+        });
+        return;
+      }
+
       if (!isAccepted) {
         return;
       }
@@ -148,6 +181,8 @@ export function createDragHelper(hwnd: bigint) {
       });
     },
     leave() {
+      waiting = null;
+
       if (!isAccepted) {
         return;
       }
@@ -159,6 +194,8 @@ export function createDragHelper(hwnd: bigint) {
       });
     },
     drop({ data, point, effect }) {
+      waiting = null;
+
       if (!isAccepted) {
         return;
       }

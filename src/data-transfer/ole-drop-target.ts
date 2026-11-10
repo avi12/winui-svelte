@@ -12,14 +12,14 @@ import type { DynWinRTValue } from "@microsoft/dynwinrt/com/unsafe";
 
 // WinUI 3 registers no OLE drop target on its window (no `OleDropTargetInterface`
 // property on any window of its tree), so Windows answers a drag from another
-// app with the forbidden sign. This registers one on the child window that holds
-// the content (the top-level when there is none), with `RegisterDragDrop`, as
-// every classic window that takes drops does, and hands its four calls to a handler.
+// app with the forbidden sign. This registers one on the top-level window and on
+// the child window that holds its content, with `RegisterDragDrop`, as every
+// classic window that takes drops does, and hands its four calls to a handler.
 // Windows asks only the window under the cursor, and WinUI's content is a child
-// window of its own. The same target on both windows is a dead end: a drag that
-// enters over the top-level's resize border and moves onto the content gets a
-// `DragLeave` and never a new `DragEnter`, so the content never hears of it.
-// A drag over the border or title bar shows the forbidden sign; no zone lives there.
+// window of its own. Each window gets a target object of its own: one object on
+// both windows made a drag that entered over the resize border and moved onto the
+// content get a `DragLeave` and never a new `DragEnter`. Content-only is a dead end
+// too: a drag from the address bar then never reached the window at all.
 
 const CONTENT_WINDOW_CLASS = "Microsoft.UI.Content.DesktopChildSiteBridge";
 const NO_WINDOW = BigInt(0);
@@ -170,24 +170,10 @@ function tellHelper({ helper, slot, call, effect }: {
   }
 }
 
-/**
- * Makes a window take drags from other apps: registers an OLE drop target on
- * it that calls `handler`. Call it on the UI thread (it enters OLE there).
- *
- * @param options - The top-level window and what answers its drags.
- * @returns What revokes the registration; null when Windows refused it (another target is registered).
- */
-export function registerOleDropTarget({ hwnd, handler }: {
-  readonly hwnd: bigint;
+function registerOnWindow({ targetWindow, handler }: {
+  readonly targetWindow: bigint;
   readonly handler: OleDropHandler;
 }) {
-  enterOle();
-  const content = findChildWindow({
-    hwnd,
-    className: CONTENT_WINDOW_CLASS
-  });
-  const hasContentWindow = content !== NO_WINDOW;
-  const targetWindow = hasContentWindow ? content : hwnd;
   const helper = createDragHelper(targetWindow);
   const target = DynCom.createComObject([dropTargetInterface()], (_iid, slot, ...args) => {
     const isLeaving = slot === DRAG_LEAVE_SLOT;
@@ -236,5 +222,42 @@ export function registerOleDropTarget({ hwnd, handler }: {
     view.release();
     target.release();
     helper?.release();
+  };
+}
+
+/**
+ * Makes a window take drags from other apps: registers an OLE drop target on
+ * it and on its content window that call `handler`. Call it on the UI thread
+ * (it enters OLE there).
+ *
+ * @param options - The top-level window and what answers its drags.
+ * @returns What revokes the registration; null when Windows refused it (another target is registered).
+ */
+export function registerOleDropTarget({ hwnd, handler }: {
+  readonly hwnd: bigint;
+  readonly handler: OleDropHandler;
+}) {
+  enterOle();
+  const revokeTopLevel = registerOnWindow({
+    targetWindow: hwnd,
+    handler
+  });
+  const isTopLevelRefused = revokeTopLevel === null;
+  if (isTopLevelRefused) {
+    return null;
+  }
+
+  const content = findChildWindow({
+    hwnd,
+    className: CONTENT_WINDOW_CLASS
+  });
+  const hasContentWindow = content !== NO_WINDOW;
+  const revokeContent = hasContentWindow ? registerOnWindow({
+    targetWindow: content,
+    handler
+  }) : null;
+  return () => {
+    revokeTopLevel();
+    revokeContent?.();
   };
 }
