@@ -41,7 +41,7 @@ export function withProjected<Args extends object, Result>({ args, projection, m
     return use(args);
   }
 
-  const isProjectable = "_obj" in args;
+  const isProjectable = "_obj" in args || "cast" in args;
   if (!isProjectable) {
     return undefined;
   }
