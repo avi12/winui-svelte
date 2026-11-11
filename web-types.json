@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/web-types",
   "name": "winui-svelte",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "framework": "svelte",
   "description-markup": "markdown",
   "contributions": {
@@ -26556,7 +26556,24 @@
             },
             {
               "name": "sizeUnit",
-              "description": "What `width` and `height` count: `dip` (device-independent pixels, the default) or `physical` (device pixels, the same on every display, so a window ported from a native one keeps its exact size). A physical size is applied again when the window lands on a display with another scale."
+              "description": "What `width` and `height` count: `dip` (device-independent pixels, the default) or `physical` (device pixels, the same on every display, so a window ported from a native one keeps its exact size). A physical size is applied again when the window lands on a display with another scale.",
+              "value": {
+                "type": [
+                  "enum",
+                  {
+                    "module": "winui-svelte/enums",
+                    "name": "SizeUnit"
+                  }
+                ]
+              },
+              "values": [
+                {
+                  "name": "dip"
+                },
+                {
+                  "name": "physical"
+                }
+              ]
             },
             {
               "name": "sizeToContent",
