@@ -1,3 +1,5 @@
+import { CALLBACK_MESSAGE, canReceiveSentMessages, createMessageMailbox } from "./message-mailbox.ts";
+import type { MailboxMessage } from "./message-mailbox.ts";
 import { createPointerShare } from "./pointer-share.ts";
 import { DynComRawMemory } from "@microsoft/dynwinrt/com/unsafe/raw";
 import {
@@ -188,7 +190,6 @@ const FLAG_TIP = 0x4;
 const FLAG_GUID = 0x20;
 const FLAG_SHOW_TIP = 0x80;
 const NOTIFY_VERSION_4 = 4;
-const CALLBACK_MESSAGE = 0x8001;
 const PEEK_REMOVE = 1;
 const MESSAGE_SIZE = 48;
 const MESSAGE_ALIGNMENT = 8;
@@ -459,18 +460,29 @@ export function createTrayNative({ writeBalloon }: { writeBalloon?: BalloonWrite
     return word >= SIGNED_WORD_LIMIT ? word - WORD_RANGE : word;
   }
 
+  const mailboxes = new Map<bigint, ReturnType<typeof createMessageMailbox>>();
+
+  function messageOf({ wparam, code }: MailboxMessage) {
+    return {
+      notification: code,
+      x: signedWord(wparam),
+      y: signedWord(wparam >> WORD_BITS)
+    };
+  }
+
   function readMessages(owner: bigint) {
     const messages: TrayMessage[] = [];
     while (user32.peekMessage(messageBuffer, owner, CALLBACK_MESSAGE, CALLBACK_MESSAGE, PEEK_REMOVE) !== 0) {
-      const anchor = messageBuffer.readU64(MESSAGE_OFFSET_WPARAM);
-      const code = messageBuffer.readU64(MESSAGE_OFFSET_LPARAM);
-      messages.push({
-        notification: Number(code & LOW_WORD_MASK),
-        x: signedWord(anchor),
-        y: signedWord(anchor >> WORD_BITS)
-      });
+      messages.push(
+        messageOf({
+          wparam: messageBuffer.readU64(MESSAGE_OFFSET_WPARAM),
+          code: Number(messageBuffer.readU64(MESSAGE_OFFSET_LPARAM) & LOW_WORD_MASK)
+        })
+      );
     }
 
+    const sent = mailboxes.get(owner)?.read() ?? [];
+    messages.push(...sent.map(messageOf));
     return messages;
   }
 
@@ -479,13 +491,20 @@ export function createTrayNative({ writeBalloon }: { writeBalloon?: BalloonWrite
     createOwnerWindow() {
       const classText = wideMemory("STATIC");
       try {
-        return user32.createWindow(0, classText, classText, WS_POPUP, 0, 0, 0, 0, null, null, null, null);
+        const hwnd = user32.createWindow(0, classText, classText, WS_POPUP, 0, 0, 0, 0, null, null, null, null);
+        if (canReceiveSentMessages()) {
+          mailboxes.set(hwnd, createMessageMailbox(hwnd));
+        }
+
+        return hwnd;
       } finally {
         classText.release();
       }
     },
     destroyWindow(hwnd) {
       user32.destroyWindow(hwnd);
+      mailboxes.get(hwnd)?.release();
+      mailboxes.delete(hwnd);
     },
     loadIcon: icons.loadIconFile,
     destroyIcon: icons.destroyIcon,
