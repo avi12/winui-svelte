@@ -35,7 +35,7 @@ import type { ElementNode, FragmentNode, NativeHost, TreeNode } from "#src/rende
 import { createTreeRenderer, NodeType, parentElement } from "#src/renderer/tree/tree.js";
 import { isBackgroundRun } from "#src/window/background-mode.js";
 import type { FrameworkElement, UIElement } from "#src/winui.js";
-import { Run, TextWrapping } from "#src/winui.js";
+import { Run } from "#src/winui.js";
 
 // The renderer for WinUI: a .svelte component's elements are
 // WinUI's own controls, named in kebab case (<stack-panel>, <text-block>), so
@@ -1033,30 +1033,26 @@ function keepPopupInWindow(control: object) {
 // The web wraps text at the edge of its box; a TextBlock's WinUI default (NoWrap)
 // runs it past the window. A `textWrapping` prop, `white-space` or `text-wrap`
 // written later still wins.
-const WRAPPED_TEXT_TAGS = new Set(["text-block", "rich-text-block"]);
-
-function wrapTextLikeTheWeb({ control, name }: {
-  control: object;
-  name: string;
-}) {
-  const isText = WRAPPED_TEXT_TAGS.has(kebabCase(name));
-  if (isText) {
-    write(control, "textWrapping", TextWrapping.Wrap);
-  }
-}
+// TextWrapping.Wrap by value: importing the enum would bind it into every app,
+// and host.test.ts holds the number to the enum; `text-block` and
+// `rich-text-block` are the two tags that end in it.
+const TEXT_WRAPPING_WRAP = 2;
+const TEXT_BLOCK_SUFFIX = "text-block";
 
 function createControl(name: string) {
-  const type = controls.get(kebabCase(name));
+  const tag = kebabCase(name);
+  const type = controls.get(tag);
   if (!isControlClass(type)) {
     throw new Error(`<${name}> is not a WinUI control registerControls was given`);
   }
 
   const control = new type();
   keepPopupInWindow(control);
-  wrapTextLikeTheWeb({
-    control,
-    name
-  });
+
+  if (tag.endsWith(TEXT_BLOCK_SUFFIX)) {
+    write(control, "textWrapping", TEXT_WRAPPING_WRAP);
+  }
+
   return control;
 }
 

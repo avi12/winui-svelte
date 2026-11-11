@@ -4,7 +4,6 @@ export type { DOMRectInit } from "./dom-rect-read-only.ts";
 export { DOMRectReadOnly } from "./dom-rect-read-only.ts";
 export type { DetectedText, DetectedWord, Point2D } from "./detected-text.ts";
 export type {
-  BarcodeBoundingBox,
   BarcodeDetectorOptions,
   BarcodeFormat,
   DetectedBarcode,

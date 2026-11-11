@@ -1,3 +1,4 @@
+import { DOMRectReadOnly, installDOMRectReadOnly } from "./dom-rect-read-only.ts";
 import { Symbology } from "#src/barcode/barcode-types.js";
 import type { Bounds } from "#src/barcode/barcode-types.js";
 import { detectCodes } from "#src/barcode/detect-codes.js";
@@ -33,18 +34,10 @@ export interface DetectedBarcodePoint {
   readonly y: number;
 }
 
-/** A rectangle with its edges, as `DOMRectReadOnly`. */
-export interface BarcodeBoundingBox extends Bounds {
-  readonly top: number;
-  readonly left: number;
-  readonly right: number;
-  readonly bottom: number;
-}
-
 /** What `BarcodeDetector.detect` resolves with, one per code. */
 export interface DetectedBarcode {
   /** The smallest upright rectangle around the code. */
-  readonly boundingBox: BarcodeBoundingBox;
+  readonly boundingBox: DOMRectReadOnly;
   /** The four corners, clockwise from the code's top-left as it reads. */
   readonly cornerPoints: readonly DetectedBarcodePoint[];
   readonly format: BarcodeFormat;
@@ -56,14 +49,8 @@ function isSupported(format: string): format is Symbology {
   return SUPPORTED_FORMATS.some(supported => supported === format);
 }
 
-function boundingBoxOf(bounds: Bounds) {
-  return {
-    ...bounds,
-    top: bounds.y,
-    left: bounds.x,
-    right: bounds.x + bounds.width,
-    bottom: bounds.y + bounds.height
-  };
+function boundingBoxOf({ x, y, width, height }: Bounds) {
+  return new DOMRectReadOnly(x, y, width, height);
 }
 
 /**
@@ -135,13 +122,19 @@ export class BarcodeDetector {
 }
 
 /**
- * Defines `BarcodeDetector` on the global scope.
+ * Defines `globalThis.BarcodeDetector`, and `DOMRectReadOnly` where the realm
+ * has none (the window thread is a worker without it).
  *
  * @returns The function that takes it away again.
  */
 export function installBarcodeDetector() {
-  return defineProperty({
+  const uninstalls = [defineProperty({
     name: "BarcodeDetector",
     value: BarcodeDetector
-  });
+  }), installDOMRectReadOnly()];
+  return () => {
+    for (const uninstall of uninstalls.reverse()) {
+      uninstall();
+    }
+  };
 }
