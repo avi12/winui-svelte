@@ -3442,6 +3442,15 @@ An app that does not import it does not bundle it
 - Each handler gets `{ gesture, x, y }`, the pointer in screen pixels: where to
   put a menu
   A double click is the second `onclick` and then `ondoubleclick`
+- Keyboard, touch and pen: the shell posts its version 4 callback messages to
+  the icon's hidden owner window, and the tray reads them on each poll
+  Enter or Space on the focused icon (`NIN_KEYSELECT`) reaches
+  `ondoubleclick`, the context-menu key and Shift+F10 (`WM_CONTEXTMENU`) reach
+  `oncontextmenu` with the anchor the shell gives, and a tap (`NIN_SELECT`)
+  reaches `onclick`
+  A message that repeats a mouse gesture the poll already reported is dropped,
+  and a message is delivered one poll after it was posted (30 or 250
+  milliseconds), so that the two never report one click twice
 - `createTrayIcon(options)` is the same without a component and returns the
   handle: `update({ icon, tooltip, isVisible })`, `notify({ title, body,
   icon, isSilent })` (a balloon), `bounds()` (where the shell drew the icon,
@@ -3838,6 +3847,22 @@ const tray = createStandaloneTray({
 tray.notify({ title: "Ready" });
 ```
 
+- Two renderers draw the same menu model; pick by the process, not by a flag:
+
+| | `<TrayIcon menu>` (windowed) | `createStandaloneTray` (native popup) |
+|---|---|---|
+| Drawn by | A WinUI `MenuFlyout` in a one-pixel window | Windows' own popup menu (`TrackPopupMenuEx`) |
+| Needs | The WinUI runtime and a UI thread | Plain Node, no window |
+| Theme and animation | WinUI's, from the app's theme | The system menu's, `colorScheme` picks light or dark |
+| Dismissed on focus loss | By the flyout, and the one-pixel window is removed after | By Windows, nothing is left behind |
+| Read by Narrator as | A flyout | A menu |
+| Submenu `onselect`, `autoExpand` | Not drawn | Not drawn |
+| Icons | Any `IconSource` | Bitmaps, with the `menuIcons` extra |
+| Idle cost | The WinUI runtime stays resident | About 93 MB and 0.2 percent of a core |
+
+  A windowed app that wants the native popup passes the same `menu` array to
+  `createStandaloneTray` in a tray process of its own (this section)
+
 - The menu is Windows' own popup menu (`TrackPopupMenuEx`), made on a right
   click and destroyed when it closes; nothing of it exists while idle
   `menu` is the same model as the windowed tray's (`winui-svelte/tray/menu`):
@@ -4037,6 +4062,15 @@ export default defineTray({
   keeps its budget)
 - `tray.svelte` is the same entrypoint written as markup (next section); a
   folder with both `tray.ts` and `tray.svelte` is an error
+
+- Idle footprint, the layout for a tray app that is mostly closed: the tray
+  is this process (plain Node, no WinUI) and the window is another process that
+  `activateOrLaunch` starts on a click and that exits when its window closes
+  Measured on Windows 11, one icon and a menu, idle for 8 seconds:
+  93 MB resident and 0.2 percent of a core, where a process that keeps the WinUI
+  runtime for a hidden window holds about 450 MB
+  The window process pays its cost only while it is open; it is the whole of
+  `createWindow` or `runWindow`, so nothing of it is retained by the tray
 
 The working example is `examples/tray-entrypoint`
 
