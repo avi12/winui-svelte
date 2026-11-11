@@ -1,3 +1,5 @@
+import { defineProperty } from "#src/web-apis/install.js";
+
 /** The members of a rectangle that `DOMRectReadOnly.fromRect` reads. */
 export interface DOMRectInit {
   readonly x?: number;
@@ -65,4 +67,21 @@ export class DOMRectReadOnly {
   get [Symbol.toStringTag]() {
     return "DOMRectReadOnly";
   }
+}
+
+/**
+ * Defines `globalThis.DOMRectReadOnly` where the realm has none.
+ *
+ * @returns The function that takes it away again.
+ */
+export function installDOMRectReadOnly() {
+  const hasRectangle = "DOMRectReadOnly" in globalThis;
+  if (hasRectangle) {
+    return () => {};
+  }
+
+  return defineProperty({
+    name: "DOMRectReadOnly",
+    value: DOMRectReadOnly
+  });
 }
