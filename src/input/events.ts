@@ -10,11 +10,12 @@ import { createDomEvent, targetOf } from "./dom-event.ts";
 import { keyboardFields } from "./keyboard-fields.ts";
 import { rememberPointer } from "./pointer-capture.ts";
 import { pointerFields } from "./pointer-fields.ts";
+import { withProjected } from "./projected-arguments.ts";
 import type { NativeValue } from "#src/native-value.js";
 import type { EventAdapter } from "#src/renderer/host/event-adapters.js";
 import { eventAdapters } from "#src/renderer/host/event-adapters.js";
-import type { KeyRoutedEventArgs } from "#winui/microsoft/ui/xaml/input/KeyRoutedEventArgs";
-import type { PointerRoutedEventArgs } from "#winui/microsoft/ui/xaml/input/PointerRoutedEventArgs";
+import { KeyRoutedEventArgs } from "#winui/microsoft/ui/xaml/input/KeyRoutedEventArgs";
+import { PointerRoutedEventArgs } from "#winui/microsoft/ui/xaml/input/PointerRoutedEventArgs";
 import type { UIElement } from "#winui/microsoft/ui/xaml/UIElement";
 
 // The web's pointer, wheel, keyboard and focus event names on raw elements.
@@ -24,6 +25,11 @@ import type { UIElement } from "#winui/microsoft/ui/xaml/UIElement";
 type Listener = (sender: unknown, args: unknown) => void;
 
 interface Route<Event> {
+  /** Gives `use` the event's arguments as the class the route reads. */
+  withArguments(options: {
+    args: unknown;
+    use: (ready: unknown) => void;
+  }): void;
   subscribe(options: {
     control: UIElement;
     listener: Listener;
@@ -87,12 +93,25 @@ function pointerEventOf({ type, control, args, onPrevent }: {
   });
 }
 
+function readPointerArguments({ args, use }: {
+  args: unknown;
+  use: (ready: unknown) => void;
+}) {
+  withProjected({
+    args,
+    projection: PointerRoutedEventArgs,
+    member: "getCurrentPoint",
+    use
+  });
+}
+
 function pointerRoute({ type, subscribe }: {
   type: string;
   subscribe: Route<PointerEvent>["subscribe"];
 }) {
   return {
     subscribe,
+    withArguments: readPointerArguments,
     makeEvent: options => pointerEventOf({
       type,
       ...options
@@ -105,6 +124,7 @@ function wheelRoute({ subscribe }: {
 }) {
   return {
     subscribe,
+    withArguments: readPointerArguments,
     makeEvent: options => pointerEventOf({
       type: "wheel",
       ...options
@@ -118,6 +138,14 @@ function keyRoute({ type, subscribe }: {
 }) {
   return {
     subscribe,
+    withArguments({ args, use }) {
+      withProjected({
+        args,
+        projection: KeyRoutedEventArgs,
+        member: "keyStatus",
+        use
+      });
+    },
     makeEvent({ control, args, onPrevent }) {
       if (!isKeyArguments(args)) {
         return undefined;
@@ -143,6 +171,9 @@ function focusRoute({ type, subscribe }: {
 }) {
   return {
     subscribe,
+    withArguments({ args, use }) {
+      use(args);
+    },
     makeEvent({ control, args }) {
       return {
         type,
@@ -171,15 +202,20 @@ function adapterOf<Event>(route: Route<Event>) {
       return route.subscribe({
         control,
         listener(_sender, args) {
-          const event = route.makeEvent({
-            control,
+          route.withArguments({
             args,
-            onPrevent: () => markHandled(args)
+            use(ready) {
+              const event = route.makeEvent({
+                control,
+                args: ready,
+                onPrevent: () => markHandled(ready)
+              });
+              const isBuilt = event !== undefined;
+              if (isBuilt) {
+                handler(event);
+              }
+            }
           });
-          const isBuilt = event !== undefined;
-          if (isBuilt) {
-            handler(event);
-          }
         }
       });
     }

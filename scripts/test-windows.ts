@@ -34,6 +34,7 @@ const DEFAULT_DESKTOP_TESTS = new Map([
   ["taskbar.test.ts", "ITaskbarList3 answers E_NOTIMPL without the shell, which runs on the default desktop only; the window has no taskbar button"],
   ["click-through.test.ts", "reads the screen and the system hit test over a window the test opens; no input is sent, the windows are never activated"],
   ["capture.test.ts", "reads a monitor through Windows.Graphics.Capture, which composes only the default desktop, over a window the test opens; the windows are never activated"],
+  ["pointer-overlay.test.ts", "sends a real mouse drag, which only the default desktop receives, and only where the example's own window is on top"],
   ["transparent-window.test.ts", "a desktop of its own is never composed, so a screen capture of it reads black and cannot show a window through another; the windows are never activated"],
   ["web-bridge.test.ts", "WebView2 needs an ordinary desktop session to start its browser"],
   ["web-recovery.test.ts", "WebView2 needs an ordinary desktop session to start its browser"],
