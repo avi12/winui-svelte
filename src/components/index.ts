@@ -45,5 +45,6 @@ export type { CaptionButtonColors, IconShowOptions, TitleBarHeight, WindowPresen
 export type { CoverOptions } from "#src/window/cover.js";
 export type { DockDisplay, DockOptions } from "#src/window/dock.js";
 export type { SizeToContent, WindowAnchor } from "#src/window/anchor.js";
+export type { SizeUnit } from "#src/window/css-pixels.js";
 export type { WindowHandle } from "#src/window/window-handle.js";
 export type { WindowBounds, WindowPlacement } from "#src/window/window-host.svelte.js";

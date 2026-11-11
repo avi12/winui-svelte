@@ -29,6 +29,7 @@ export { ImageMimeType, ImageOrientation, ResizeQuality } from "./web-apis/image
 export { TrayGesture } from "./tray/click-detector.ts";
 export { TrayBalloonIcon } from "./tray/tray-core.ts";
 export { SizeToContent, WindowAnchor } from "./window/anchor.ts";
+export { SizeUnit } from "./window/css-pixels.ts";
 export { Backdrop } from "./window/backdrop.ts";
 export { IconShowOptions, TitleBarHeight, WindowPresentation, WindowTheme } from "./window/chrome.ts";
 export { DockDisplay } from "./window/dock.ts";
