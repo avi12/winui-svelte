@@ -1,5 +1,6 @@
 import { DomErrorName } from "./dom-exception.ts";
 import { defineProperty } from "./install.ts";
+import { sharedRectangle } from "#src/capture/region.js";
 import type { NativeValue } from "#src/native-value.js";
 import { isRecord, read } from "#src/renderer/host/reflect.js";
 import { DomNode, NodeType } from "#src/renderer/tree/dom.js";
@@ -114,17 +115,12 @@ function intersect({ first, second }: {
   first: ObservedBox;
   second: ObservedBox;
 }) {
-  const left = Math.max(first.x, second.x);
-  const top = Math.max(first.y, second.y);
-  const right = Math.min(first.x + first.width, second.x + second.width);
-  const bottom = Math.min(first.y + first.height, second.y + second.height);
-  const isEmpty = right < left || bottom < top;
-  return isEmpty ? null : {
-    x: left,
-    y: top,
-    width: right - left,
-    height: bottom - top
-  };
+  const shared = sharedRectangle({
+    first,
+    second
+  });
+  const isEmpty = shared.width < 0 || shared.height < 0;
+  return isEmpty ? null : shared;
 }
 
 /** The boxes `ResizeObserver.observe` can be told to report. */

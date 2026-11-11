@@ -1,3 +1,5 @@
+import { appDataFolder, AppDataLocation } from "./app-data-folder.ts";
+import type { AppDataEnvironment } from "./app-data-folder.ts";
 import { mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
@@ -33,4 +35,37 @@ export function atomicFile(location: string) {
       renameSync(swap, location);
     }
   } satisfies StorageFile;
+}
+
+/**
+ * The storage file of an API in the app's data folder, unless the options
+ * give their own.
+ *
+ * @param options - The file name, and the options the API was given: its own file, the app's name,
+ *   the folder and where the folders are.
+ * @returns The storage file.
+ */
+export function appDataFile({ fileName, options }: {
+  readonly fileName: string;
+  readonly options: {
+    readonly file?: StorageFile;
+    readonly appName?: string;
+    readonly location?: AppDataLocation;
+    readonly environment?: AppDataEnvironment;
+  };
+}) {
+  return options.file ?? atomicFile(
+    path.join(
+      appDataFolder({
+        location: options.location ?? AppDataLocation.LOCAL,
+        ...options.appName !== undefined && {
+          appName: options.appName
+        },
+        ...options.environment !== undefined && {
+          environment: options.environment
+        }
+      }),
+      fileName
+    )
+  );
 }

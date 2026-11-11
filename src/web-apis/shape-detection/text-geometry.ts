@@ -25,30 +25,42 @@ interface Point {
 }
 
 /**
- * The part of an image to read, in whole pixels and inside the image: the
- * region widened to the pixels it touches, clipped to the image, or the whole
- * image when no region is given.
- *
- * @returns The crop, or `undefined` when the region misses the image.
+ * The part of an image a region covers, widened to the pixels it touches and
+ * clipped to the image, or the whole image when no region is given; the
+ * width or height is not above 0 when the region misses the image.
  */
-export function cropOf({ region, width, height }: Size & {
-  readonly region: OcrBox | undefined;
+export function clippedBoxOf({ region, width, height }: Size & {
+  readonly region?: OcrBox | undefined;
 }) {
   const left = Math.max(0, Math.floor(region?.x ?? 0));
   const top = Math.max(0, Math.floor(region?.y ?? 0));
   const right = Math.min(width, Math.ceil(region === undefined ? width : region.x + region.width));
   const bottom = Math.min(height, Math.ceil(region === undefined ? height : region.y + region.height));
-  const isEmpty = right <= left || bottom <= top;
-  if (isEmpty) {
-    return undefined;
-  }
-
   return {
     x: left,
     y: top,
     width: right - left,
     height: bottom - top
   } satisfies OcrBox;
+}
+
+/**
+ * The part of an image to read, in whole pixels and inside the image: the
+ * region widened to the pixels it touches, clipped to the image, or the whole
+ * image when no region is given.
+ *
+ * @returns The crop, or `undefined` when the region misses the image.
+ */
+export function cropOf(options: Size & {
+  readonly region: OcrBox | undefined;
+}) {
+  const box = clippedBoxOf(options);
+  const isEmpty = box.width <= 0 || box.height <= 0;
+  if (isEmpty) {
+    return undefined;
+  }
+
+  return box;
 }
 
 /**

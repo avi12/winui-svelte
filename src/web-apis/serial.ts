@@ -1,9 +1,9 @@
 import { bytesOfBufferSource } from "./buffer-source.ts";
-import { chooseAndGrant, createDeviceGrants } from "./device-grants.ts";
+import { chooseOneMatching, createDeviceGrants } from "./device-grants.ts";
 import type { DeviceChooser, DeviceGrants } from "./device-grants.ts";
 import { DevicePresenceTarget } from "./device-presence.ts";
 import { DomErrorName, domException } from "./dom-exception.ts";
-import { HandlerEventTarget } from "./event-handlers.ts";
+import { ConnectionHandlerTarget } from "./event-handlers.ts";
 import { defineNavigatorProperty } from "./install.ts";
 import type {
   SerialBackend,
@@ -173,7 +173,7 @@ export class SerialConnectionEvent extends Event {
 }
 
 /** One serial port the user allowed this page to use. */
-export class SerialPort extends HandlerEventTarget {
+export class SerialPort extends ConnectionHandlerTarget {
   /** The port's name, such as `COM3`. WinUI-only. */
   readonly portName: string;
 
@@ -208,28 +208,6 @@ export class SerialPort extends HandlerEventTarget {
 
   get writable() {
     return this.currentWritable;
-  }
-
-  get onconnect() {
-    return this.getHandler("connect");
-  }
-
-  set onconnect(handler: EventListener | null) {
-    this.setHandler({
-      type: "connect",
-      handler
-    });
-  }
-
-  get ondisconnect() {
-    return this.getHandler("disconnect");
-  }
-
-  set ondisconnect(handler: EventListener | null) {
-    this.setHandler({
-      type: "disconnect",
-      handler
-    });
   }
 
   /**
@@ -528,16 +506,13 @@ export class Serial extends DevicePresenceTarget<SerialPortInfo> {
       work: () => known.backend.list(),
       name: DomErrorName.NETWORK
     });
-    const candidates = present.filter(info => filters.length === 0 || filters.some(filter => matchesFilter({
-      info,
-      filter
-    })));
-    const [chosen] = await chooseAndGrant({
+    const chosen = await chooseOneMatching({
+      present,
+      filters,
+      matches: matchesFilter,
       chooser: options.chooser ?? known.chooser,
-      candidates,
       grants: known.grants,
       emptyMessage: "No port selected by the user.",
-      maximum: 1,
       ...options.signal === undefined ? {} : { signal: options.signal }
     });
     return portOf({

@@ -26,3 +26,32 @@ export class HandlerEventTarget extends EventTarget {
     }
   }
 }
+
+/** A target with the `onconnect` and `ondisconnect` handler properties. */
+export class ConnectionHandlerTarget extends HandlerEventTarget {
+  // fallow-ignore-next-line unused-class-member
+  get onconnect() {
+    return this.getHandler("connect");
+  }
+
+  // fallow-ignore-next-line unused-class-member
+  set onconnect(handler: EventListener | null) {
+    this.setHandler({
+      type: "connect",
+      handler
+    });
+  }
+
+  // fallow-ignore-next-line unused-class-member
+  get ondisconnect() {
+    return this.getHandler("disconnect");
+  }
+
+  // fallow-ignore-next-line unused-class-member
+  set ondisconnect(handler: EventListener | null) {
+    this.setHandler({
+      type: "disconnect",
+      handler
+    });
+  }
+}

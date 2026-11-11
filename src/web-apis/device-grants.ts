@@ -114,3 +114,56 @@ export async function chooseAndGrant<T extends { readonly id: string }>(options:
   const result: [T, ...T[]] = [first, ...rest];
   return result;
 }
+
+/**
+ * The devices of a listing that the user has allowed, made into the objects
+ * the page sees.
+ *
+ * @param options - The listing, the grants and how to make the page's object of an entry.
+ * @returns The page's objects, for the allowed entries.
+ */
+export function grantedDevices<Info extends { readonly id: string }, Device>({ present, grants, toDevice }: {
+  readonly present: readonly Info[];
+  readonly grants: DeviceGrants<Info>;
+  readonly toDevice: (info: Info) => Device;
+}) {
+  return present.filter(info => grants.has(info.id)).map(toDevice);
+}
+
+/**
+ * The shared body of a `requestDevice` that allows one device: keeps what
+ * matches one of the filters (all of it for none), asks the chooser and allows
+ * the answer.
+ *
+ * @param options - The listing, the filters and how one matches, the chooser, the grants and the
+ *   text of the `NotFoundError`.
+ * @returns The chosen entry.
+ * @throws {DOMException} `NotAllowedError` without a chooser, `NotFoundError` when nothing is chosen.
+ */
+export async function chooseOneMatching<Info extends { readonly id: string }, Filter>(options: {
+  readonly present: readonly Info[];
+  readonly filters: readonly Filter[];
+  readonly matches: (match: {
+    info: Info;
+    filter: Filter;
+  }) => boolean;
+  readonly chooser: DeviceChooser<Info> | undefined;
+  readonly grants: DeviceGrants<Info>;
+  readonly emptyMessage: string;
+  readonly signal?: AbortSignal;
+}) {
+  const { present, filters, matches, chooser, grants, emptyMessage, signal } = options;
+  const candidates = present.filter(info => filters.length === 0 || filters.some(filter => matches({
+    info,
+    filter
+  })));
+  const [chosen] = await chooseAndGrant({
+    chooser,
+    candidates,
+    grants,
+    emptyMessage,
+    maximum: 1,
+    ...signal === undefined ? {} : { signal }
+  });
+  return chosen;
+}

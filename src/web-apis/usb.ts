@@ -1,5 +1,5 @@
 import { bytesOfBufferSource, dataViewOf } from "./buffer-source.ts";
-import { chooseAndGrant, createDeviceGrants } from "./device-grants.ts";
+import { chooseOneMatching, createDeviceGrants, grantedDevices } from "./device-grants.ts";
 import type { DeviceChooser, DeviceGrants } from "./device-grants.ts";
 import { DevicePresenceTarget } from "./device-presence.ts";
 import { DomErrorName, domException } from "./dom-exception.ts";
@@ -653,12 +653,14 @@ export class USB extends DevicePresenceTarget<UsbDeviceInfo> {
   async getDevices() {
     const known = requireContext();
     const present = await guarded(() => known.backend.list());
-    return present
-      .filter(info => known.grants.has(info.id))
-      .map(info => deviceOf({
+    return grantedDevices({
+      present,
+      grants: known.grants,
+      toDevice: info => deviceOf({
         known,
         info
-      }));
+      })
+    });
   }
 
   /**
@@ -684,16 +686,13 @@ export class USB extends DevicePresenceTarget<UsbDeviceInfo> {
 
     options.signal?.throwIfAborted();
     const present = await guarded(() => known.backend.list());
-    const candidates = present.filter(info => filters.length === 0 || filters.some(filter => matchesFilter({
-      info,
-      filter
-    })));
-    const [chosen] = await chooseAndGrant({
+    const chosen = await chooseOneMatching({
+      present,
+      filters,
+      matches: matchesFilter,
       chooser: options.chooser ?? known.chooser,
-      candidates,
       grants: known.grants,
       emptyMessage: "No device selected.",
-      maximum: 1,
       ...options.signal === undefined ? {} : { signal: options.signal }
     });
     return deviceOf({

@@ -1,5 +1,5 @@
 import { bytesOfBufferSource, dataViewOf } from "./buffer-source.ts";
-import { chooseAndGrant, createDeviceGrants } from "./device-grants.ts";
+import { chooseAndGrant, createDeviceGrants, grantedDevices } from "./device-grants.ts";
 import type { DeviceChooser, DeviceGrants } from "./device-grants.ts";
 import { DevicePresenceTarget } from "./device-presence.ts";
 import { DomErrorName, domException } from "./dom-exception.ts";
@@ -366,12 +366,14 @@ export class HID extends DevicePresenceTarget<HidDeviceInfo> {
       work: () => known.backend.list(),
       name: DomErrorName.NOT_ALLOWED
     });
-    return present
-      .filter(info => known.grants.has(info.id))
-      .map(info => deviceOf({
+    return grantedDevices({
+      present,
+      grants: known.grants,
+      toDevice: info => deviceOf({
         known,
         info
-      }));
+      })
+    });
   }
 
   /**

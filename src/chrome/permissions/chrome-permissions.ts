@@ -9,13 +9,11 @@ import {
 import type { Permissions } from "./permission-types.ts";
 import { launchUri } from "#src/data-transfer/launcher.js";
 import { ChromeEvent } from "#src/downloads/chrome-event.js";
-import { appDataFolder, AppDataLocation } from "#src/web-apis/app-data-folder.js";
-import type { AppDataEnvironment } from "#src/web-apis/app-data-folder.js";
+import type { AppDataEnvironment, AppDataLocation } from "#src/web-apis/app-data-folder.js";
 import type { StorageFile } from "#src/web-apis/atomic-file.js";
-import { atomicFile } from "#src/web-apis/atomic-file.js";
+import { appDataFile } from "#src/web-apis/atomic-file.js";
 import { PermissionStateName, readPermission, requestPermission } from "#src/web-apis/permissions.js";
 import type { PermissionName } from "#src/web-apis/permissions.js";
-import path from "node:path";
 
 const FILE_NAME = "chrome-permissions.json";
 
@@ -73,20 +71,10 @@ export class ChromePermissions {
 
   /** Reads the saved grants; the API's own folder is made on the first write. */
   constructor(options: ChromePermissionsOptions = {}) {
-    this.file = options.file ?? atomicFile(
-      path.join(
-        appDataFolder({
-          location: options.location ?? AppDataLocation.LOCAL,
-          ...options.appName !== undefined && {
-            appName: options.appName
-          },
-          ...options.environment !== undefined && {
-            environment: options.environment
-          }
-        }),
-        FILE_NAME
-      )
-    );
+    this.file = appDataFile({
+      fileName: FILE_NAME,
+      options
+    });
     this.openSettings = options.openSettings ?? launchUri;
     this.granted = new Set(parseStored(this.file.read()));
   }

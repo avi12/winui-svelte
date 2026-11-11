@@ -1,4 +1,4 @@
-import { HandlerEventTarget } from "./event-handlers.ts";
+import { ConnectionHandlerTarget } from "./event-handlers.ts";
 
 /**
  * Tells when devices of a kind come and go, from a listing and a "something
@@ -62,7 +62,7 @@ function createDevicePresence<T extends { readonly id: string }>({ list, subscri
  * `connect` and `disconnect`. It watches the system only once something
  * listens, and stops when told.
  */
-export class DevicePresenceTarget<T extends { readonly id: string }> extends HandlerEventTarget {
+export class DevicePresenceTarget<T extends { readonly id: string }> extends ConnectionHandlerTarget {
   private readonly presence;
 
   /** Made by the API that extends this. */
@@ -94,32 +94,6 @@ export class DevicePresenceTarget<T extends { readonly id: string }> extends Han
           this.dispatchEvent(event);
         }
       }
-    });
-  }
-
-  // fallow-ignore-next-line unused-class-member
-  get onconnect() {
-    return this.getHandler("connect");
-  }
-
-  // fallow-ignore-next-line unused-class-member
-  set onconnect(handler: EventListener | null) {
-    this.setHandler({
-      type: "connect",
-      handler
-    });
-  }
-
-  // fallow-ignore-next-line unused-class-member
-  get ondisconnect() {
-    return this.getHandler("disconnect");
-  }
-
-  // fallow-ignore-next-line unused-class-member
-  set ondisconnect(handler: EventListener | null) {
-    this.setHandler({
-      type: "disconnect",
-      handler
     });
   }
 

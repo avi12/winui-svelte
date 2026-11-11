@@ -4,6 +4,7 @@ import { binarizeAdaptive, binarizeGlobal, toLuminance } from "./binarize.ts";
 import type { BitMatrix } from "./bit-matrix.ts";
 import { detectLinearCodes } from "./linear/linear-detect.ts";
 import { detectQrCodes } from "./qr/qr-detect.ts";
+import { clippedBoxOf } from "#src/web-apis/shape-detection/text-geometry.js";
 
 const BYTES_PER_PIXEL = 4;
 const LINEAR_FORMATS: readonly Symbology[] = [
@@ -22,20 +23,6 @@ interface Found {
 interface Size {
   readonly width: number;
   readonly height: number;
-}
-
-function clampedArea(options: DetectCodesOptions) {
-  const { width, height, region } = options;
-  const left = Math.max(0, Math.floor(region?.x ?? 0));
-  const top = Math.max(0, Math.floor(region?.y ?? 0));
-  const right = Math.min(width, Math.ceil((region?.x ?? 0) + (region?.width ?? width)));
-  const bottom = Math.min(height, Math.ceil((region?.y ?? 0) + (region?.height ?? height)));
-  return {
-    x: left,
-    y: top,
-    width: right - left,
-    height: bottom - top
-  };
 }
 
 function hasUsableInput({ pixels, width, height }: DetectCodesOptions) {
@@ -133,7 +120,7 @@ function toDetected({ code, area, image }: {
 }
 
 function search(options: DetectCodesOptions) {
-  const area = clampedArea(options);
+  const area = clippedBoxOf(options);
   const isSearchable = hasPositiveArea(area) && hasUsableInput(options);
   if (!isSearchable) {
     return [];

@@ -85,6 +85,29 @@ export function fitWithin({ size, limits }: {
 }
 
 /**
+ * The rectangle two rectangles share, whose width or height is below 0 when
+ * they are apart.
+ *
+ * @param options - The two rectangles.
+ * @returns The shared rectangle, not yet checked for being empty.
+ */
+export function sharedRectangle({ first, second }: {
+  readonly first: Rectangle;
+  readonly second: Rectangle;
+}) {
+  const left = Math.max(first.x, second.x);
+  const top = Math.max(first.y, second.y);
+  const right = Math.min(first.x + first.width, second.x + second.width);
+  const bottom = Math.min(first.y + first.height, second.y + second.height);
+  return {
+    x: left,
+    y: top,
+    width: right - left,
+    height: bottom - top
+  } satisfies Rectangle;
+}
+
+/**
  * The part of a rectangle that lies inside another.
  *
  * @param options - The two rectangles.
@@ -94,21 +117,16 @@ export function overlapOf({ first, second }: {
   readonly first: Rectangle;
   readonly second: Rectangle;
 }) {
-  const left = Math.max(first.x, second.x);
-  const top = Math.max(first.y, second.y);
-  const right = Math.min(first.x + first.width, second.x + second.width);
-  const bottom = Math.min(first.y + first.height, second.y + second.height);
-  const isEmpty = right <= left || bottom <= top;
+  const shared = sharedRectangle({
+    first,
+    second
+  });
+  const isEmpty = shared.width <= 0 || shared.height <= 0;
   if (isEmpty) {
     return undefined;
   }
 
-  return {
-    x: left,
-    y: top,
-    width: right - left,
-    height: bottom - top
-  } satisfies Rectangle;
+  return shared;
 }
 
 /**

@@ -1,11 +1,9 @@
-import { appDataFolder, AppDataLocation } from "./app-data-folder.ts";
-import type { AppDataEnvironment } from "./app-data-folder.ts";
-import { atomicFile } from "./atomic-file.ts";
+import type { AppDataEnvironment, AppDataLocation } from "./app-data-folder.ts";
+import { appDataFile } from "./atomic-file.ts";
 import type { StorageFile } from "./atomic-file.ts";
 import { DomErrorName } from "./dom-exception.ts";
 import { defineProperty } from "./install.ts";
 import { startTimer } from "#src/window/timers.js";
-import path from "node:path";
 import { z } from "zod";
 
 const FILE_NAME = "local-storage.json";
@@ -403,19 +401,10 @@ function notifyStorageEvent({ options, change, storage }: {
  * @returns The function that writes pending changes and takes them away again.
  */
 export function installWebStorage(options: WebStorageInstallOptions = {}) {
-  const file = options.file ?? atomicFile(
-    path.join(
-      appDataFolder({
-        location: options.location ?? AppDataLocation.LOCAL,
-        ...options.appName !== undefined && {
-          appName: options.appName
-        },
-        ...options.environment !== undefined && {
-          environment: options.environment
-        }
-      }), FILE_NAME
-    )
-  );
+  const file = appDataFile({
+    fileName: FILE_NAME,
+    options
+  });
   const localItems = loadedItems(file);
   const writer = new DebouncedWriter({
     write: () => file.write(JSON.stringify(Object.fromEntries(localItems))),
