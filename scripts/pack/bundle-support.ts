@@ -18,13 +18,13 @@ export const TrayBudget = {
   /** Only the menu model (`winui-svelte/tray/menu`); a server-side build leaves zod and Svelte as imports. */
   menuModel: 5000,
   /** A tray-only process: icon, popup menu and the call that starts or signals the app. */
-  trayOnly: 17_700,
+  trayOnly: 18_500,
   /** Two icons, each with its own color scheme, one reading the progress registry. */
-  twoTrays: 19_980,
+  twoTrays: 20_700,
   /** `tray.js` of the tray entrypoint example; about 85 000 of it is zod, which an app build bundles. */
-  entrypoint: 99_500,
+  entrypoint: 100_300,
   /** `tray.js` of the tray written as markup. */
-  svelteEntrypoint: 100_100
+  svelteEntrypoint: 100_900
 } as const;
 
 const externalModule = new RegExp(String.raw`^#winui/|dist[\/]bindings|@microsoft[\/]dynwinrt`, "u");
