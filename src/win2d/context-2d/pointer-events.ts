@@ -1,10 +1,11 @@
 import type { CanvasElement } from "./canvas-element.ts";
 import type { EventArguments } from "#src/components/convert.js";
 import type { CanvasControlComponentProps } from "#src/components/generated/win2d/index.js";
-import { isPointerArguments, pointerFields } from "#src/input/pointer-fields.js";
+import { pointerFields } from "#src/input/pointer-fields.js";
 import type { PointerHandlerName } from "#src/input/pointer-routes.js";
 import { POINTER_EVENT_TYPES } from "#src/input/pointer-routes.js";
-import type { PointerRoutedEventArgs } from "#winui/microsoft/ui/xaml/input/PointerRoutedEventArgs";
+import { withProjected } from "#src/input/projected-arguments.js";
+import { PointerRoutedEventArgs } from "#winui/microsoft/ui/xaml/input/PointerRoutedEventArgs";
 import type { UIElement } from "#winui/microsoft/ui/xaml/UIElement";
 
 // WinUI pointer events of the control a canvas is shown in, as the DOM events
@@ -38,24 +39,31 @@ function forward({ name, canvas, element, user }: {
 }) {
   return (sender: UIElement, pointerArguments: EventArguments<PointerRoutedEventArgs>) => {
     const target = element();
-    const isPointer = target !== undefined && isPointerArguments(pointerArguments);
-    if (isPointer) {
-      const fields = pointerFields({
+    const hasTarget = target !== undefined;
+    if (hasTarget) {
+      withProjected({
         args: pointerArguments,
-        element: target
-      });
-      let isPrevented = false;
-      for (const type of [POINTER_EVENT_TYPES[name], ...MOUSE_TWINS[name]]) {
-        const isAllowed = canvas.dispatchEvent({
-          type,
-          ...fields
-        });
-        isPrevented ||= !isAllowed;
-      }
+        projection: PointerRoutedEventArgs,
+        member: "getCurrentPoint",
+        use(ready) {
+          const fields = pointerFields({
+            args: ready,
+            element: target
+          });
+          let isPrevented = false;
+          for (const type of [POINTER_EVENT_TYPES[name], ...MOUSE_TWINS[name]]) {
+            const isAllowed = canvas.dispatchEvent({
+              type,
+              ...fields
+            });
+            isPrevented ||= !isAllowed;
+          }
 
-      if (isPrevented) {
-        pointerArguments.handled = true;
-      }
+          if (isPrevented) {
+            ready.handled = true;
+          }
+        }
+      });
     }
 
     user[name]?.(sender, pointerArguments);

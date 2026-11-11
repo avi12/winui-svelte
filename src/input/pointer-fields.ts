@@ -83,16 +83,6 @@ export interface PointerFields {
 /** The part of WinUI's `PointerRoutedEventArgs` the fields are read from. */
 export type PointerArguments = Pick<PointerRoutedEventArgs, "keyModifiers" | "getCurrentPoint" | "getIntermediatePoints">;
 
-/**
- * Tells whether a value is the arguments of a WinUI pointer event.
- *
- * @param value - What a WinUI handler was called with.
- * @returns True when it can be read for pointer fields.
- */
-export function isPointerArguments(value: unknown): value is PointerRoutedEventArgs {
-  return typeof value === "object" && value !== null && "getCurrentPoint" in value;
-}
-
 function buttonOf({ isLeft, isRight, isMiddle }: {
   isLeft: boolean;
   isRight: boolean;
