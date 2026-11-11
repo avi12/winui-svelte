@@ -31,6 +31,7 @@
     "src/data-transfer/index.ts",
     "src/input/index.ts",
     "src/incremental/index.ts",
+    "src/selection/index.ts",
     "src/progress/index.ts",
     "src/security/index.ts",
     "src/web-apis/shape-detection/index.ts",

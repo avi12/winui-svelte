@@ -46,6 +46,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/win32` | `src/win32/index.ts` | `bindDll()`, `bind()`, `hasPackageIdentity()` and the memory helpers (opt-in escape hatch; see Win32 seam) |
 | `winui-svelte/app/jump-list` | `src/app/jump-list/index.ts` | `setJumpListTasks()`, `clearJumpList()` (opt-in; see Jump list tasks) |
 | `winui-svelte/data-transfer` | `src/data-transfer/index.ts` | `enableDragEvents()`, `dropzone`, `draggable`, `filePicker`, `pickFiles`, `pickSaveFile`, `clipboard`, `launchUri` / `launchFile` / `openFolder` / `revealInExplorer`, `share`, `NativeFile`, `DataTransfer`, `DragEvent` (opt-in; see Data transfer) |
+| `winui-svelte/selection` | `src/selection/index.ts` | `createSelector()`, `reduceSelector()`, `selectionResult()`, `hoverCursor()`, `SelectionShape`, the selection geometry (`lassoRegion`, `moveRegion`, `resizeRegion`, `pixelRegion`) and `CroppedView` (opt-in; see Selection overlay) |
 | `winui-svelte/incremental` | `src/incremental/index.ts` | `createIncrementalSource()`, `IncrementalSource`, `IncrementalStatus`, `IncrementalState` (opt-in; see Incremental loading) |
 | `winui-svelte/downloads` | `src/downloads/index.ts` | `Downloads` (`chrome.downloads`), `fetchToFile()`, `markOfTheWeb()`, `DownloadError` (opt-in; see Downloads) |
 | `winui-svelte/security` | `src/security/index.ts` | `protectData()`, `unprotectData()`, `wipe()`, `ProtectionScope`, `DataProtectionError`: Windows DPAPI, compatible with .NET `ProtectedData` (opt-in; see Security) |
@@ -4970,6 +4971,80 @@ await windows.remove(panel.id);
 - Not mirrored: `tabs` in a window, `create`'s `focused: false` and `incognito`
   effects, and `onBoundsChanged`'s separate move and resize
 - `src/chrome/windows/chrome-windows.test.ts` runs it over fake windows
+
+## Selection overlay (`winui-svelte/selection`)
+
+The app-agnostic half of a "circle to search" overlay: a pure state machine for
+the pointer gesture, the geometry under it, and a view that shows only the
+selected part of a captured monitor; no window, no drawing, no Gemini
+
+```ts
+import {
+  createSelector,
+  CroppedView,
+  pixelRegion,
+  reduceSelector,
+  selectionResult,
+  SelectionShape,
+  SelectorEventKind
+} from "winui-svelte/selection";
+
+let state = createSelector({ bounds: { width: 1920, height: 1080 }, shape: SelectionShape.lasso });
+
+const onpointerdown = (event: PointerEvent) => {
+  state = reduceSelector({
+    state,
+    event: { kind: SelectorEventKind.pointerDown, point: { x: event.x, y: event.y } }
+  });
+};
+// pointermove and pointerup the same way, with SelectorEventKind.pointerMove and
+// pointerUp; state.stroke is the loop to draw while the pointer is down
+
+const result = selectionResult(state);
+if (result) {
+  const region = pixelRegion({
+    selection: result.region,
+    drawnIn: { width: 1920, height: 1080 },
+    picture: { width: 3840, height: 2160 }
+  });
+  const view = new CroppedView({ track });
+  if (region) {
+    await view.show(region);
+    await view.moveTo({ x: region.x + 40, y: region.y });
+  }
+  const preview = await view.grabFrame();
+  await view.reset();
+}
+```
+
+- `createSelector(options)` makes the state, `reduceSelector({ state, event })`
+  steps it (events: `pointerDown`, `pointerMove`, `pointerUp`, `clear`) and
+  returns the same object when nothing changed
+- `SelectionShape.lasso` selects the padded bounding box of the loop (the loop
+  stays in `result.outline` for a mask); `SelectionShape.rectangle` selects
+  the dragged box; a stroke under the minimum is dropped
+- After a selection a press on a corner resizes it, a press inside moves it,
+  a press elsewhere starts a new one; `hoverCursor` names the CSS cursor for a
+  point and `visibleRegion` the box to draw while a rectangle is dragged
+- Options, all optional: `shape`, `minimumStep` (1.5), `minimumStroke` (10),
+  `padding` (16), `minimumSize` (20), `cornerReach` (28)
+- The geometry is exported on its own: `lassoRegion`, `dragRegion`,
+  `moveRegion`, `resizeRegion`, `nearestCorner`, `gripCorner`,
+  `isFallingCorner`, `boundsOf`, `rectangleContains`,
+  `inflateRectangle`, `rectangleFromPoints`, `distanceBetween`
+- `pixelRegion({ selection, drawnIn, picture })` maps a selection drawn in
+  device-independent pixels onto a picture of the same area in physical
+  pixels, rounding outward; cut the still itself with
+  `createImageBitmap(still, x, y, width, height)`
+- `CroppedView({ track })` wraps a `getDisplayMedia` screen track:
+  `show(region)` is `track.cropTo(CropTarget.fromRect(region))`,
+  `moveTo({ x, y })` and `resizeTo({ width, height })` edit it, `reset()` is
+  `track.cropTo(null)`, `grabFrame()` is `ImageCapture.grabFrame()` so a
+  preview shows only the crop, and `region` is the rectangle now (null for
+  the whole monitor); its rectangles are in the monitor's physical pixels, as
+  `CropTarget.fromRect` takes them
+- Not here: drawing the scrim, brackets or an action bar, text selection and
+  OCR; those belong to the app
 
 ## Data transfer (`winui-svelte/data-transfer`)
 
