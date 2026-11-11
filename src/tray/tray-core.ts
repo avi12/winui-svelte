@@ -191,15 +191,32 @@ export function createTrayCore<const Extras extends readonly TrayExtra[]>(option
     now: options.now,
     doubleClickMilliseconds: DOUBLE_CLICK_MILLISECONDS,
     onGesture(event) {
-      lastPolledAt = options.now();
       const isMenu = event.gesture === TrayGesture.contextMenu;
+      const isLeftToTheShell = isMenu && native.isReceivingMessages === true;
+      if (isLeftToTheShell) {
+        return;
+      }
+
+      lastPolledAt = options.now();
+
       if (!isMenu) {
         native.allowForeground();
       }
 
       options[HANDLER_OF_GESTURE[event.gesture]]?.(event);
+      settle();
     }
   });
+
+  // A handler can block (a popup menu is modal), and what the shell sent and the buttons pressed meanwhile
+  // belong to the interaction it was handling: the click that opened the menu and the one that dismissed it.
+  // Delivered afterwards they open the menu again, so they are read and dropped.
+  function settle() {
+    native.readMessages(identity.owner);
+    native.readPointer();
+    pendingMessages = [];
+    lastPolledAt = options.now();
+  }
 
   function loadCurrent() {
     return native.loadIcon({
@@ -316,6 +333,8 @@ export function createTrayCore<const Extras extends readonly TrayExtra[]>(option
         x,
         y
       });
+      settle();
+      return;
     }
   }
 

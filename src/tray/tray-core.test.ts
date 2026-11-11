@@ -56,6 +56,7 @@ class FakeNative implements TrayNative {
     isOnTray: false
   };
   messages: TrayMessage[] = [];
+  isReceivingMessages = false;
   private nextIcon = 1n;
 
   readMessages(owner: bigint) {
@@ -447,5 +448,59 @@ test("a mouse click is not reported twice when the shell also posts its message"
   tick();
   tick();
   assert.deepEqual(clicks, ["click"]);
+  handle.remove();
+});
+
+test("what the shell sent while a handler blocked is dropped, so a menu does not open again", () => {
+  let opened = 0;
+  const { native, tick, handle } = start({
+    oncontextmenu() {
+      opened++;
+      native.messages = [{
+        notification: 0x7b,
+        x: 1,
+        y: 2
+      }];
+    }
+  });
+  native.messages = [{
+    notification: 0x7b,
+    x: 1,
+    y: 2
+  }];
+  tick();
+  tick();
+  tick();
+  tick();
+  assert.equal(opened, 1);
+  handle.remove();
+});
+
+test("with the shell's messages heard, a menu opens on its context-menu message and not on the polled right click", () => {
+  let opened = 0;
+  const { native, tick, handle } = start({ oncontextmenu: () => opened++ });
+  native.isReceivingMessages = true;
+  native.pointer = {
+    ...native.pointer,
+    x: 110,
+    y: 112,
+    right: DOWN,
+    isOnTray: true
+  };
+  tick();
+  native.pointer = {
+    ...native.pointer,
+    right: RELEASED
+  };
+  tick();
+  assert.equal(opened, 0);
+  native.messages = [{
+    notification: 0x7b,
+    x: 110,
+    y: 112
+  }];
+  tick();
+  tick();
+  assert.equal(opened, 1);
   handle.remove();
 });

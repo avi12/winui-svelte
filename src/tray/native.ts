@@ -136,6 +136,13 @@ export interface TrayNative {
   /** Takes the callback messages the shell posted to `owner` since the last call. */
   readMessages(owner: bigint): TrayMessage[];
 
+  /**
+   * True when `readMessages` hears the shell's own messages for the icon. The shell sends the context-menu
+   * message when a menu may open, after it has handled the click, so that is when a menu is shown;
+   * without it the menu opens from the polled right click.
+   */
+  readonly isReceivingMessages?: boolean;
+
   /** Leaves the pointer reading that icons of one process share; `readPointer` is not called after. */
   stopReadingPointer?(): void;
 
@@ -527,6 +534,7 @@ export function createTrayNative({ writeBalloon }: { writeBalloon?: BalloonWrite
     iconRect: readIconRect,
     readPointer: sharedPointer.read,
     readMessages,
+    isReceivingMessages: canReceiveSentMessages(),
     stopReadingPointer: sharedPointer.stop,
     focusWindow: bringWindowToFront,
     allowForeground
