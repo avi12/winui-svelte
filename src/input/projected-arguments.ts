@@ -8,10 +8,8 @@ import { projectAs, releaseProjected } from "#winui/lifetime";
 
 type Projection<Args extends object> = Parameters<typeof projectAs<Args>>[1];
 
-function hasMember<Args extends object>({ value, member }: {
-  value: object;
-  member: string;
-}): value is Args {
+// eslint-disable-next-line no-restricted-syntax -- a type predicate cannot destructure its subject
+function hasMember<Args extends object>(value: object, member: string): value is Args {
   return member in value;
 }
 
@@ -34,10 +32,7 @@ export function withProjected<Args extends object, Result>({ args, projection, m
     return undefined;
   }
 
-  if (hasMember<Args>({
-    value: args,
-    member
-  })) {
+  if (hasMember<Args>(args, member)) {
     return use(args);
   }
 
