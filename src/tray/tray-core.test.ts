@@ -7,6 +7,7 @@ import type {
   PointerSample,
   ScreenRect,
   TrayIdentity,
+  TrayMessage,
   TrayNative
 } from "./native.ts";
 import { BalloonIcon, NotifyOperation as Operation } from "./native.ts";
@@ -54,7 +55,15 @@ class FakeNative implements TrayNative {
     middle: RELEASED,
     isOnTray: false
   };
+  messages: TrayMessage[] = [];
   private nextIcon = 1n;
+
+  readMessages(owner: bigint) {
+    this.calls.push(`readMessages ${owner}`);
+    const taken = this.messages;
+    this.messages = [];
+    return taken;
+  }
 
   createOwnerWindow() {
     this.calls.push("createOwnerWindow");
@@ -269,7 +278,8 @@ test("a click lets the process it starts take the foreground, before onclick run
     left: RELEASED
   };
   tick();
-  assert.deepEqual(native.calls.slice(-2), ["allowForeground", "onclick"]);
+  const iClick = native.calls.indexOf("onclick");
+  assert.deepEqual(native.calls.slice(iClick - 1, iClick + 1), ["allowForeground", "onclick"]);
   handle.remove();
 });
 
@@ -372,4 +382,70 @@ test("a GUID is passed through, and a malformed one is refused", () => {
   assert.equal(native.notifications[0]?.data.identity.guid, guid);
   handle.remove();
   assert.throws(() => start({ guid: "not-a-guid" }), /GUID/u);
+});
+
+test("Enter or Space on the focused icon reaches ondoubleclick, one tick after the shell posted it", () => {
+  const events: string[] = [];
+  const { native, tick, handle } = start({ ondoubleclick: ({ gesture }) => events.push(gesture) });
+  native.messages = [{
+    notification: 0x401,
+    x: 10,
+    y: 20
+  }];
+  tick();
+  assert.deepEqual(events, []);
+  tick();
+  assert.deepEqual(events, ["doubleClick"]);
+  handle.remove();
+});
+
+test("the context-menu key reaches oncontextmenu with the anchor the shell gave", () => {
+  const anchors: Array<{
+    x: number;
+    y: number;
+  }> = [];
+  const { native, tick, handle } = start({
+    oncontextmenu: ({ x, y }) => anchors.push({
+      x,
+      y
+    })
+  });
+  native.messages = [{
+    notification: 0x7b,
+    x: -30,
+    y: 40
+  }];
+  tick();
+  tick();
+  assert.deepEqual(anchors, [{
+    x: -30,
+    y: 40
+  }]);
+  handle.remove();
+});
+
+test("a mouse click is not reported twice when the shell also posts its message", () => {
+  const clicks: string[] = [];
+  const { native, tick, handle } = start({ onclick: ({ gesture }) => clicks.push(gesture) });
+  native.pointer = {
+    ...native.pointer,
+    x: 110,
+    y: 112,
+    left: DOWN,
+    isOnTray: true
+  };
+  tick();
+  native.pointer = {
+    ...native.pointer,
+    left: RELEASED
+  };
+  native.messages = [{
+    notification: 0x400,
+    x: 110,
+    y: 112
+  }];
+  tick();
+  tick();
+  assert.deepEqual(clicks, ["click"]);
+  handle.remove();
 });

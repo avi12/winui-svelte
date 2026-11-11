@@ -107,6 +107,7 @@ function fakeTray({ name, rect, scheme, items }: {
     },
     iconRect: () => rect,
     readPointer: pointer,
+    readMessages: () => [],
     focusWindow: () => true,
     allowForeground() {}
   };

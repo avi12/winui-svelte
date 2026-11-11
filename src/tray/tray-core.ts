@@ -1,11 +1,12 @@
 import { createClickDetector, TrayGesture } from "./click-detector.ts";
 import type { TrayPointerEvent } from "./click-detector.ts";
-import { NotifyOperation } from "./native.ts";
+import { NotifyOperation, TrayNotification } from "./native.ts";
 import type {
   Balloon,
   PointerSample,
   ScreenRect,
   TrayIdentity,
+  TrayMessage,
   TrayNative
 } from "./native.ts";
 import type {
@@ -31,6 +32,18 @@ const FAST_POLL_MILLISECONDS = 30;
 const SLOW_POLL_MILLISECONDS = 250;
 const MAINTENANCE_MILLISECONDS = 1000;
 const DOUBLE_CLICK_MILLISECONDS = 500;
+const MESSAGE_ECHO_MILLISECONDS = 500;
+const GESTURE_OF_NOTIFICATION: ReadonlyMap<number, TrayGesture> = new Map([
+  [TrayNotification.select, TrayGesture.click],
+  [TrayNotification.keySelect, TrayGesture.doubleClick],
+  [TrayNotification.contextMenu, TrayGesture.contextMenu]
+]);
+const HANDLER_OF_GESTURE = {
+  click: "onclick",
+  doubleClick: "ondoubleclick",
+  contextMenu: "oncontextmenu",
+  middleClick: "onmiddleclick"
+} as const;
 const NO_ICON = 0n;
 const FIRST_ID = 1;
 
@@ -172,22 +185,19 @@ export function createTrayCore<const Extras extends readonly TrayExtra[]>(option
   let isRemoved = false;
   let tick = 0;
   let pollMilliseconds = SLOW_POLL_MILLISECONDS;
+  let lastPolledAt = -MESSAGE_ECHO_MILLISECONDS;
+  let pendingMessages: TrayMessage[] = [];
   const detector = createClickDetector({
     now: options.now,
     doubleClickMilliseconds: DOUBLE_CLICK_MILLISECONDS,
     onGesture(event) {
-      const handlers = {
-        click: options.onclick,
-        doubleClick: options.ondoubleclick,
-        contextMenu: options.oncontextmenu,
-        middleClick: options.onmiddleclick
-      };
+      lastPolledAt = options.now();
       const isMenu = event.gesture === TrayGesture.contextMenu;
       if (!isMenu) {
         native.allowForeground();
       }
 
-      handlers[event.gesture]?.(event);
+      options[HANDLER_OF_GESTURE[event.gesture]]?.(event);
     }
   });
 
@@ -285,6 +295,30 @@ export function createTrayCore<const Extras extends readonly TrayExtra[]>(option
     stopTimer = startTimer();
   }
 
+  function deliverMessages() {
+    const messages = pendingMessages;
+    pendingMessages = native.readMessages(identity.owner);
+    const isEcho = options.now() - lastPolledAt < MESSAGE_ECHO_MILLISECONDS;
+    if (isEcho) {
+      return;
+    }
+
+    for (const { notification, x, y } of messages) {
+      const gesture = GESTURE_OF_NOTIFICATION.get(notification);
+      const isKnown = gesture !== undefined;
+      if (!isKnown) {
+        continue;
+      }
+
+      native.allowForeground();
+      options[HANDLER_OF_GESTURE[gesture]]?.({
+        gesture,
+        x,
+        y
+      });
+    }
+  }
+
   function poll() {
     tick++;
     const isMaintenanceTick = tick % Math.ceil(MAINTENANCE_MILLISECONDS / pollMilliseconds) === 0;
@@ -298,6 +332,7 @@ export function createTrayCore<const Extras extends readonly TrayExtra[]>(option
       sample,
       rect: isLookingForIcon ? native.iconRect(identity) : null
     });
+    deliverMessages();
     pace(sample);
   }
 

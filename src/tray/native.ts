@@ -63,6 +63,20 @@ export interface NotifyData {
   readonly balloon: Balloon | null;
 }
 
+/** The shell's notification codes in the low word of a version 4 callback message. */
+export const TrayNotification = {
+  select: 0x400,
+  keySelect: 0x401,
+  contextMenu: 0x7b
+} as const;
+
+/** One callback message the shell posted for the icon: its code and the anchor in screen pixels. */
+export interface TrayMessage {
+  readonly notification: number;
+  readonly x: number;
+  readonly y: number;
+}
+
 /** A rectangle in screen pixels. */
 export interface ScreenRect {
   readonly left: number;
@@ -116,6 +130,9 @@ export interface TrayNative {
   /** Where the shell draws the icon; null when it has none (not added, hidden, or the shell restarted). */
   iconRect(identity: TrayIdentity): ScreenRect | null;
   readPointer(): PointerSample;
+
+  /** Takes the callback messages the shell posted to `owner` since the last call. */
+  readMessages(owner: bigint): TrayMessage[];
 
   /** Leaves the pointer reading that icons of one process share; `readPointer` is not called after. */
   stopReadingPointer?(): void;
@@ -172,6 +189,15 @@ const FLAG_GUID = 0x20;
 const FLAG_SHOW_TIP = 0x80;
 const NOTIFY_VERSION_4 = 4;
 const CALLBACK_MESSAGE = 0x8001;
+const PEEK_REMOVE = 1;
+const MESSAGE_SIZE = 48;
+const MESSAGE_ALIGNMENT = 8;
+const MESSAGE_OFFSET_WPARAM = 16;
+const MESSAGE_OFFSET_LPARAM = 24;
+const LOW_WORD_MASK = 0xFFFFn;
+const SIGNED_WORD_LIMIT = 0x8000;
+const WORD_RANGE = 0x10000;
+const WORD_BITS = 16n;
 const WS_POPUP = 0x80000000;
 const GA_ROOT = 2;
 const CLASS_NAME_CHARS = 128;
@@ -343,7 +369,8 @@ export function createTrayNative({ writeBalloon }: { writeBalloon?: BalloonWrite
       keyState: ["GetAsyncKeyState", ["i32"], "i32"],
       windowFromPoint: ["WindowFromPoint", ["i64"], "pointer"],
       ancestor: ["GetAncestor", ["pointer", "u32"], "pointer"],
-      className: ["GetClassNameW", ["pointer", "pointer", "i32"], "i32"]
+      className: ["GetClassNameW", ["pointer", "pointer", "i32"], "i32"],
+      peekMessage: ["PeekMessageW", ["pointer", "pointer", "u32", "u32", "u32"], "i32"]
     }
   });
   const shell32 = bindDll({
@@ -425,6 +452,28 @@ export function createTrayNative({ writeBalloon }: { writeBalloon?: BalloonWrite
     };
   }
 
+  const messageBuffer = DynComRawMemory.allocate(MESSAGE_SIZE, MESSAGE_ALIGNMENT);
+
+  function signedWord(value: bigint) {
+    const word = Number(value & LOW_WORD_MASK);
+    return word >= SIGNED_WORD_LIMIT ? word - WORD_RANGE : word;
+  }
+
+  function readMessages(owner: bigint) {
+    const messages: TrayMessage[] = [];
+    while (user32.peekMessage(messageBuffer, owner, CALLBACK_MESSAGE, CALLBACK_MESSAGE, PEEK_REMOVE) !== 0) {
+      const anchor = messageBuffer.readU64(MESSAGE_OFFSET_WPARAM);
+      const code = messageBuffer.readU64(MESSAGE_OFFSET_LPARAM);
+      messages.push({
+        notification: Number(code & LOW_WORD_MASK),
+        x: signedWord(anchor),
+        y: signedWord(anchor >> WORD_BITS)
+      });
+    }
+
+    return messages;
+  }
+
   const sharedPointer = pointerShare.join(readRawPointer);
   const native: TrayNative = {
     createOwnerWindow() {
@@ -458,6 +507,7 @@ export function createTrayNative({ writeBalloon }: { writeBalloon?: BalloonWrite
     },
     iconRect: readIconRect,
     readPointer: sharedPointer.read,
+    readMessages,
     stopReadingPointer: sharedPointer.stop,
     focusWindow: bringWindowToFront,
     allowForeground

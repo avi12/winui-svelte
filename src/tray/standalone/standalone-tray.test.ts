@@ -62,6 +62,7 @@ function fakeNative() {
     notify: () => true,
     iconRect: (_identity: TrayIdentity) => ICON_RECT,
     readPointer: () => pointer,
+    readMessages: () => [],
     focusWindow(hwnd) {
       calls.push(`focusWindow ${hwnd}`);
       return isFocusable;
