@@ -1,4 +1,4 @@
-import type { PackageProgress, StoreBackend, UpdateCheck } from "./types.ts";
+import type { InstallOptions, PackageProgress, StoreBackend, UpdateCheck } from "./types.ts";
 import { roInitialize } from "@microsoft/dynwinrt";
 import assert from "node:assert/strict";
 import { test } from "node:test";
@@ -144,7 +144,7 @@ test("an update check carries the mandatory flag and installs only on request", 
       isMandatory: true
     }],
     hasMandatory: true,
-    async install({ onprogress } = {}) {
+    async install({ onprogress }: InstallOptions = {}) {
       onprogress?.({
         packageFamilyName: "Avi.App_abc",
         state: UpdateState.downloading,

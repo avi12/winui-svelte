@@ -93,7 +93,7 @@ test("a keyword property completes with the keywords the translator accepts, and
   for (const member of DISCRETE_MEMBERS) {
     const entry = properties.find(property => property.name === member);
     const hasValues = entry !== undefined && "values" in entry;
-    const values = hasValues ? entry.values.map(value => value.name) : [];
+    const values = hasValues ? (entry.values?.map(value => value.name) ?? []) : [];
     assert.deepEqual(values, discreteWordsOf(member), member);
     assert.match(entry?.description ?? "", /^WinUI: sets \w+;/u, member);
   }

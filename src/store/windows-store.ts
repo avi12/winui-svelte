@@ -4,6 +4,7 @@ import { updateStateOf } from "./states.ts";
 import type {
   AppLicense,
   AvailableUpdate,
+  InstallOptions,
   StoreWindow,
   UpdateCheck,
   UpdateOutcome,
@@ -112,7 +113,7 @@ export async function windowsCheckUpdates(window: StoreWindow | undefined) {
   return {
     updates: available,
     hasMandatory: available.some(update => update.isMandatory),
-    async install({ onprogress } = {}) {
+    async install({ onprogress }: InstallOptions = {}) {
       const operation = context.trySilentDownloadAndInstallStorePackageUpdatesAsync(updates);
       const isWatched = onprogress !== undefined;
       const result = await (isWatched ? operation.progress(status => onprogress(progressOf(status))) : operation);
