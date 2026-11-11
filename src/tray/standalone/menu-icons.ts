@@ -1,9 +1,10 @@
 import {
   dimmedRaster,
   DISABLED_ALPHA,
-  framedSquare,
   premultipliedSquare,
   rasterOf,
+  stripWidthOf,
+  tickedRow,
   tintedRaster
 } from "./icon-raster.ts";
 import type { Raster } from "./icon-raster.ts";
@@ -216,16 +217,17 @@ function createMenuIconCalls() {
     return decoded.get(key);
   }
 
-  function sectionOf({ bytes, size }: {
+  function sectionOf({ bytes, width, height }: {
     readonly bytes: Uint8Array;
-    readonly size: number;
+    readonly width: number;
+    readonly height: number;
   }) {
     const block = DynComRawMemory.allocate(INFO_BYTES + POINTER_BYTES, POINTER_BYTES);
     const source = DynComRawMemory.allocate(bytes.length, BYTES_PER_PIXEL);
     try {
       block.writeU32(0, HEADER_BYTES);
-      block.writeI32(OFFSET_WIDTH, size);
-      block.writeI32(OFFSET_HEIGHT, -size);
+      block.writeI32(OFFSET_WIDTH, width);
+      block.writeI32(OFFSET_HEIGHT, -height);
       block.writeU16(OFFSET_PLANES, 1);
       block.writeU16(OFFSET_BIT_COUNT, BITS_PER_PIXEL);
       const bitsOut = block.pointer(INFO_BYTES).address;
@@ -286,13 +288,15 @@ function createMenuIconCalls() {
         size
       });
       return sectionOf({
-        bytes: isChecked ? framedSquare({
+        bytes: tickedRow({
           bytes: square,
           size,
           rgb: menuTextRgb(isDark),
-          alpha: isEnabled ? TICK_ALPHA : TICK_ALPHA * DISABLED_ALPHA
-        }) : square,
-        size
+          alpha: isEnabled ? TICK_ALPHA : TICK_ALPHA * DISABLED_ALPHA,
+          isTicked: isChecked
+        }),
+        width: stripWidthOf(size) + size,
+        height: size
       });
     },
     /** Frees a bitmap `bitmapOf` made; call it after the menu is destroyed. */

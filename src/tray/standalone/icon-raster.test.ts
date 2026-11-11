@@ -1,9 +1,10 @@
 import {
   dimmedRaster,
   DISABLED_ALPHA,
-  framedSquare,
   premultipliedSquare,
   rasterOf,
+  stripWidthOf,
+  tickedRow,
   tintedRaster
 } from "./icon-raster.ts";
 import { pictureOf } from "#src/tray/menu/icon.js";
@@ -105,15 +106,66 @@ test("the picture of an icon follows the theme", () => {
   );
 });
 
-test("a ticked picture gets a frame on its edge only", () => {
-  const size = 4;
-  const framed = framedSquare({
-    bytes: new Uint8Array(size * size * 4),
+function alphaAt({ row, x, y, width }: {
+  readonly row: Uint8Array;
+  readonly x: number;
+  readonly y: number;
+  readonly width: number;
+}) {
+  return row[(y * width + x) * 4 + 3];
+}
+
+test("a ticked row has the dot in its strip, the picture after it, and no dot when not ticked", () => {
+  const size = 16;
+  const strip = stripWidthOf(size);
+  const picture = new Uint8Array(size * size * 4).fill(7);
+  const options = {
+    bytes: picture,
     size,
     rgb: 0xFFFFFF,
-    alpha: 0.5
+    alpha: 1
+  };
+  const ticked = tickedRow({
+    ...options,
+    isTicked: true
   });
-  assert.deepEqual([...framed.subarray(0, 4)], [128, 128, 128, 128]);
-  const inner = (size + 1) * 4;
-  assert.deepEqual([...framed.subarray(inner, inner + 4)], [0, 0, 0, 0]);
+  const plain = tickedRow({
+    ...options,
+    isTicked: false
+  });
+  const width = strip + size;
+
+  assert.equal(ticked.length, width * size * 4);
+  assert.equal(
+    alphaAt({
+      row: ticked,
+      x: strip / 2,
+      y: size / 2,
+      width
+    }), 255
+  );
+  assert.equal(
+    alphaAt({
+      row: plain,
+      x: strip / 2,
+      y: size / 2,
+      width
+    }), 0
+  );
+  assert.equal(
+    alphaAt({
+      row: ticked,
+      x: strip + 3,
+      y: 3,
+      width
+    }), 7
+  );
+  assert.equal(
+    alphaAt({
+      row: plain,
+      x: strip + 3,
+      y: 3,
+      width
+    }), 7
+  );
 });

@@ -3906,7 +3906,7 @@ tray.notify({ title: "Ready" });
   size of the menu's check mark at the screen's scale (at least the small icon
   size), and is freed with the menu
   A disabled line gets a grey, fainter icon (Windows does not dim a bitmap),
-  and a ticked line or radio gets a frame around its icon, because Windows
+  and a ticked line or radio gets a dot in a strip before its icon (every icon has the strip, so the text stays aligned), because Windows
   draws the icon where the tick would be
   A path that cannot be read leaves the line without an icon; the rest of the
   menu opens as usual

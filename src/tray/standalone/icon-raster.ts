@@ -7,6 +7,9 @@ import type { IconPixels } from "#src/win32-icons.js";
 const BLUE = 0;
 const GREEN = 1;
 const RED = 2;
+const DOT_RADIUS_SHARE = 0.14;
+const STRIP_SHARE = 0.5;
+const HALF_PIXEL = 0.5;
 const ALPHA = 3;
 const BYTE_MAX = 255;
 const RED_WEIGHT = 0.299;
@@ -176,33 +179,49 @@ export function premultipliedSquare({ raster, size }: {
 }
 
 /**
- * Draws a one-pixel frame around the edge of a premultiplied square, over what is there: how a ticked
- * line with an icon shows its tick, because Windows draws the icon where the check mark would be.
+ * Puts a premultiplied square after a strip of its own and, for a ticked line, a dot in the middle of that
+ * strip: how a ticked line with an icon shows its tick, because Windows draws the icon where the check
+ * mark would be. The strip is there for every line, so the icons and the text keep their alignment.
  *
- * @param options - `bytes`: the premultiplied square; `size`: its side; `rgb`: the frame's color;
- * `alpha`: its opacity from 0 to 1.
- * @returns The square with the frame.
+ * @param options - `bytes`: the premultiplied square; `size`: its side; `rgb`: the dot's color; `alpha`: its
+ * opacity from 0 to 1; `isTicked`: whether to draw the dot.
+ * @returns The pixels of a bitmap `size` high and `stripWidthOf(size) + size` wide.
  */
-export function framedSquare({ bytes, size, rgb, alpha }: {
+export function tickedRow({ bytes, size, rgb, alpha, isTicked }: {
   readonly bytes: Uint8Array;
   readonly size: number;
   readonly rgb: number;
   readonly alpha: number;
+  readonly isTicked: boolean;
 }) {
-  const out = new Uint8Array(bytes);
-  const last = size - 1;
-  const frame = channelsOf(rgb);
+  const strip = stripWidthOf(size);
+  const width = strip + size;
+  const out = new Uint8Array(width * size * BYTES_PER_PIXEL);
+  const radius = size * DOT_RADIUS_SHARE;
+  const dot = channelsOf(rgb);
   for (let y = 0; y < size; y++) {
-    for (let x = 0; x < size; x++) {
-      const isEdge = x === 0 || y === 0 || x === last || y === last;
-      const offset = (y * size + x) * BYTES_PER_PIXEL;
-      const kept = 1 - alpha;
-      for (let channel = 0; isEdge && channel < BYTES_PER_PIXEL; channel++) {
-        const over = channel === ALPHA ? BYTE_MAX : frame[channel] ?? 0;
-        out[offset + channel] = Math.round(over * alpha + (bytes[offset + channel] ?? 0) * kept);
+    const row = y * width * BYTES_PER_PIXEL;
+    const source = y * size * BYTES_PER_PIXEL;
+    out.set(bytes.subarray(source, source + size * BYTES_PER_PIXEL), row + strip * BYTES_PER_PIXEL);
+    for (let x = 0; isTicked && x < strip; x++) {
+      const distance = Math.hypot(x + HALF_PIXEL - strip / 2, y + HALF_PIXEL - size / 2);
+      const weight = Math.min(1, Math.max(0, radius + HALF_PIXEL - distance)) * alpha;
+      for (let channel = 0; channel < BYTES_PER_PIXEL; channel++) {
+        const over = channel === ALPHA ? BYTE_MAX : dot[channel] ?? 0;
+        out[row + x * BYTES_PER_PIXEL + channel] = Math.round(over * weight);
       }
     }
   }
 
   return out;
+}
+
+/**
+ * The width of the strip `tickedRow` puts before an icon of this side.
+ *
+ * @param size - The icon's side.
+ * @returns The strip's width in pixels.
+ */
+export function stripWidthOf(size: number) {
+  return Math.ceil(size * STRIP_SHARE);
 }
