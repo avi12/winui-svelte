@@ -959,12 +959,21 @@ class WindowHost {
     const placement = props.placement ?? null;
     const isPlaced = placement !== null;
     if (isPlaced) {
-      appWindow.moveAndResize({
+      const target = {
         x: placement.x,
         y: placement.y,
         width: placement.width ?? size.width,
         height: placement.height ?? size.height
-      });
+      };
+      appWindow.moveAndResize(target);
+      // Moved to a display with another scale, the window was resized by that
+      // scale's ratio on the way (WM_DPICHANGED): placed again at the scale it
+      // has now, so that it is never shown at the wrong size.
+      const isRescaled = this.handle.scale !== scale;
+      if (isRescaled) {
+        appWindow.moveAndResize(target);
+      }
+
       return;
     }
 
