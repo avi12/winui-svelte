@@ -26543,7 +26543,7 @@
             },
             {
               "name": "width",
-              "description": "The size in device-independent pixels (the scale of the window's display applied); the window opens at it and follows it when it changes. Without them the window has the system's default size.",
+              "description": "The size, in `sizeUnit`s (device-independent pixels by default, the scale of the window's display applied); the window opens at it and follows it when it changes. Without them the window has the system's default size.",
               "value": {
                 "type": "number"
               }
@@ -26553,6 +26553,10 @@
               "value": {
                 "type": "number"
               }
+            },
+            {
+              "name": "sizeUnit",
+              "description": "What `width` and `height` count: `dip` (device-independent pixels, the default) or `physical` (device pixels, the same on every display, so a window ported from a native one keeps its exact size). A physical size is applied again when the window lands on a display with another scale."
             },
             {
               "name": "sizeToContent",
