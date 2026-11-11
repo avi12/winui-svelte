@@ -9,6 +9,8 @@
     "erasableSyntaxOnly": true,
     "verbatimModuleSyntax": true,
     "noEmit": true,
+    "incremental": true,
+    "tsBuildInfoFile": "./.verify/tsc/tsconfig.tsbuildinfo",
     "strict": true,
     "exactOptionalPropertyTypes": true,
     "noUncheckedIndexedAccess": true,
