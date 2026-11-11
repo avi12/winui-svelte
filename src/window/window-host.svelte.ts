@@ -966,26 +966,51 @@ class WindowHost {
     const placement = props.placement ?? null;
     const isPlaced = placement !== null;
     if (isPlaced) {
-      const target = {
-        x: placement.x,
-        y: placement.y,
-        width: placement.width ?? size.width,
-        height: placement.height ?? size.height
-      };
-      appWindow.moveAndResize(target);
-      // Moved to a display with another scale, the window was resized by that
-      // scale's ratio on the way (WM_DPICHANGED): placed again at the scale it
-      // has now, so that it is never shown at the wrong size.
-      const isRescaled = this.handle.scale !== scale;
-      if (isRescaled) {
-        appWindow.moveAndResize(target);
-      }
-
+      this.placeAt({
+        placement,
+        size,
+        scale
+      });
       return;
     }
 
+    this.sizeAndCenter({
+      current,
+      size,
+      scale
+    });
+  }
+
+  private placeAt({ placement, size, scale }: {
+    placement: WindowPlacement;
+    size: WindowSize;
+    scale: number;
+  }) {
+    const { appWindow } = this.handle.window;
+    const target = {
+      x: placement.x,
+      y: placement.y,
+      width: placement.width ?? size.width,
+      height: placement.height ?? size.height
+    };
+    appWindow.moveAndResize(target);
+    // Moved to a display with another scale, the window was resized by that
+    // scale's ratio on the way (WM_DPICHANGED): placed again at the scale it
+    // has now, so that it is never shown at the wrong size.
+    const isRescaled = this.handle.scale !== scale;
+    if (isRescaled) {
+      appWindow.moveAndResize(target);
+    }
+  }
+
+  private sizeAndCenter({ current, size, scale }: {
+    current: WindowSize;
+    size: WindowSize;
+    scale: number;
+  }) {
+    const { appWindow } = this.handle.window;
     appWindow.resize(size);
-    const isCentered = props.isCentered ?? true;
+    const isCentered = this.props.isCentered ?? true;
     if (isCentered) {
       this.center();
     }
