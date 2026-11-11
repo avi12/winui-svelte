@@ -48,6 +48,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/data-transfer` | `src/data-transfer/index.ts` | `enableDragEvents()`, `dropzone`, `draggable`, `filePicker`, `pickFiles`, `pickSaveFile`, `clipboard`, `launchUri` / `launchFile` / `openFolder` / `revealInExplorer`, `share`, `NativeFile`, `DataTransfer`, `DragEvent` (opt-in; see Data transfer) |
 | `winui-svelte/selection` | `src/selection/index.ts` | `createSelector()`, `reduceSelector()`, `selectionResult()`, `hoverCursor()`, `SelectionShape`, the selection geometry (`lassoRegion`, `moveRegion`, `resizeRegion`, `pixelRegion`) and `CroppedView` (opt-in; see Selection overlay) |
 | `winui-svelte/incremental` | `src/incremental/index.ts` | `createIncrementalSource()`, `IncrementalSource`, `IncrementalStatus`, `IncrementalState` (opt-in; see Incremental loading) |
+| `winui-svelte/image-search` | `src/image-search/index.ts` | `openImageSearch()`, `imageSearchUrl()`, `buildImageSearchRequest()`, `ImageSearchEngine` (opt-in; see Image search) |
 | `winui-svelte/downloads` | `src/downloads/index.ts` | `Downloads` (`chrome.downloads`), `fetchToFile()`, `markOfTheWeb()`, `DownloadError` (opt-in; see Downloads) |
 | `winui-svelte/security` | `src/security/index.ts` | `protectData()`, `unprotectData()`, `wipe()`, `ProtectionScope`, `DataProtectionError`: Windows DPAPI, compatible with .NET `ProtectedData` (opt-in; see Security) |
 | `winui-svelte/chrome/runtime` | `src/chrome/runtime/index.ts` | `Runtime` (`chrome.runtime`), `Port`, `InstallReason`, the native messaging codec (opt-in; see Chrome runtime) |
@@ -4384,6 +4385,54 @@ wipe(plain);
 - DPAPI offers no recovery: keys follow the user's logon secret, so an
   administrator's password reset can make old blobs unreadable; a packaged app
   keeps the same user keys as an unpackaged one
+
+## Image search (`winui-svelte/image-search`)
+
+Reverse image search on Google Lens, Bing, Yandex and TinEye, with no API key
+Opt-in: nothing is bundled until an app imports it, and importing does no work
+
+```ts
+import { ImageSearchEngine, openImageSearch } from "winui-svelte/image-search";
+
+const frame = await imageCapture.grabFrame();
+const blob = await new OffscreenCanvas(frame.width, frame.height).convertToBlob();
+await openImageSearch({ engine: ImageSearchEngine.GOOGLE_LENS, image: { blob } });
+```
+
+- `ImageSearchEngine`: `GOOGLE_LENS`, `BING`, `YANDEX`, `TINEYE`
+- `buildImageSearchRequest({ engine, image })`: the search as data
+  (`method`, `url`, `fields`), sent by nobody; validated with zod
+- `imageSearchUrl({ engine, image, fetch? })`: the result page address; an
+  upload is one `POST` whose redirect is returned unfollowed, an address makes
+  no call
+- `openImageSearch(options)`: `imageSearchUrl`, then the user's default browser
+- `image` is `{ blob }` (bytes to upload) or `{ url }` (a hosted http or https
+  image)
+
+What each engine takes, checked by hand on 2026-11-11 with a 64 by 64 test PNG
+and a Wikimedia image address
+
+| Engine | Upload (`{ blob }`) | Hosted address (`{ url }`) |
+|---|---|---|
+| Google Lens | multipart `POST` to `lens.google.com/v3/upload`, field `encoded_image`; answered 303 with a result page | `lens.google.com/uploadbyurl?url=`; answered 303 |
+| Bing | multipart `POST` to `bing.com/images/search?view=detailv2&iss=sbiupload`, field `imageBin` (base64); answered 302 with a result page | `bing.com/images/searchbyimage?cbir=sbi&imgurl=`; answered 302 to a result page |
+| Yandex | not supported | `yandex.com/images/search?rpt=imageview&url=`; answered 200 |
+| TinEye | not supported | `tineye.com/search?url=`; answered 200 |
+
+Unverified, and why
+- These are the engines' own web endpoints, not documented APIs; they can
+  change or start refusing clients without notice, and an engine may ask for a
+  consent page, a captcha or a sign-in that the helper does not handle
+- That the opened result page shows matches was not checked: only the redirect
+  was observed, and no result page was fetched or scraped
+- Yandex's upload step answered 200 without an image id to a plain `fetch`, so
+  an upload is not offered; TinEye's `POST /search` answered 405 behind
+  Cloudflare's bot check, which the helper does not try to pass; both take a
+  hosted address only (an upload to either throws `ImageSearchUnsupportedError`)
+- Host the crop yourself to use Yandex or TinEye; TinEye also sells an API with
+  keys, outside this helper
+- The engines' terms govern use; the helper sets no browser headers and keeps
+  no cookies
 
 ## Downloads (`winui-svelte/downloads`)
 
