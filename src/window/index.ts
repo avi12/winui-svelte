@@ -4,6 +4,7 @@ export type { AppWindow, WindowOptions } from "./create-window.ts";
 export { Backdrop } from "./backdrop.ts";
 export type { WindowBounds, WindowSize } from "./anchor.ts";
 export { SizeToContent, WindowAnchor } from "./anchor.ts";
+export { SizeUnit } from "./css-pixels.ts";
 export type { CoverOptions } from "./cover.ts";
 export { coverWindow } from "./cover.ts";
 export type { DockOptions } from "./dock.ts";

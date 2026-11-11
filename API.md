@@ -2246,6 +2246,21 @@ pass the root's desired size, plus the frame, is clamped to `minWidth`,
 `"bottomRight"`; the `WindowAnchor` set) is the corner that stays where it is:
 anchored bottom-right, a window whose content grows taller grows upward
 A side the content sets ignores the `width` or `height` prop
+
+`width` and `height` are device-independent pixels, so at 150 % scale a
+`width={540}` window is 810 device pixels wide
+`sizeUnit="physical"` (`"dip"`, the default, or `"physical"`; the `SizeUnit`
+set) counts device pixels instead, so a window ported from a native one keeps
+its exact size on every display
+A physical size is resolved against the display the window lands on: a window
+centered on a display with another scale is sized again there, and one that
+moves to such a display (the scale changed) gets its size back
+`minWidth`, `minHeight`, `maxWidth` and `maxHeight` stay device-independent
+`createWindow` takes `sizeUnit` too
+
+```svelte
+<Window width={540} height={672} sizeUnit="physical">
+```
 The scale is applied (the desired size is in device-independent pixels), so a
 move to a display with another scale refits
 The root is measured with `FrameworkElement.DesiredSize` on `LayoutUpdated`:

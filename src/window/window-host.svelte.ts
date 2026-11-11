@@ -27,7 +27,8 @@ import {
   WindowPresentation,
   WindowTheme
 } from "./chrome.ts";
-import { toDevicePixels } from "./css-pixels.ts";
+import type { SizeUnit } from "./css-pixels.ts";
+import { SizeUnit as SizeUnitKind, toDevicePixels, toWindowPixels } from "./css-pixels.ts";
 import {
   changeStyles,
   clearWindowClip,
@@ -128,12 +129,20 @@ export interface WindowProps {
   appUserModelId?: string;
 
   /**
-   * The size in device-independent pixels (the scale of the window's display
-   * applied); the window opens at it and follows it when it changes. Without
-   * them the window has the system's default size.
+   * The size, in `sizeUnit`s (device-independent pixels by default, the scale
+   * of the window's display applied); the window opens at it and follows it
+   * when it changes. Without them the window has the system's default size.
    */
   width?: number;
   height?: number;
+
+  /**
+   * What `width` and `height` count: `dip` (device-independent pixels, the
+   * default) or `physical` (device pixels, the same on every display, so a
+   * window ported from a native one keeps its exact size). A physical size is
+   * applied again when the window lands on a display with another scale.
+   */
+  sizeUnit?: SizeUnit | undefined;
 
   /**
    * Which sides of the window follow its content: the content is measured
@@ -303,10 +312,11 @@ export interface AttachOptions {
 
 // A side of the window in device pixels: the prop's, unless the prop is left
 // out or the content sets that side.
-function sideOf({ value, current, isFitted, scale }: {
+function sideOf({ value, current, isFitted, unit, scale }: {
   value: number | undefined;
   current: number;
   isFitted: boolean;
+  unit: SizeUnit;
   scale: number;
 }) {
   const isKept = value === undefined || isFitted;
@@ -314,8 +324,9 @@ function sideOf({ value, current, isFitted, scale }: {
     return current;
   }
 
-  return toDevicePixels({
+  return toWindowPixels({
     value,
+    unit,
     scale
   });
 }
@@ -382,6 +393,7 @@ class WindowHost {
   private appliedSize: {
     width: number | undefined;
     height: number | undefined;
+    unit: SizeUnit;
   };
 
   constructor({ content, props, titleBar, size }: AttachOptions, orphan: Window | undefined) {
@@ -391,7 +403,8 @@ class WindowHost {
     this.titleBar = titleBar;
     this.appliedSize = {
       width: props.width,
-      height: props.height
+      height: props.height,
+      unit: props.sizeUnit ?? SizeUnitKind.dip
     };
 
     const { appUserModelId } = props;
@@ -936,16 +949,10 @@ class WindowHost {
     }
 
     const current = this.openSize ?? appWindow.size;
-    const size = {
-      width: props.width === undefined ? current.width : toDevicePixels({
-        value: props.width,
-        scale
-      }),
-      height: props.height === undefined ? current.height : toDevicePixels({
-        value: props.height,
-        scale
-      })
-    };
+    const size = this.sizeAt({
+      current,
+      scale
+    });
     if (this.isKeptInBackground) {
       appWindow.moveAndResize(
         backgroundPlacement({
@@ -982,6 +989,45 @@ class WindowHost {
     if (isCentered) {
       this.center();
     }
+
+    // Centered on a display with another scale, the window was resized by that
+    // scale's ratio on the way (WM_DPICHANGED): sized again at the scale of
+    // the display it landed on, so a physical size is exact there.
+    const isRescaled = this.handle.scale !== scale;
+    if (isRescaled) {
+      appWindow.resize(
+        this.sizeAt({
+          current,
+          scale: this.handle.scale
+        })
+      );
+
+      if (isCentered) {
+        this.center();
+      }
+    }
+  }
+
+  // The width and height props in device pixels at `scale`; a side the props
+  // leave out is `current`'s.
+  private sizeAt({ current, scale }: {
+    current: WindowSize;
+    scale: number;
+  }) {
+    const { width, height, sizeUnit } = this.props;
+    const unit = sizeUnit ?? SizeUnitKind.dip;
+    return {
+      width: width === undefined ? current.width : toWindowPixels({
+        value: width,
+        unit,
+        scale
+      }),
+      height: height === undefined ? current.height : toWindowPixels({
+        value: height,
+        unit,
+        scale
+      })
+    };
   }
 
   private center() {
@@ -998,16 +1044,26 @@ class WindowHost {
   // undone, since the props did not change. A side that follows the content
   // (sizeToContent) is the content's to set.
   private syncSize() {
-    const { width, height } = this.props;
-    const isChanged = width !== this.appliedSize.width || height !== this.appliedSize.height;
+    const { width, height, sizeUnit } = this.props;
+    const unit = sizeUnit ?? SizeUnitKind.dip;
+    const isChanged = width !== this.appliedSize.width ||
+      height !== this.appliedSize.height ||
+      unit !== this.appliedSize.unit;
     if (!isChanged) {
       return;
     }
 
     this.appliedSize = {
       width,
-      height
+      height,
+      unit
     };
+    this.resizeToProps();
+  }
+
+  private resizeToProps() {
+    const { width, height, sizeUnit } = this.props;
+    const unit = sizeUnit ?? SizeUnitKind.dip;
     const { appWindow } = this.handle.window;
     const { scale } = this.handle;
     const { isWidthFitted, isHeightFitted } = this.fittedSides;
@@ -1016,12 +1072,14 @@ class WindowHost {
         value: width,
         current: appWindow.size.width,
         isFitted: isWidthFitted,
+        unit,
         scale
       }),
       height: sideOf({
         value: height,
         current: appWindow.size.height,
         isFitted: isHeightFitted,
+        unit,
         scale
       })
     });
@@ -1163,6 +1221,11 @@ class WindowHost {
     const tracker = createScaleTracker({
       readScale: () => this.handle.scale,
       onChange: scale => {
+        const isPhysical = this.props.sizeUnit === SizeUnitKind.physical;
+        if (isPhysical) {
+          this.resizeToProps();
+        }
+
         this.syncLimits();
         this.syncRegions();
         this.syncShape();
