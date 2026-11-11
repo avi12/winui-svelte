@@ -1,13 +1,12 @@
 import { detectedTextOf } from "./detected-text.ts";
-import { DOMRectReadOnly } from "./dom-rect-read-only.ts";
+import { installDOMRectReadOnly } from "./dom-rect-read-only.ts";
 import type { OcrBox } from "./text-geometry.ts";
 import { availableOcrLanguages, isOcrLanguageSupported, recognizePixels } from "./text-recognizer.ts";
 import { DomErrorName, domException } from "#src/web-apis/dom-exception.js";
 import { swapRedBlue } from "#src/web-apis/image-pixels.js";
 import type { ImageBitmapSource } from "#src/web-apis/images.js";
-import { createImageBitmap, ImageBitmap } from "#src/web-apis/images.js";
+import { imageDataOf } from "#src/web-apis/images.js";
 import { defineProperty } from "#src/web-apis/install.js";
-import { ImageData } from "#src/win2d/context-2d/image-data.js";
 import { z } from "zod";
 
 // The Shape Detection API's TextDetector over the OCR that ships with Windows
@@ -35,20 +34,6 @@ const OPTIONS_SCHEMA = z.strictObject({
  * - `region`: the part of every source image to read, in the source's pixels
  */
 export type TextDetectorOptions = z.input<typeof OPTIONS_SCHEMA>;
-
-async function imageDataOf(image: ImageBitmapSource) {
-  const isBitmap = image instanceof ImageBitmap;
-  if (isBitmap) {
-    return image.toImageData();
-  }
-
-  const isPixels = image instanceof ImageData;
-  if (isPixels) {
-    return image;
-  }
-
-  return (await createImageBitmap(image)).toImageData();
-}
 
 /**
  * The web `TextDetector`: finds text in an image with the OCR that ships with
@@ -145,15 +130,7 @@ export function installTextDetector() {
     name: "TextDetector",
     value: TextDetector
   })];
-  const hasRectangle = "DOMRectReadOnly" in globalThis;
-  if (!hasRectangle) {
-    uninstalls.push(
-      defineProperty({
-        name: "DOMRectReadOnly",
-        value: DOMRectReadOnly
-      })
-    );
-  }
+  uninstalls.push(installDOMRectReadOnly());
 
   return () => {
     for (const uninstall of uninstalls.reverse()) {
