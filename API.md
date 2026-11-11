@@ -3442,14 +3442,16 @@ An app that does not import it does not bundle it
 - Each handler gets `{ gesture, x, y }`, the pointer in screen pixels: where to
   put a menu
   A double click is the second `onclick` and then `ondoubleclick`
-- Keyboard, touch and pen: the shell posts its version 4 callback messages to
-  the icon's hidden owner window, and the tray reads them on each poll
-  Enter or Space on the focused icon (`NIN_KEYSELECT`) reaches
-  `ondoubleclick`, the context-menu key and Shift+F10 (`WM_CONTEXTMENU`) reach
+- Keyboard, touch and pen: the shell sends its version 4 callback messages to
+  the icon's hidden owner window, and the tray keeps them (see below) and
+  delivers them on its next poll
+  Enter or Space on the focused icon reaches `onclick` (the shell sends the
+  same select a tap does, and a key press also arrives as a left button down
+  and up), the context-menu key and Shift+F10 (`WM_CONTEXTMENU`) reach
   `oncontextmenu` with the anchor the shell gives, and a tap (`NIN_SELECT`)
   reaches `onclick`
   A message that repeats a mouse gesture the poll already reported is dropped,
-  and a message is delivered one poll after it was posted (30 or 250
+  and a message is delivered one poll after it was sent (30 or 250
   milliseconds), so that the two never report one click twice
 - `createTrayIcon(options)` is the same without a component and returns the
   handle: `update({ icon, tooltip, isVisible })`, `notify({ title, body,
@@ -3473,19 +3475,20 @@ An app that does not import it does not bundle it
   second), is reloaded at the system DPI's small-icon size, and swaps on a
   light or dark taskbar
 
-How clicks are heard, and what that cannot do: dynwinrt (0.1.0-preview.23)
-binds Win32 functions to call, but offers no way to turn a JavaScript function
-into a native function pointer (a window procedure, a hook, `SetWindowSubclass`):
-in a probe, the table of a COM object it made ended after the three `IUnknown`
-entries, and a COM thunk needs its own object as `this`
-So the shell's callback message
-(`NIF_MESSAGE`) cannot be received
-That includes the keyboard ones: `NIN_KEYSELECT` and `NIN_SELECT` (Enter and
-Space on a focused icon; `NOTIFYICON_VERSION_4` makes the shell send them) are
-callback messages of the icon's window, delivered to its window procedure like
-the mouse ones; reading them takes a procedure, and the polled substitutes do
-not exist for a key (`GetAsyncKeyState` says a key is down, not that the shell
-sent the icon an activation, and which icon has focus is not readable)
+How clicks are heard: dynwinrt (0.1.0-preview.23) binds Win32 functions to call,
+but offers no way to turn a JavaScript function into a native function pointer
+(a window procedure, a hook, `SetWindowSubclass`), and a COM thunk needs its
+own object as `this`
+The shell sends the icon's callback message (`NIF_MESSAGE`) to the owner
+window, and only a window procedure sees a sent message
+So on x64 the owner window gets a procedure of a few bytes of machine code
+(`src/tray/message-mailbox.ts`, in executable memory from `VirtualAlloc`): it
+writes the `wParam` and `lParam` of the callback message into a ring and
+returns, and every other message goes to `DefWindowProcW`; the tray reads the
+ring on each poll
+That is how Enter, the context-menu key, Shift+F10, touch and pen reach the
+handlers
+On arm64 the procedure is not available, so only the polled gestures below work
 The tray polls instead: every 30 ms while the pointer is on the taskbar or
 the overflow flyout (or a button is down), every 250 ms elsewhere, and not at
 all while the icon is hidden, because a timer that wakes the thread 33 times a
@@ -3498,7 +3501,7 @@ What this means:
 
 | Works | Cannot be heard |
 |---|---|
-| click, double click, middle click, right click with its position (the menu opens there) | keyboard activation (Enter or the context-menu key on a focused icon), touch and pen taps, `NIN_BALLOONUSERCLICK` / `NIN_BALLOONTIMEOUT` (so `notify` has no click event), `NIN_POPUPOPEN` hover cards |
+| click, double click, middle click, right click with its position (the menu opens there) | `NIN_BALLOONUSERCLICK` / `NIN_BALLOONTIMEOUT` (so `notify` has no click event), `NIN_POPUPOPEN` hover cards |
 | icon swap on theme and DPI, restart of explorer, update, hide | clicks on an icon the user has moved into the hidden overflow flyout while it is closed |
 
 Menus: write the flyout in the `menu` snippet and a right click opens it at

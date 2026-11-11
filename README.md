@@ -996,12 +996,13 @@ Stated plainly, so nobody finds them by surprise:
   `winui-svelte/media` makes one from RGBA bytes
 - **The tray icon hears the mouse by polling.** WinUI has no tray API, and
   dynwinrt cannot make a JavaScript function a native window procedure, so
-  `winui-svelte/tray` reads the pointer and the buttons every 30 ms instead of
-  receiving the shell's callback
-  Clicks, double clicks, middle clicks and
-  right clicks (with their position) work; keyboard activation, touch, and a
-  click on a balloon cannot be heard (nothing says which icon has keyboard
-  focus, so Enter and Space on it are lost too)
+  `winui-svelte/tray` gives the icon's owner window a few bytes of machine code
+  as its procedure (x64) and reads what the shell sent it
+  Clicks, double clicks, middle clicks and right clicks (with their position)
+  are also read from the pointer and the buttons every 30 ms
+  Keyboard activation (Enter, the context-menu key, Shift+F10), touch and pen
+  work on x64; a click on a balloon cannot be heard, and on arm64 the keyboard
+  cannot either
   The `menu` snippet opens its
   flyout from a one-pixel window made on the right click
   A Tauri or Electron
