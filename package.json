@@ -212,6 +212,10 @@
       "types": "./dist/downloads/index.d.ts",
       "default": "./dist/downloads/index.js"
     },
+    "./image-search": {
+      "types": "./dist/image-search/index.d.ts",
+      "default": "./dist/image-search/index.js"
+    },
     "./input": {
       "types": "./dist/input/index.d.ts",
       "svelte": "./dist/input/index.js",
