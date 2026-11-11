@@ -41,6 +41,11 @@
   // svelte-ignore state_referenced_locally
   host.onCommand(command => {
     commands.get(String(command["cmd"]))?.(command);
+    const isClosing = command["cmd"] === "close";
+    if (isClosing) {
+      return;
+    }
+
     host.report({
       kind: String(command["cmd"]),
       ...counts,
