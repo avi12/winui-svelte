@@ -4429,6 +4429,8 @@ Unverified, and why
   an upload is not offered; TinEye's `POST /search` answered 405 behind
   Cloudflare's bot check, which the helper does not try to pass; both take a
   hosted address only (an upload to either throws `ImageSearchUnsupportedError`)
+- `ImageSearchError` is the base of the errors above; `UploadEncoding` is the
+  closed set of ways a request carries the image in a multipart field (`file`, `base64`)
 - Host the crop yourself to use Yandex or TinEye; TinEye also sells an API with
   keys, outside this helper
 - The engines' terms govern use; the helper sets no browser headers and keeps
@@ -5092,6 +5094,12 @@ if (result) {
   preview shows only the crop, and `region` is the rectangle now (null for
   the whole monitor); its rectangles are in the monitor's physical pixels, as
   `CropTarget.fromRect` takes them
+- `SelectionPhase` is the closed set of gesture phases and `SelectionCursor`
+  the cursors `hoverCursor` answers with
+- Defaults: `DEFAULT_CORNER_REACH` (grab distance of a corner),
+  `DEFAULT_LASSO_PADDING` (margin around a lasso), `DEFAULT_MINIMUM_SIZE`
+  (smallest region), `DEFAULT_MINIMUM_STROKE` and `DEFAULT_MINIMUM_STEP`
+  (shortest lasso and drag that count)
 - Not here: drawing the scrim, brackets or an action bar, text selection and
   OCR; those belong to the app
 
