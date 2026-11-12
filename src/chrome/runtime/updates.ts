@@ -1,4 +1,5 @@
 import { ChromeEvent } from "#src/downloads/chrome-event.js";
+import type { StoreBackend, UpdateCheck } from "#src/store/types.js";
 import { Updater } from "#src/updater/updater.js";
 import type { UpdaterOptions } from "#src/updater/updater.js";
 
@@ -26,10 +27,15 @@ export interface RuntimeUpdateSource extends Omit<UpdaterOptions, "currentVersio
   readonly minimumIntervalMilliseconds?: number;
 }
 
-/** Chrome's `onUpdateAvailable` and `requestUpdateCheck`, backed by `winui-svelte/updater`. */
+/**
+ * Chrome's `onUpdateAvailable` and `requestUpdateCheck`. In a package (the
+ * Store's MSIX) the Store is asked for updates and installs them silently; in
+ * a per-user install `winui-svelte/updater` checks the feed and unpacks the
+ * new version.
+ */
 export class RuntimeUpdates {
-  /** Fires once a newer version is downloaded and unpacked; `reload` starts it. */
-  readonly onUpdateAvailable = new ChromeEvent<(details: { version: string }) => void>();
+  /** Fires once a newer version is ready (`version` is missing for a Store update); `reload` starts it. */
+  readonly onUpdateAvailable = new ChromeEvent<(details: { version?: string }) => void>();
 
   private readonly source: RuntimeUpdateSource | undefined;
   private readonly currentVersion: string;
@@ -37,20 +43,64 @@ export class RuntimeUpdates {
   private lastCheck = Number.NEGATIVE_INFINITY;
   private stagedVersion: string | undefined;
 
-  constructor({ source, currentVersion }: {
+  private readonly storeBackend: StoreBackend | undefined;
+
+  constructor({ source, currentVersion, storeBackend }: {
     source: RuntimeUpdateSource | undefined;
     currentVersion: string;
+    storeBackend?: StoreBackend;
   }) {
     this.source = source;
     this.currentVersion = currentVersion;
+    this.storeBackend = storeBackend;
   }
 
   /**
-   * Checks the feed and unpacks a newer version beside the running one.
+   * Asks for a newer version: the Store in a package, else the feed (unpacked
+   * beside the running version).
    *
-   * @returns `no_update` with no update source configured, `throttled` when asked again too soon.
+   * @returns `no_update` with nothing to ask, `throttled` when asked again too soon.
    */
   async requestUpdateCheck() {
+    const now = Date.now();
+    const interval = this.source?.minimumIntervalMilliseconds ?? DEFAULT_THROTTLE_MILLISECONDS;
+    const isThrottled = now - this.lastCheck < interval;
+    if (isThrottled) {
+      return {
+        status: UpdateCheckStatus.THROTTLED
+      } satisfies UpdateCheckResult;
+    }
+
+    this.lastCheck = now;
+    const { checkForUpdates } = await import("#src/store/updates.js");
+    const reply = await checkForUpdates(
+      this.storeBackend && {
+        backend: this.storeBackend
+      }
+    );
+    if (reply.hasPackage) {
+      return this.installFromStore(reply.value);
+    }
+
+    return this.checkFeed();
+  }
+
+  private async installFromStore(check: UpdateCheck) {
+    const hasNothing = check.updates.length === 0;
+    if (hasNothing) {
+      return {
+        status: UpdateCheckStatus.NO_UPDATE
+      } satisfies UpdateCheckResult;
+    }
+
+    await check.install();
+    this.onUpdateAvailable.dispatch({});
+    return {
+      status: UpdateCheckStatus.UPDATE_AVAILABLE
+    } satisfies UpdateCheckResult;
+  }
+
+  private async checkFeed() {
     const { source } = this;
     const hasNoSource = source === undefined;
     if (hasNoSource) {
@@ -59,15 +109,6 @@ export class RuntimeUpdates {
       } satisfies UpdateCheckResult;
     }
 
-    const now = Date.now();
-    const isThrottled = now - this.lastCheck < (source.minimumIntervalMilliseconds ?? DEFAULT_THROTTLE_MILLISECONDS);
-    if (isThrottled) {
-      return {
-        status: UpdateCheckStatus.THROTTLED
-      } satisfies UpdateCheckResult;
-    }
-
-    this.lastCheck = now;
     this.updater ??= new Updater({
       ...source,
       currentVersion: this.currentVersion

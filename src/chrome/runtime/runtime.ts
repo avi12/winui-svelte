@@ -14,6 +14,7 @@ import { onStartup } from "#src/app/schedule/events.js";
 import { ChromeEvent } from "#src/downloads/chrome-event.js";
 import type { Json } from "#src/messaging/json.js";
 import type { Transport } from "#src/state/transports/transport.js";
+import type { StoreBackend } from "#src/store/types.js";
 
 const MANIFEST_VERSION = 3;
 const ARCHITECTURES = new Map([
@@ -65,6 +66,9 @@ export interface RuntimeOptions extends IdentitySources, Omit<NativeHostSetup, "
   /** Where `requestUpdateCheck` looks for a newer version; none by default, and then it answers `no_update`. */
   readonly updates?: RuntimeUpdateSource;
 
+  /** Stands in for Windows when the Store is asked for updates; the tests give one. */
+  readonly storeBackend?: StoreBackend;
+
   /** Ends this process after `reload` started a newer version; `process.exit` by default. */
   readonly exitApp?: () => void;
 }
@@ -108,7 +112,10 @@ export class Runtime {
     this.options = options;
     this.updates = new RuntimeUpdates({
       source: options.updates,
-      currentVersion: this.getManifest().version
+      currentVersion: this.getManifest().version,
+      ...options.storeBackend && {
+        storeBackend: options.storeBackend
+      }
     });
     this.onUpdateAvailable = this.updates.onUpdateAvailable;
     const { suspendSource } = options;

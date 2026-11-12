@@ -4519,6 +4519,8 @@ await createRelease({
   no administrator rights) whose Uninstall runs the `launcher` with
   `uninstallArguments` (`--uninstall` by default), and a Start menu shortcut;
   call it again after an update to refresh the version shown
+- In a package (MSIX) `install()` and `uninstall()` do nothing: Windows already
+  lists the app and removes it
 - `uninstall({ id, displayName, root })` removes the entry and the shortcut and
   deletes the root from a detached command a few seconds later, so the running
   launcher is free by then; do the app's own cleanup (startup entry, protocol
@@ -4785,6 +4787,11 @@ const answer = await runtime.sendMessage({ hello: "world" });
 - `reload()` starts the version `requestUpdateCheck` unpacked and exits this
   one, else it is `relaunch` of `winui-svelte/app`; `exitApp` changes how
   the process ends
+- In a package (the Store's MSIX) `requestUpdateCheck()` asks the Store
+  (`checkForUpdates` of `winui-svelte/store`) and installs what it finds
+  silently, with no `updates` option needed; `onUpdateAvailable` then fires
+  with no version and `reload()` relaunches; outside a package it uses the feed
+  as below
 - `requestUpdateCheck()` resolves `{ status, version? }` (`UpdateCheckStatus`:
   `update_available`, `no_update`, `throttled`), and `onUpdateAvailable` fires
   with `{ version }` once the new version is unpacked; give the runtime

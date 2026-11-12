@@ -2,6 +2,7 @@ import { createWindowsRegistry } from "#src/app/activation/native.js";
 import type { RegistryBackend } from "#src/app/activation/registry.js";
 import type { ShellBackend } from "#src/app/shell/backend.js";
 import { createShortcut } from "#src/app/shell/shortcut.js";
+import { hasPackage } from "#src/store/identity.js";
 import { spawn } from "node:child_process";
 import path from "node:path";
 
@@ -66,11 +67,17 @@ function uninstallKey(id: string) {
  * Makes the app an installed program: an entry in Add or remove programs
  * (current user only, no administrator rights) whose Uninstall runs the
  * launcher, and a Start menu shortcut. Safe to call again after an update, it
- * overwrites both and refreshes the version shown.
+ * overwrites both and refreshes the version shown. In a package (MSIX) it
+ * does nothing: Windows already lists the app and removes it.
  *
  * @param options - The identity, the install root, the version and the launcher.
  */
 export function install(options: InstallOptions) {
+  const isPackaged = hasPackage();
+  if (isPackaged) {
+    return;
+  }
+
   const { id, displayName, version, publisher, root, launcher, registry = createWindowsRegistry() } = options;
   const key = uninstallKey(id);
   const uninstallCommand = [launcher, ...options.uninstallArguments ?? ["--uninstall"]]
@@ -120,6 +127,11 @@ export interface UninstallOptions extends InstallIdentity {
  * @param options - The identity and the install root.
  */
 export function uninstall(options: UninstallOptions) {
+  const isPackaged = hasPackage();
+  if (isPackaged) {
+    return;
+  }
+
   const { id, root, registry = createWindowsRegistry() } = options;
   registry.deleteTree(uninstallKey(id));
   const shortcut = shortcutPath(options);
