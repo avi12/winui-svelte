@@ -16,7 +16,7 @@ mod test_support;
 mod version;
 
 pub use application::Application;
-pub use apply::{ApplyOutcome, ApplyRequest};
+pub use apply::{ApplyOutcome, ApplyRequest, APPLY_SWITCH};
 pub use launch::Launcher;
 pub use layout::{
     app_folder, install_root_of, installed_versions, is_bad, mark_bad, newest_runnable, BAD_MARKER,

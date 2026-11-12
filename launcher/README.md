@@ -52,6 +52,7 @@ fn main() {
 | Versions | `Version` (same grammar and order as `src/updater/version.ts`), `installed_versions`, `newest_runnable`, `install_root_of`, `.staging` folders ignored |
 | Stub | `Launcher::forward` starts the newest folder's executable with the arguments passed through |
 | Update | `Launcher::apply` waits for the parent, then asks, then kills; starts the newest version; on a failed start marks it bad (`BAD_MARKER`) and starts the previous one |
+| Switch | `ApplyRequest::parse` reads `--apply <pid> [arguments]`, which `Updater.restart` sends when it has a `launcher`; `APPLY_SWITCH` names it |
 | Staging | `Launcher::promote_staging`, built on `retry`, `rename_with_retry`, `remove_dir_all_with_retry` |
 | Lock | `InstallLock`, a lock file that names its process and is taken over when that process has exited |
 | Hooks | `LifecycleEvent` (`--install`, `--updated`, `--obsolete`, `--uninstall`), `dispatch`, `run_hook` |

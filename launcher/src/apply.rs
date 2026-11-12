@@ -12,6 +12,11 @@ use std::time::{Duration, Instant};
 
 const POLL_INTERVAL: Duration = Duration::from_millis(50);
 
+/// The switch a running app gives its root launcher to be replaced, followed by
+/// its own pid and the arguments the new version starts with; the TypeScript
+/// `Updater.restart` sends it
+pub const APPLY_SWITCH: &str = "--apply";
+
 /// What an update hands the launcher once the new version is unpacked
 #[derive(Debug, Clone, Default)]
 pub struct ApplyRequest {
@@ -22,6 +27,24 @@ pub struct ApplyRequest {
     pub arguments: Vec<String>,
     /// Run the `Updated` and `Obsolete` hooks around the swap
     pub should_run_hooks: bool,
+}
+
+impl ApplyRequest {
+    /// Reads `--apply <pid> [arguments...]` from a command line; None for
+    /// anything else. The `Updated` and `Obsolete` hooks run around the swap
+    pub fn parse(arguments: &[String]) -> Option<Self> {
+        let [switch, pid, rest @ ..] = arguments else {
+            return None;
+        };
+        if switch != APPLY_SWITCH {
+            return None;
+        }
+        Some(Self {
+            parent_pid: pid.parse().ok(),
+            arguments: rest.to_vec(),
+            should_run_hooks: true,
+        })
+    }
 }
 
 #[derive(Debug)]
@@ -143,6 +166,16 @@ mod tests {
         let mut launcher = Launcher::new(Plain, temp.path().to_path_buf());
         launcher.startup_timeout = Duration::from_secs(20);
         launcher
+    }
+
+    #[test]
+    fn parses_the_apply_switch() {
+        let arguments = ["--apply", "42", "--tray"].map(ToString::to_string);
+        let request = ApplyRequest::parse(&arguments).unwrap();
+        assert_eq!(request.parent_pid, Some(42));
+        assert_eq!(request.arguments, ["--tray"]);
+        assert!(request.should_run_hooks);
+        assert!(ApplyRequest::parse(&["--tray".to_string()]).is_none());
     }
 
     #[test]
