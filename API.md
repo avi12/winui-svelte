@@ -2134,6 +2134,15 @@ Sizes are in device-independent pixels (the window's DPI applied);
 centering, which is the default
 `activate={false}` shows the window without
 taking focus
+`cover` (the options `handle.cover` takes, see Covering a display) places
+the window over a display or a region of it before it first shows, so it never
+flashes at the wrong place or scale; it wins over `placement`, `stateKey` and
+centering, is placed again when the display or the region changes, and is
+ignored in a background run; `oncovered` hears the bounds applied (device
+pixels) once the window is placed and visible: when it first shows (later, if it
+opened with `isHidden`) and after each new placement of a shown window
+`isAlwaysOnTop` also holds for a window that opens hidden: the topmost style is
+applied again whenever the window is shown
 `onboundschanged` hears the bounds the window opened with and
 then every move or resize (device pixels), so an app that reopens the window
 where it was has them before the user touches it
@@ -2333,6 +2342,18 @@ that display's pixels; a rescale that changed the size anyway is placed again
 `coverWindow({ appWindow, display, region })` (`winui-svelte/window`) does the
 same for a bare `AppWindow`, and `coveredBounds` in `src/window/anchor.ts` is
 the plain arithmetic
+```svelte
+<Window
+  isBorderless
+  isResizable={false}
+  isHidden={!isReady}
+  cover={{ display: displayId }}
+  oncovered={bounds => canvasFollows(bounds)}
+/>
+```
+
+The `cover` prop of `<Window>` does the same before the first show, with the
+same options, and `oncovered` reports the bounds once the window is visible
 `outerBounds` and `appWindow` are physical pixels only in a PerMonitorV2
 process
 Not verified: whether a topmost window that equals a monitor's bounds changes
@@ -5215,14 +5236,32 @@ if (result) {
 - `SelectionShape.lasso` selects the padded bounding box of the loop (the loop
   stays in `result.outline` for a mask); `SelectionShape.rectangle` selects
   the dragged box; a stroke under the minimum is dropped
-- After a selection a press on a corner resizes it, a press inside moves it,
-  a press elsewhere starts a new one; `hoverCursor` names the CSS cursor for a
+- After a selection a press on a corner or on an edge (between the corners)
+  resizes it, a press inside moves it, a press elsewhere starts a new one;
+  every result keeps `minimumSize` and stays inside `bounds`, so a drag that
+  leaves the box (the app captures the pointer) keeps working, clamped; `hoverCursor` names the CSS cursor for a
   point and `visibleRegion` the box to draw while a rectangle is dragged
 - Options, all optional: `shape`, `minimumStep` (1.5), `minimumStroke` (10),
-  `padding` (16), `minimumSize` (20), `cornerReach` (28)
+  `padding` (16), `minimumSize` (20), `cornerReach` (28), `edgeReach` (22; with the corners' 28 that is a 56 and a
+  44 pixel grab target, above the 44 pixels touch asks for; raise them for a
+  coarse pointer)
+- Keyboard, with a selection and no gesture under way: `selectorKeyEvent({ key,
+  isAlt, isShift, isControl })` turns Alt+Arrow into a `nudge` of 1 pixel,
+  Alt+Shift+Arrow of 10, and Ctrl+Alt+Arrow (with Shift for 10) into a
+  `resizeBy` of the bottom right corner; the events are
+  `SelectorEventKind.nudge` and `resizeBy` with a `delta`, and any other key
+  gives undefined
+- `SELECTION_SHORTCUTS` is the one table of these shortcuts (`nudge`,
+  `nudgeLarge`, `resize`, `resizeLarge`), data only: an `id`, the `chord`
+  (`isControl`, `isAlt`, `isShift`, `key`), the event `kind` it makes and its
+  `step`; it holds no wording, so an app looks its labels up by `id` for its
+  help panel; `selectorKeyEvent` reads it by default and takes a `shortcuts`
+  list of `SelectionShortcut` to rebind or drop shortcuts, and
+  `formatChord(chord)` gives "Alt+Shift+Arrow"
 - The geometry is exported on its own: `lassoRegion`, `dragRegion`,
   `moveRegion`, `resizeRegion`, `nearestCorner`, `gripCorner`,
-  `isFallingCorner`, `boundsOf`, `rectangleContains`,
+  `isFallingCorner`, `nearestEdge`, `gripEdge`, `isHorizontalEdge`, `ResizeEdge`
+  (`top`, `right`, `bottom`, `left`), `boundsOf`, `rectangleContains`,
   `inflateRectangle`, `rectangleFromPoints`, `distanceBetween`
 - `pixelRegion({ selection, drawnIn, picture })` maps a selection drawn in
   device-independent pixels onto a picture of the same area in physical
@@ -5236,13 +5275,20 @@ if (result) {
   the whole monitor); its rectangles are in the monitor's physical pixels, as
   `CropTarget.fromRect` takes them
 - `SelectionPhase` is the closed set of gesture phases and `SelectionCursor`
-  the cursors `hoverCursor` answers with
+  the cursors `hoverCursor` answers with: `nwse-resize` and `nesw-resize` on the
+  corners, `ns-resize` on the top and bottom edges, `ew-resize` on the left and
+  right ones, `move` inside, `crosshair` outside
 - Defaults: `DEFAULT_CORNER_REACH` (grab distance of a corner),
   `DEFAULT_LASSO_PADDING` (margin around a lasso), `DEFAULT_MINIMUM_SIZE`
   (smallest region), `DEFAULT_MINIMUM_STROKE` and `DEFAULT_MINIMUM_STEP`
   (shortest lasso and drag that count), `DEFAULT_SELECTION_RADIUS` and
   `DEFAULT_BRACKET_ARM` (the overlay's corner radius and bracket length),
-  `DEFAULT_WORD_REACH` (how far from a word a press still takes it)
+  `DEFAULT_WORD_REACH` (how far from a word a press still takes it),
+  `DEFAULT_EDGE_REACH` (grab distance of an edge), `NUDGE_STEP` and
+  `NUDGE_LARGE_STEP` (the keyboard steps), `DEFAULT_HANDLE_SIZE`,
+  `DEFAULT_SCRIM_OPACITY` and `DEFAULT_SELECTED_SCRIM_OPACITY` (the overlay's
+  handle diameter and scrim opacities)
+- `handlePoints(selection)` gives the eight handle centres the overlay draws
 - `SelectionOverlay` (`winui-svelte/components`) draws a selector's state
   over a frozen picture; see below
 - Text over OCR words: `selectableWords`, `wordAt`, `wordsBetween`,
@@ -5259,8 +5305,24 @@ if (result) {
 
 A frozen `image` stretched over the area, a dim scrim with the selection cut
 out of it (one even-odd `Path`, so the hole stays clear at any opacity), a
-2px accent edge and four rounded corner brackets on the selection, and the loop
-being drawn with a soft glow
+2px accent edge, four rounded corner brackets and eight round grab handles
+(corners and edge middles) on the selection, and the loop being drawn with a
+soft glow; the handles appear only once a selection exists
+Colours come from CSS custom properties, declared on `:root` by the component
+with defaults equal to the stock look, so an app themes it from its own
+`:root` (and a `prefers-color-scheme` block) with no prop: `--selection-edge-color`
+and `--selection-glow-color` (the accent: `SystemAccentColorDark1` in light,
+`SystemAccentColorLight2` in dark, which is what the accent fill is),
+`--selection-bracket-color`, `--selection-handle-color`,
+`--selection-stroke-core-color` and `--selection-scrim-color` (all white but the
+scrim, black)
+WinUI's CSS takes no `var()` for an opacity or a size, so those are props:
+`scrimOpacity` (0.35), `selectedScrimOpacity` (0.6) and `handleSize` (14)
+The hit area of a handle is the selector's `cornerReach` and `edgeReach`, not a
+CSS property, because the overlay takes no pointer and the reducer does the
+hit test
+Custom properties are app-wide resources and the last sheet registered wins a
+key, so import the app's stylesheet after the components
 It takes no pointer: the app feeds `reduceSelector` and passes its state;
 `radius` and `arm` (the bracket length) override the defaults
 Fades and the bracket entrance are CSS transitions and `@keyframes`, so
@@ -5853,6 +5915,43 @@ Call it from a `pointerdown` handler, as on the web
 The Canvas 2D of `winui-svelte/win2d/context-2d` reads the same fields (one
 implementation), so a drawing library on a canvas sees the same `pointerType`,
 `pressure`, tilt and coalesced events
+
+### Primary pointer and click count
+
+```ts
+import { createClickCounter, createPrimaryPointerTracker, PressOutcome } from "winui-svelte/input";
+
+const tracker = createPrimaryPointerTracker();
+const clicks = createClickCounter();   // the system's double-click time and distance
+
+function onpointerdown({ pointerId, button, x, y, timeStamp }: PointerEvent) {
+  const { outcome } = tracker.press({ pointerId, button });
+  if (outcome === PressOutcome.started) {
+    const count = clicks.press({ point: { x, y }, time: timeStamp, button });
+  }
+}
+// tracker.move(pointerId).isFollowed, tracker.release(pointerId).isEnded
+```
+
+`createPrimaryPointerTracker` follows the first pointer of a gesture and ignores
+the others while it is down
+`press` returns `{ pointerId, role, outcome }`: `role` is `primary` for button 0
+and `secondary` for any other (a mouse's right button, a pen's barrel button or
+eraser), `outcome` is `started`, `secondary` (nothing started or changed) or
+`ignored` (another pointer is down)
+`move` returns `{ pointerId, isFollowed }`, true for the followed pointer and
+while nothing is down (hover); `release` returns `{ pointerId, isEnded }`
+`PointerRole` names the two roles and `pointerRoleOf(button)` gives the role of
+a button number
+What a secondary press means (cancel, a menu) is the app's
+`createClickCounter` counts presses in a row, which WinUI's events do not carry:
+`press({ point, time, button })` returns 1 for a lone press, 2 for a double and
+so on; a press continues the run when it is within the double-click time
+(`GetDoubleClickTime`) and distance (`SM_CXDOUBLECLK`, a radius around the last
+press) of the one before and has the same button (0 by default)
+`createClickCounter({ milliseconds, distance })` overrides either setting; the
+distance is in the pixels of the points given, and the system's is in physical
+pixels
 
 ### Focus
 
@@ -7811,7 +7910,7 @@ Each area is an opt-in subpath, so an app that imports none of them bundles none
 | `winui-svelte/devices/power` | `battery`, `systemPower` |
 | `winui-svelte/devices/network` | `networkInformation` |
 | `winui-svelte/devices/audio` | `audioDevices` |
-| `winui-svelte/devices/display` | `displays`, `getDisplayMonitors` |
+| `winui-svelte/devices/display` | `displays`, `getDisplayMonitors`, `displayAtBounds` |
 | `winui-svelte/devices/gamepad` | `gamepads`, `pressedButtons` |
 | `winui-svelte/devices/sensors` | `lightSensor`, `accelerometer`, `inclinometer` |
 
@@ -7975,6 +8074,7 @@ build; print the document to a file and use `printFile`, or draw it with Win2D
 | `systemPower()` | `Microsoft.Windows.System.Power.PowerManager` (Windows App SDK) | `displayStatus`, `isDisplayOn`, `effectivePowerMode`, `isUserPresent`, `resumeCount`, `reading` |
 | `networkInformation()` | `NetworkInformation` | `isOnline`, `connectivity`, `profileName`, `isMetered`, `isRoaming`, `isWifi`, `isMobile`, `signalBars`, `reading` (with every profile name) |
 | `displays()` | `DisplayArea` and its watcher | `areas` (bounds and work area), `primary`, `count`; needs the Windows App SDK, which a window has |
+| `displayAtBounds({ x, y, width, height })` | `DisplayArea.findAll` | the display whose `outerBounds` equal the rectangle, else the one holding its centre (an `areas` list can be given); its `id` is what `cover` takes |
 | `getDisplayMonitors()` | `DisplayMonitor` | name, native resolution, physical size, DPI, luminance; needs no window |
 | `audioDevices()` | `DeviceClass.AudioRender` and `AudioCapture` watchers, `MediaDevice` | `outputs`, `inputs` (watchers), `defaultOutputId`, `defaultInputId`, and the communications ids |
 | `gamepads()` | `Gamepad` | `gamepads`, each with `isWireless` and `read()` for the sticks, triggers and buttons; `pressedButtons()` names the buttons |
