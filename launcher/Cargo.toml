@@ -1,0 +1,11 @@
+[package]
+name = "winui-svelte-launcher"
+version = "0.0.1"
+edition = "2021"
+description = "The Squirrel-style per-user install shared by winui-svelte apps: the stub, the update apply with rollback, the lock and the lifecycle hooks"
+license = "Apache-2.0"
+repository = "https://github.com/avi12/winui-svelte"
+publish = false
+
+[lib]
+path = "src/lib.rs"
