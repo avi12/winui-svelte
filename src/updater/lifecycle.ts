@@ -1,9 +1,9 @@
-const ARGUMENT_PREFIX = "--winui-svelte-";
+const SWITCH_PREFIX = "--";
 const FIRST_RUN_VARIABLE = "WINUI_SVELTE_FIRST_RUN";
 const RESTARTED_VARIABLE = "WINUI_SVELTE_RESTARTED";
 const SET = "1";
 
-/** The moments the launcher tells the app about, as `--winui-svelte-<event> <version>`. */
+/** The moments the launcher tells the app about, as the switch `--<event>` followed by the version. */
 export const LifecycleEvent = {
   INSTALL: "install",
   UPDATED: "updated",
@@ -16,8 +16,8 @@ export type LifecycleEvent = typeof LifecycleEvent[keyof typeof LifecycleEvent];
 
 /** What a lifecycle handler is given. */
 export interface LifecycleDetails {
-  /** The version the event is about. */
-  readonly version: string;
+  /** The version the event is about; undefined when the launcher gave none. */
+  readonly version: string | undefined;
 }
 
 /** A handler per event; give the ones the app cares about. */
@@ -36,21 +36,17 @@ function isLifecycleEvent(value: string): value is LifecycleEvent {
  * @returns The event and its version, or undefined for a normal start.
  */
 export function parseLifecycle(argv: readonly string[]) {
-  const [flag, version] = argv;
-  const isLifecycle = flag?.startsWith(ARGUMENT_PREFIX) === true && version !== undefined;
-  if (!isLifecycle) {
-    return undefined;
+  for (const [i, argument] of argv.entries()) {
+    const event = argument.startsWith(SWITCH_PREFIX) ? argument.slice(SWITCH_PREFIX.length) : "";
+    if (isLifecycleEvent(event)) {
+      return {
+        event,
+        version: argv[i + 1]
+      };
+    }
   }
 
-  const event = flag.slice(ARGUMENT_PREFIX.length);
-  if (!isLifecycleEvent(event)) {
-    return undefined;
-  }
-
-  return {
-    event,
-    version
-  };
+  return undefined;
 }
 
 /**

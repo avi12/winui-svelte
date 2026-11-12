@@ -4524,8 +4524,8 @@ await createRelease({
 - The `launcher` is a stable program in the root, not inside an `app-x.y.z`
   folder, so the entry and the shortcut survive updates
 - `handleLifecycle({ argv, handlers })` runs the handler for a launcher event
-  (`--winui-svelte-install|updated|obsolete|uninstall <version>`, the
-  `LifecycleEvent` values) and returns true when it was one, so the app exits
+  (the switches `--install`, `--updated`, `--obsolete` and `--uninstall`, the
+  `LifecycleEvent` values, followed by the version) and returns true when it was one, so the app exits
   after doing its own setup or cleanup; handlers get 30 seconds for install
   and uninstall, 15 for updated and obsolete; `parseLifecycle(argv)` only
   reads the event
@@ -4543,8 +4543,12 @@ await createRelease({
   zips; a folder still in use stays for the next run
 - A channel is a feed file name: `feedFileName("beta")` is `releases.beta.json`,
   and `createRelease({ channel })` writes it; the app's `feedUrl` names the same file
-- Not done: delta packages, and a root launcher that picks the newest folder
-  (the app's shortcut or launcher starts `installedVersions(root)[0]`)
+- The root launcher is the Rust crate `winui-svelte-launcher` (`launcher/` in
+  the repository, not in the npm package): it starts the newest folder, waits
+  for the old process, rolls back a version that fails to start and sends the
+  events above
+- `installedVersions(root)` lists the `app-x.y.z` folders, newest first
+- Not done: delta packages
 - Most apps use it through `chrome.runtime`: `requestUpdateCheck`,
   `onUpdateAvailable` and `reload` of `winui-svelte/chrome/runtime`
 
