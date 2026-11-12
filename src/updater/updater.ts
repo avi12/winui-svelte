@@ -8,6 +8,8 @@ import { spawn } from "node:child_process";
 import { readdir, rm } from "node:fs/promises";
 import path from "node:path";
 
+const APPLY_SWITCH = "--apply";
+
 /** What `Updater` takes. */
 export interface UpdaterOptions {
   /** The install root, for example `%LOCALAPPDATA%\MyApp`; each version gets an `app-x.y.z` folder in it. */
@@ -21,6 +23,14 @@ export interface UpdaterOptions {
 
   /** The executable inside a version's folder that `restart` starts, relative to that folder. */
   readonly executable: string;
+
+  /**
+   * The stable launcher in the install root (the Rust crate
+   * `winui-svelte-launcher`). When given, `restart` hands over to it with
+   * `--apply <pid>`: it waits for this process to end, starts the newest
+   * version and rolls back to the previous one if that fails to start.
+   */
+  readonly launcher?: string;
 
   /** Stands in for the global `fetch`; the tests give one. */
   readonly fetch?: typeof fetch;
@@ -98,7 +108,9 @@ export class Updater {
   }
 
   /**
-   * Starts a staged version, detached, so the caller can exit right after.
+   * Starts the staged version, detached, so the caller can exit right after:
+   * through the launcher when one is configured (it waits for this process and
+   * can roll back), else the version's own executable.
    *
    * @param options - The version to start and the arguments to give it.
    */
@@ -106,12 +118,16 @@ export class Updater {
     version: string;
     args?: readonly string[];
   }) {
+    const { root, executable, launcher } = this.options;
     const folder = appFolder({
-      root: this.options.root,
+      root,
       version
     });
-    const child = spawn(path.join(folder, this.options.executable), args, {
-      cwd: folder,
+    const hasLauncher = launcher !== undefined;
+    const program = hasLauncher ? launcher : path.join(folder, executable);
+    const programArguments = hasLauncher ? [APPLY_SWITCH, String(process.pid), ...args] : args;
+    const child = spawn(program, programArguments, {
+      cwd: hasLauncher ? root : folder,
       detached: true,
       stdio: "ignore"
     });

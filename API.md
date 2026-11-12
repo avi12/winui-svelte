@@ -4509,9 +4509,11 @@ await createRelease({
 - `createRelease` zips the built app with the `tar.exe` Windows ships and adds
   it to `releases.json` (version, file, SHA-256, size); upload the folder to
   any static host
-- `new Updater({ root, feedUrl, currentVersion, executable })` has
+- `new Updater({ root, feedUrl, currentVersion, executable, launcher? })` has
   `checkForUpdate()`, `stage(release)`, `update()` (both), `restart({ version })`
-  and `prune()`
+  and `prune()`; with a `launcher`, `restart` runs `launcher --apply <pid>`
+  (the launcher waits for this process, starts the newest version and rolls
+  back when it fails to start), and `Runtime.reload()` does the same
 - `install({ id, displayName, publisher, version, root, launcher })` makes the
   app an installed program: an entry in Add or remove programs (current user,
   no administrator rights) whose Uninstall runs the `launcher` with
