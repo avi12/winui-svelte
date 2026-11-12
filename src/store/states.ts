@@ -39,6 +39,30 @@ export const PackageStage = {
 /** One of the values of `PackageStage`. */
 export type PackageStage = (typeof PackageStage)[keyof typeof PackageStage];
 
+/** How the running package was signed (`PackageSignatureKind`). */
+export const SignatureKind = {
+  none: 0,
+  developer: 1,
+  enterprise: 2,
+  store: 3,
+  system: 4
+} as const;
+
+/** One of the values of `SignatureKind`. */
+export type SignatureKind = (typeof SignatureKind)[keyof typeof SignatureKind];
+
+/** Whether the package's own installer source has a newer version (`PackageUpdateAvailability`). */
+export const PackageUpdateState = {
+  unknown: 0,
+  noUpdates: 1,
+  available: 2,
+  required: 3,
+  error: 4
+} as const;
+
+/** One of the values of `PackageUpdateState`. */
+export type PackageUpdateState = (typeof PackageUpdateState)[keyof typeof PackageUpdateState];
+
 // The bindings type WinRT's enums as opaque classes (their metadata has no
 // default interface), though the value is the number of the sets above.
 function readerOf<T extends number>({ members, fallback }: {
@@ -69,4 +93,26 @@ export const updateStateOf = readerOf({
 export const startupStateOf = readerOf({
   members: StartupState,
   fallback: StartupState.disabled
+});
+
+/**
+ * The `SignatureKind` of a value Windows gave.
+ *
+ * @param value - `PackageSignatureKind` as the bindings hand it over.
+ * @returns The kind; `none` for one this package does not know.
+ */
+export const signatureKindOf = readerOf({
+  members: SignatureKind,
+  fallback: SignatureKind.none
+});
+
+/**
+ * The `PackageUpdateState` of a value Windows gave.
+ *
+ * @param value - `PackageUpdateAvailability` as the bindings hand it over.
+ * @returns The state; `unknown` for one this package does not know.
+ */
+export const packageUpdateStateOf = readerOf({
+  members: PackageUpdateState,
+  fallback: PackageUpdateState.unknown
 });

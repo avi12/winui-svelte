@@ -8,5 +8,5 @@ export type { MessageSender, PortEnd } from "./port.ts";
 export { Port } from "./port.ts";
 export type { PlatformInfo, RuntimeManifest, RuntimeOptions } from "./runtime.ts";
 export { Runtime } from "./runtime.ts";
-export type { RuntimeUpdateSource, UpdateCheckResult } from "./updates.ts";
+export type { AppInstallerUpdateSource, FeedUpdateSource, RuntimeUpdateSource, UpdateCheckResult } from "./updates.ts";
 export { UpdateCheckStatus } from "./updates.ts";

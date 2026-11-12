@@ -1,4 +1,4 @@
-import type { PackageStage, StartupState, UpdateState } from "./states.ts";
+import type { PackageStage, PackageUpdateState, StartupState, UpdateState } from "./states.ts";
 
 /** The window a Store call is owned by: a `WindowHandle` or the native `Window`. */
 export interface StoreWindow {
@@ -20,6 +20,9 @@ export interface PackageInfo {
   readonly version: string;
   readonly installedPath: string;
   readonly isDevelopmentMode: boolean;
+
+  /** True when the Store signed the package; false for one sideloaded from an installer or a release. */
+  readonly isFromStore: boolean;
 }
 
 /** The licence of this app in the Store (`StoreAppLicense`). */
@@ -111,6 +114,9 @@ export interface StoreBackend {
   license(window: StoreWindow | undefined): Promise<AppLicense>;
   onOfflineLicensesChanged(callback: () => void): () => void;
   checkUpdates(window: StoreWindow | undefined): Promise<UpdateCheck>;
+
+  /** Asks the package's own installer source (its `.appinstaller` file) for a newer version. */
+  checkPackageUpdate(): Promise<PackageUpdateState>;
   onPackageProgress(callback: (progress: PackageProgress) => void): () => void;
   startupTask(taskId: string): Promise<StartupTaskHandle>;
 

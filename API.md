@@ -70,7 +70,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/tray/standalone` | `src/tray/standalone/index.ts` | `createStandaloneTray()`, `defineTray()`, its opt-in parts `balloons`, `bounds` and `themedIcon`, `MenuItemKind`, `MenuLevel`, and the `winui-svelte/app` calls that start or signal the app: a tray with no window, no WinUI and no components (opt-in; see Tray with no window) |
 | `winui-svelte/notice` | `src/notice/index.ts` | `showNotice()`, `NoticeIcon`, `NoticeButtons`, `NoticeButton`: a message box with no window or app (opt-in; see Notice with no app) |
 | `winui-svelte/forms` | `src/forms/index.ts` | `Form`, `FormField`, `textField`, `numberField`, `selectField` and the other field attachments, `formButton`, `FormValues`, `validityOf` (opt-in; see Forms) |
-| `winui-svelte/store` | `src/store/index.ts` | `getAppLicense`, `watchLicense`, `checkForUpdates`, `watchPackages`, `getStartupTask`, `getPackageInfo`: the Store and package APIs, answering `hasPackage: false` outside a package (opt-in) |
+| `winui-svelte/store` | `src/store/index.ts` | `getAppLicense`, `watchLicense`, `checkForUpdates`, `checkPackageUpdate`, `watchPackages`, `getStartupTask`, `getPackageInfo`: the Store and package APIs, answering `hasPackage: false` outside a package (opt-in) |
 | `winui-svelte/accessibility`, `/accessibility/audit` | `src/accessibility/index.ts`, `src/accessibility/audit/index.ts` | `announce`, `liveRegion`, `LivePriority`; `auditAccessibility`, `accessibilityRules` (opt-in; see Accessibility) |
 | `winui-svelte/automation` | `src/automation/index.ts` | `withUiaClient`, `createUiaWorker`, `readWindowText`, `UiaControlType`: a UI Automation client that reads the text of another window (opt-in; see UI Automation client) |
 | `winui-svelte/devices` | `src/devices/index.ts` | device enumeration, input devices, Bluetooth, printers, power, network, display, audio, gamepads and sensors, each also at `winui-svelte/devices/<area>` (opt-in; see Windows devices) |
@@ -4792,6 +4792,15 @@ const answer = await runtime.sendMessage({ hello: "world" });
   silently, with no `updates` option needed; `onUpdateAvailable` then fires
   with no version and `reload()` relaunches; outside a package it uses the feed
   as below
+- A package that did not come from the Store (`isFromStore` of
+  `getPackageInfo()` is false, for example one sideloaded from a shared
+  installer) is asked through `checkPackageUpdate` of `winui-svelte/store`;
+  give the runtime `updates: { appInstallerUrl }`, the address of its
+  `.appinstaller` file, and an available or required update fires
+  `onUpdateAvailable` and opens `ms-appinstaller:?source=<encoded url>`, which
+  Windows installs from; without `appInstallerUrl` the answer is `no_update`;
+  `RuntimeUpdateSource` is the feed source (`FeedUpdateSource`) or
+  `AppInstallerUpdateSource`
 - `requestUpdateCheck()` resolves `{ status, version? }` (`UpdateCheckStatus`:
   `update_available`, `no_update`, `throttled`), and `onUpdateAvailable` fires
   with `{ version }` once the new version is unpacked; give the runtime
@@ -7974,10 +7983,11 @@ throws
 | `hasPackage()`, `getPackageInfo()` | whether the process has an identity; the package's name, full name, family name, publisher, version and install path, or null |
 | `getAppLicense({ window })` | `isActive`, `isTrial`, `skuStoreId`, `expirationDate` (null when it never ends) |
 | `watchLicense({ window, pollMilliseconds })` | a `LicenseWatcher` that raises `offlinelicenseschanged` (`onofflinelicenseschanged`); `close()` stops it |
+| `checkPackageUpdate()` | for a package not from the Store: `PackageUpdateState` (`unknown`, `noUpdates`, `available`, `required`, `error`) from its `.appinstaller` source, or `hasPackage: false`; `getPackageInfo().isFromStore` says which kind the package is |
 | `checkForUpdates({ window })` | `{ updates, hasMandatory, install({ onprogress }) }`: nothing is downloaded until `install` is called, and it installs exactly the updates found |
 | `watchPackages()` | a `PackageWatcher` that raises `packagestaging`, `packageinstalling` and `packageupdating` (`PackageProgressEvent`, with `progress`, `isComplete`, `errorCode`) |
 | `getStartupTask({ taskId })` | the task's `state`, `enable()` (a request: read the state it returns) and `disable()` |
-| `UpdateState`, `StartupState`, `PackageStage` | the closed sets, each a value plus a type |
+| `UpdateState`, `PackageUpdateState`, `SignatureKind`, `StartupState`, `PackageStage` | the closed sets, each a value plus a type |
 | `windowsStoreBackend` | the real backend over the WinRT classes; `StoreBackend` is the interface the calls take, so a test swaps it |
 
 `window` is the owner of any Store dialog: a `WindowHandle` or the native

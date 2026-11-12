@@ -1,3 +1,4 @@
+import type { PackageUpdateState as PackageUpdateStateValue } from "./states.ts";
 import type { InstallOptions, PackageProgress, StoreBackend, UpdateCheck } from "./types.ts";
 import { roInitialize } from "@microsoft/dynwinrt";
 import assert from "node:assert/strict";
@@ -11,11 +12,12 @@ import { test } from "node:test";
 roInitialize();
 
 const { checkForUpdates } = await import("./updates.ts");
+const { checkPackageUpdate } = await import("./package-update.ts");
 const { getAppLicense, watchLicense } = await import("./license.ts");
 const { getPackageInfo, hasPackage } = await import("./identity.ts");
 const { PackageProgressEvent, watchPackages } = await import("./packages.ts");
 const { getStartupTask } = await import("./startup.ts");
-const { StartupState, UpdateState, updateStateOf, startupStateOf } = await import("./states.ts");
+const { PackageUpdateState, StartupState, UpdateState, updateStateOf, startupStateOf } = await import("./states.ts");
 const { hasPackageIdentity } = await import("./windows-identity.ts");
 
 const LICENSE = {
@@ -30,9 +32,10 @@ function settle() {
   return new Promise(resolve => setImmediate(resolve));
 }
 
-function fakeBackend({ isPackaged, check }: {
+function fakeBackend({ isPackaged, check, availability = PackageUpdateState.noUpdates }: {
   isPackaged: boolean;
   check?: UpdateCheck;
+  availability?: PackageUpdateStateValue;
 }) {
   const calls: string[] = [];
   let license = LICENSE;
@@ -51,7 +54,8 @@ function fakeBackend({ isPackaged, check }: {
       publisher: "CN=Avi",
       version: "1.2.3.0",
       installedPath: "C:\\Program Files\\WindowsApps\\Avi.App",
-      isDevelopmentMode: false
+      isDevelopmentMode: false,
+      isFromStore: true
     }),
     async license() {
       calls.push("license");
@@ -73,6 +77,10 @@ function fakeBackend({ isPackaged, check }: {
       return () => {
         stops += 1;
       };
+    },
+    async checkPackageUpdate() {
+      calls.push("checkPackageUpdate");
+      return availability;
     },
     async startupTask(taskId: string) {
       calls.push(`startupTask:${taskId}`);
@@ -261,4 +269,19 @@ test("node.exe has no package identity, and the real calls say so", async () => 
   assert.equal(packages.hasPackage, false);
   licenses.close();
   packages.close();
+});
+
+test("the package update answer is no package outside one, else the availability", async () => {
+  const outside = fakeBackend({ isPackaged: false });
+  assert.deepEqual(await checkPackageUpdate(outside), { hasPackage: false });
+  assert.deepEqual(outside.calls, []);
+
+  const inside = fakeBackend({
+    isPackaged: true,
+    availability: PackageUpdateState.available
+  });
+  assert.deepEqual(await checkPackageUpdate(inside), {
+    hasPackage: true,
+    value: PackageUpdateState.available
+  });
 });

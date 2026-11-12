@@ -1,4 +1,5 @@
 import { ChromeEvent } from "#src/downloads/chrome-event.js";
+import { PackageUpdateState } from "#src/store/states.js";
 import type { StoreBackend, UpdateCheck } from "#src/store/types.js";
 import { Updater } from "#src/updater/updater.js";
 import type { UpdaterOptions } from "#src/updater/updater.js";
@@ -21,15 +22,31 @@ export interface UpdateCheckResult {
   readonly version?: string;
 }
 
-/** Where a Squirrel-style install gets its updates; the running version comes from the manifest. */
-export interface RuntimeUpdateSource extends Omit<UpdaterOptions, "currentVersion"> {
+interface ThrottledSource {
   /** Calls closer together than this answer `throttled`, as Chrome does; five minutes by default. */
   readonly minimumIntervalMilliseconds?: number;
 }
 
+/** Where a Squirrel-style install gets its updates; the running version comes from the manifest. */
+export interface FeedUpdateSource extends Omit<UpdaterOptions, "currentVersion">, ThrottledSource {
+  readonly appInstallerUrl?: never;
+}
+
+/** Where a package installed outside the Store gets its updates. */
+export interface AppInstallerUpdateSource extends ThrottledSource {
+  /** The address of the `.appinstaller` file the package was installed from; Windows installs from it. */
+  readonly appInstallerUrl: string;
+}
+
+/** Where updates come from: a feed (a per-user install) or an `.appinstaller` file (a sideloaded package). */
+export type RuntimeUpdateSource = FeedUpdateSource | AppInstallerUpdateSource;
+
+const APP_INSTALLER_SCHEME = "ms-appinstaller:?source=";
+
 /**
  * Chrome's `onUpdateAvailable` and `requestUpdateCheck`. In a package (the
- * Store's MSIX) the Store is asked for updates and installs them silently; in
+ * Store's MSIX) the Store is asked for updates and installs them silently; a
+ * package from elsewhere asks its `.appinstaller` file; in
  * a per-user install `winui-svelte/updater` checks the feed and unpacks the
  * new version.
  */
@@ -44,20 +61,26 @@ export class RuntimeUpdates {
   private stagedVersion: string | undefined;
 
   private readonly storeBackend: StoreBackend | undefined;
+  private readonly openUri: ((url: string) => Promise<boolean>) | undefined;
 
-  constructor({ source, currentVersion, storeBackend }: {
+  constructor({ source, currentVersion, storeBackend, openUri }: {
     source: RuntimeUpdateSource | undefined;
     currentVersion: string;
     storeBackend?: StoreBackend;
+
+    /** Opens a link; `launchUri` by default. The tests give one. */
+    openUri?: (url: string) => Promise<boolean>;
   }) {
     this.source = source;
     this.currentVersion = currentVersion;
     this.storeBackend = storeBackend;
+    this.openUri = openUri;
   }
 
   /**
-   * Asks for a newer version: the Store in a package, else the feed (unpacked
-   * beside the running version).
+   * Asks for a newer version: the Store in a Store package, the `.appinstaller`
+   * file in a sideloaded one, else the feed (unpacked beside the running
+   * version).
    *
    * @returns `no_update` with nothing to ask, `throttled` when asked again too soon.
    */
@@ -72,17 +95,54 @@ export class RuntimeUpdates {
     }
 
     this.lastCheck = now;
+    const options = this.storeBackend && {
+      backend: this.storeBackend
+    };
+    const { getPackageInfo } = await import("#src/store/identity.js");
+    const info = getPackageInfo(options);
+    const isUnpackaged = info === null;
+    if (isUnpackaged) {
+      return this.checkFeed();
+    }
+
+    if (!info.isFromStore) {
+      return this.checkAppInstaller(options);
+    }
+
     const { checkForUpdates } = await import("#src/store/updates.js");
-    const reply = await checkForUpdates(
-      this.storeBackend && {
-        backend: this.storeBackend
-      }
-    );
+    const reply = await checkForUpdates(options);
     if (reply.hasPackage) {
       return this.installFromStore(reply.value);
     }
 
     return this.checkFeed();
+  }
+
+  private async checkAppInstaller(options: { backend: StoreBackend } | undefined) {
+    const appInstallerUrl = this.source?.appInstallerUrl;
+    const hasNoAppInstaller = appInstallerUrl === undefined;
+    if (hasNoAppInstaller) {
+      return {
+        status: UpdateCheckStatus.NO_UPDATE
+      } satisfies UpdateCheckResult;
+    }
+
+    const { checkPackageUpdate } = await import("#src/store/package-update.js");
+    const reply = await checkPackageUpdate(options);
+    const isUpdateReady = reply.hasPackage
+      && (reply.value === PackageUpdateState.available || reply.value === PackageUpdateState.required);
+    if (!isUpdateReady) {
+      return {
+        status: UpdateCheckStatus.NO_UPDATE
+      } satisfies UpdateCheckResult;
+    }
+
+    const openUri = this.openUri ?? (await import("#src/data-transfer/launcher.js")).launchUri;
+    await openUri(`${APP_INSTALLER_SCHEME}${encodeURIComponent(appInstallerUrl)}`);
+    this.onUpdateAvailable.dispatch({});
+    return {
+      status: UpdateCheckStatus.UPDATE_AVAILABLE
+    } satisfies UpdateCheckResult;
   }
 
   private async installFromStore(check: UpdateCheck) {
@@ -102,8 +162,8 @@ export class RuntimeUpdates {
 
   private async checkFeed() {
     const { source } = this;
-    const hasNoSource = source === undefined;
-    if (hasNoSource) {
+    const hasNoFeed = source === undefined || source.appInstallerUrl !== undefined;
+    if (hasNoFeed) {
       return {
         status: UpdateCheckStatus.NO_UPDATE
       } satisfies UpdateCheckResult;

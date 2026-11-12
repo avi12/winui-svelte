@@ -95,7 +95,8 @@ test("a package identity wins, and its URLs are ms-appx", () => {
       publisher: "CN=x",
       version: "1.0.0.0",
       installedPath: "C:\\Program Files\\WindowsApps\\Demo",
-      isDevelopmentMode: false
+      isDevelopmentMode: false,
+      isFromStore: true
     })
   });
   assert.equal(runtime.id, "Demo_abc");

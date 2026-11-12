@@ -1,10 +1,11 @@
 export * from "./identity.ts";
 export * from "./license.ts";
 export * from "./updates.ts";
+export * from "./package-update.ts";
 export * from "./packages.ts";
 export * from "./startup.ts";
 export type { PackageReply } from "./reply.ts";
-export { PackageStage, StartupState, UpdateState } from "./states.ts";
+export { PackageStage, PackageUpdateState, SignatureKind, StartupState, UpdateState } from "./states.ts";
 export type {
   AppLicense,
   AvailableUpdate,

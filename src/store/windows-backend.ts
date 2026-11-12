@@ -1,5 +1,5 @@
 import type { StoreBackend } from "./types.ts";
-import { hasPackageIdentity, windowsPackageInfo } from "./windows-identity.ts";
+import { hasPackageIdentity, windowsCheckPackageUpdate, windowsPackageInfo } from "./windows-identity.ts";
 import { windowsOnPackageProgress, windowsStartupTask } from "./windows-packages.ts";
 import { windowsCheckUpdates, windowsLicense, windowsOnOfflineLicensesChanged } from "./windows-store.ts";
 
@@ -16,6 +16,7 @@ export function windowsStoreBackend() {
     license: windowsLicense,
     onOfflineLicensesChanged: windowsOnOfflineLicensesChanged,
     checkUpdates: windowsCheckUpdates,
+    checkPackageUpdate: windowsCheckPackageUpdate,
     onPackageProgress: windowsOnPackageProgress,
     startupTask: windowsStartupTask,
     poll({ milliseconds, tick }) {

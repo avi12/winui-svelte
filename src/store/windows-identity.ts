@@ -1,4 +1,5 @@
 import { Package } from "./bindings.ts";
+import { packageUpdateStateOf, SignatureKind, signatureKindOf } from "./states.ts";
 import type { PackageInfo } from "./types.ts";
 import { hasPackageIdentity } from "#src/window/package-identity.js";
 
@@ -19,8 +20,20 @@ export function windowsPackageInfo() {
     publisher: id.publisher,
     version: `${major}.${minor}.${build}.${revision}`,
     installedPath: current.installedPath,
-    isDevelopmentMode: current.isDevelopmentMode
+    isDevelopmentMode: current.isDevelopmentMode,
+    isFromStore: signatureKindOf(current.signatureKind) === SignatureKind.store
   } satisfies PackageInfo;
 }
 
 export { hasPackageIdentity };
+
+/**
+ * Asks the package's `.appinstaller` source whether a newer version exists
+ * (`Package.CheckUpdateAvailabilityAsync`). Call it only inside a package.
+ *
+ * @returns The availability.
+ */
+export async function windowsCheckPackageUpdate() {
+  const result = await Package.current.checkUpdateAvailabilityAsync();
+  return packageUpdateStateOf(result.availability);
+}
