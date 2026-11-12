@@ -278,7 +278,6 @@ export class ItemRows<Item> {
       wanted,
       groups
     }));
-    // eslint-disable-next-line svelte/prefer-svelte-reactivity -- not component state
     const entries = new Map<string, Entry<Item>>(shown.map(item => [key(item), item]));
     for (const group of groups) {
       entries.set(groupRowKey(group.key), new GroupHeader(group));

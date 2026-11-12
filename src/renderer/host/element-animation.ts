@@ -1271,7 +1271,6 @@ export function enableElementAnimation(options?: ElementAnimationOptions) {
   });
 
   const previousComputedStyle = read(globalThis, GET_COMPUTED_STYLE);
-  // eslint-disable-next-line no-restricted-syntax -- stands in for the global getComputedStyle(element, pseudoElement)
   function computedStyleOf(node: NativeValue, ...rest: NativeValue[]) {
     if (isMotionNode(node)) {
       return engine.computedStyle(node);

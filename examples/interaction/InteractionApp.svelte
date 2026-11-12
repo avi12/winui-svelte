@@ -95,7 +95,6 @@
 
   newPromise();
 
-  // eslint-disable-next-line no-restricted-syntax -- Svelte's action signature is (node, parameter)
   function probeAction(_node: object, label: string) {
     actionCalls++;
     note(`action:${label}`);

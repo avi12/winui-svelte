@@ -13,5 +13,4 @@ interface TrayMenuEditorComponent {
 }
 
 declare const TrayMenuEditor: TrayMenuEditorComponent;
-// eslint-disable-next-line no-restricted-exports -- Svelte declares a component as the default export
 export default TrayMenuEditor;

@@ -411,7 +411,6 @@ function lowerNode({ context, node }: {
  * @param options - The context and the fragment.
  * @returns The text of an array expression.
  */
-// eslint-disable-next-line no-restricted-syntax -- a recursive function needs its return type written
 export function arrayOf({ context, fragment }: {
   context: MarkupContext;
   fragment: AST.Fragment;

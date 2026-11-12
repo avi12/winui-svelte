@@ -57,9 +57,7 @@ export interface SpeechSynthesisUtteranceExtras {
 
 declare global {
   // The extras join the standard types wherever this module is imported.
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type -- declaration merging is the point
   interface SpeechSynthesisVoice extends SpeechSynthesisVoiceExtras {}
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type -- declaration merging is the point
   interface SpeechSynthesisUtterance extends SpeechSynthesisUtteranceExtras {}
 }
 
@@ -122,9 +120,7 @@ export class SpeechSynthesisVoice {
   readonly voiceURI: string;
   readonly name: string;
   readonly lang: string;
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- the standard member name
   readonly localService: boolean;
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- the standard member name
   readonly default: boolean;
   readonly gender: SpeechVoiceGender;
   readonly description: string;

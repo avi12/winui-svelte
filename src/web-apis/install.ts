@@ -27,7 +27,6 @@ export function defineProperty({ name, value, target = globalThis }: {
   return () => {
     const isNew = previous === undefined;
     if (isNew) {
-      // eslint-disable-next-line no-restricted-syntax -- the one typed way to delete a property of any object
       Reflect.deleteProperty(target, name);
       return;
     }

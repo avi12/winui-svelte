@@ -24,7 +24,6 @@ import type { BalloonOptions } from "#src/tray/index.js";
 
 declare module "#src/components/convert.js" {
   interface AppBrushes {
-    // eslint-disable-next-line @typescript-eslint/naming-convention -- a resource key keeps its XAML case
     BrandBrush: true;
   }
 }

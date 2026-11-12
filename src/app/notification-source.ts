@@ -71,7 +71,6 @@ function progressDataOf({ progress, sequence }: {
   return data;
 }
 
-// eslint-disable-next-line no-restricted-syntax -- reads as a conditional call; the pair is not a bag of options
 function ifDefined<T>(value: T | undefined, apply: (defined: T) => void) {
   const isDefined = value !== undefined;
   if (isDefined) {

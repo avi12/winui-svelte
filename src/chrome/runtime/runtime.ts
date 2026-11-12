@@ -36,7 +36,6 @@ export interface PlatformInfo {
 
 /** Chrome's manifest, as far as an app has one. */
 export interface RuntimeManifest {
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- Chrome's own key
   readonly manifest_version: typeof MANIFEST_VERSION;
   readonly name: string;
   readonly version: string;
@@ -137,7 +136,6 @@ export class Runtime {
   getManifest() {
     const { name, version, description } = this.identity();
     return {
-      // eslint-disable-next-line @typescript-eslint/naming-convention -- Chrome's own key
       manifest_version: MANIFEST_VERSION,
       name,
       version,

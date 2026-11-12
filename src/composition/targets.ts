@@ -69,6 +69,5 @@ export function kindOfValue(value: MemberValue) {
 /** The kinds of a property set's members, from the values it starts with. */
 export function kindsOfValues<Values extends Readonly<Record<string, MemberValue>>>(values: Values) {
   const entries = Object.entries(values).map(([name, value]) => [name, kindOfValue(value)]);
-  // oxlint-disable-next-line typescript/consistent-type-assertions -- Object.fromEntries loses each name's kind
   return Object.fromEntries(entries) as KindsOfValues<Values>;
 }

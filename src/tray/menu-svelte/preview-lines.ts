@@ -12,7 +12,6 @@ interface PreviewLine {
   readonly depth: number;
 }
 
-// eslint-disable-next-line no-restricted-syntax -- a recursive function needs its return type written
 function linesOf({ entries, depth }: {
   readonly entries: readonly ResolvedMenuItem[];
   readonly depth: number;

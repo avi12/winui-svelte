@@ -23,7 +23,6 @@ class FakeCollection {
   }
 
   // WinUI's own InsertAt(index, item), which the renderer calls by name.
-  // eslint-disable-next-line no-restricted-syntax -- mirrors WinUI's signature
   insertAt(index: number, item: object) {
     this.items.splice(index, 0, item);
     this.adopt(item);
@@ -188,16 +187,12 @@ export class FakeMotionPanel {
 export class Line extends FakeMotionPanel {
   // WinUI's own names, which the length of a line reads.
 
-  // oxlint-disable-next-line id-length
   x1 = 0;
 
-  // oxlint-disable-next-line id-length
   y1 = 0;
 
-  // oxlint-disable-next-line id-length
   x2 = 30;
 
-  // oxlint-disable-next-line id-length
   y2 = 40;
 
   strokeThickness = 2;
@@ -337,7 +332,6 @@ export class FakeBag {
     return this.held.indexOf(item);
   }
 
-  // eslint-disable-next-line no-restricted-syntax -- mirrors WinUI's signature
   insertAt(index: number, item: object) {
     this.held.splice(index, 0, item);
   }
@@ -351,7 +345,6 @@ export class FakeBag {
 export class FakeService {
   static readonly notes = new WeakMap<object, unknown>();
 
-  // eslint-disable-next-line no-restricted-syntax -- mirrors WinUI's static Set<Property>(element, value)
   static setNote(control: object, value: unknown) {
     FakeService.notes.set(control, value);
   }

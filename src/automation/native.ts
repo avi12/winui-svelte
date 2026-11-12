@@ -438,7 +438,6 @@ export function createUiaNativeBackend() {
         interfaceType: elementInterface,
         slot: ELEMENT_AUTOMATION_ID_SLOT + offset
       }),
-      // oxlint-disable-next-line typescript/consistent-type-assertions -- the answer is a control type id of the header
       controlType: numberOut({
         object: element,
         slot: ELEMENT_CONTROL_TYPE_SLOT + offset

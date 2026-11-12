@@ -14,7 +14,6 @@ registerControls(fakeControls);
 registerHooks(svelteHooks());
 const { mountSnippetRow } = await import("./keyed-rows.svelte.ts");
 // The typings of a .svelte module name only its default export.
-// oxlint-disable-next-line typescript/consistent-type-assertions
 const { rowOf } = await import("./RootSwap.fixture.svelte") as unknown as { rowOf: Snippet<[boolean]> };
 
 // Svelte applies a change on the next microtask.
@@ -26,7 +25,6 @@ test("a realized row puts its new root in the container's slot", async () => {
   const slot = new FakeButton();
   const row = mountSnippetRow({
     // The fake stands for the ContentControl the container made.
-    // oxlint-disable-next-line typescript/consistent-type-assertions
     slot: slot as never,
     snippet: rowOf,
     value: false

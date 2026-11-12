@@ -172,7 +172,6 @@ export type GridLengthInput = number | GridLengthText | GridLengthValue;
  * prop takes their names too:
  * `declare module "winui-svelte/components" { interface AppBrushes { BrandBrush: true } }`.
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type -- an app fills it by merging
 export interface AppBrushes {}
 
 declare const projection: unique symbol;

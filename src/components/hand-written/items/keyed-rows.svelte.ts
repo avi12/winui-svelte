@@ -77,7 +77,6 @@ export function mountSnippetRow<Value>({ slot, snippet, value }: {
 export class KeyedRows<Entry> {
   private readonly rows = new LiveRows<Entry, FrameworkElement>();
   private readonly mount: RowMount<Entry>;
-  // eslint-disable-next-line svelte/prefer-svelte-reactivity -- not component state
   private entries: ReadonlyMap<string, Entry> = new Map();
   private nextContainerId = 0;
 

@@ -87,7 +87,6 @@ test("a value that is not a number and an unknown state are TypeErrors", () => {
       value: Number.NaN
     }), TypeError
   );
-  // oxlint-disable-next-line typescript/consistent-type-assertions -- an unknown state is what is being tried
   assert.throws(() => progressCall({ state: "loud" as never }), TypeError);
 });
 

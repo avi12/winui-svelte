@@ -45,7 +45,6 @@ export class WindowControlsOverlayGeometryChangeEvent extends Event {
   readonly titlebarAreaRect: TitlebarAreaRect;
 
   /** Whether the overlay is in use now. */
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- the standard member name
   readonly visible: boolean;
 
   constructor(type: string, init: {

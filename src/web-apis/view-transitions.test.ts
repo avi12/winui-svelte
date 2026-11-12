@@ -26,12 +26,10 @@ function control(label: string) {
 }
 
 function labelOf(element: UIElement) {
-  // oxlint-disable-next-line typescript/consistent-type-assertions -- the stand-ins are FakeControls
   return (element as unknown as FakeControl).label;
 }
 
 class FakeAnimation implements TransitionAnimation {
-  // oxlint-disable-next-line typescript/consistent-type-assertions -- never read by the transition
   configuration = {} as unknown as ConnectedAnimationConfiguration;
   readonly source: string;
   destination: string | null = null;
@@ -64,7 +62,6 @@ class FakeAnimation implements TransitionAnimation {
 class FakeService implements TransitionAnimationService {
   readonly animations = new Map<string, FakeAnimation>();
 
-  // eslint-disable-next-line no-restricted-syntax -- the service's own signature
   prepareToAnimate(key: string, source: UIElement) {
     this.animations.set(key, new FakeAnimation(labelOf(source)));
   }

@@ -591,7 +591,6 @@ function defineMembers({ target, members }: {
     for (const [name, descriptor] of previous) {
       const isNew = descriptor === undefined;
       if (isNew) {
-        // eslint-disable-next-line no-restricted-syntax -- the one typed way to delete a property of any object
         Reflect.deleteProperty(target, name);
       } else {
         Object.defineProperty(target, name, descriptor);
@@ -671,7 +670,6 @@ export function installPage(options: PageInstallOptions = {}) {
 
     const isOurDocument = !hasDocument && globalThis.document === pageDocument;
     if (isOurDocument) {
-      // eslint-disable-next-line no-restricted-syntax -- the one typed way to delete a property of any object
       Reflect.deleteProperty(globalThis, "document");
     }
 

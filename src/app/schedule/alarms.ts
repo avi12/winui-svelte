@@ -138,7 +138,6 @@ function alarmOf({ name, xml }: {
  * @throws {Error} When the fields are not valid, an argument holds a control
  *   character, or Task Scheduler refuses the task.
  */
-// eslint-disable-next-line no-restricted-syntax -- mirrors chrome.alarms.create(name, info)
 export async function create(name: string, info: AlarmCreateInfo = {}) {
   const taskName = taskNameOf(name);
   const parsed = createInfoSchema.safeParse(info);
@@ -178,7 +177,6 @@ export async function create(name: string, info: AlarmCreateInfo = {}) {
  * @returns The alarm, or undefined when there is none.
  * @throws {TypeError} When the name is not an identifier.
  */
-// eslint-disable-next-line no-restricted-syntax -- mirrors chrome.alarms.get(name)
 export async function get(name: string, options: AlarmOptions = {}) {
   const taskName = taskNameOf(name);
   const xml = (options.backend ?? createSchtasksBackend()).read(taskName);
@@ -221,7 +219,6 @@ export async function getAll(options: AlarmOptions = {}) {
  * @returns Whether there was an alarm to remove.
  * @throws {TypeError} When the name is not an identifier.
  */
-// eslint-disable-next-line no-restricted-syntax -- mirrors chrome.alarms.clear(name)
 export async function clear(name: string, options: AlarmOptions = {}) {
   const taskName = taskNameOf(name);
   return (options.backend ?? createSchtasksBackend()).remove(taskName);

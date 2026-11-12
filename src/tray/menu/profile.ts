@@ -34,6 +34,5 @@ export function parseProfile<ItemId extends string = string>({ value, level = Me
   const parsed = schemaFor(level).safeParse(value);
   const fallback = defaultProfile<ItemId>({ level });
   // a saved file may name ids the app no longer has; resolveMenu ignores them, so the type states what the app writes
-  // oxlint-disable-next-line typescript/consistent-type-assertions -- see above
   return parsed.success ? parsed.data as unknown as MenuProfile<ItemId> : fallback;
 }

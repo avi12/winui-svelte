@@ -23,7 +23,6 @@ const hostManifestSchema = z.object({
   name: z.string(),
   path: z.string().min(1),
   type: z.literal("stdio"),
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- the manifest's own key
   allowed_origins: z.array(z.string()).optional()
 });
 

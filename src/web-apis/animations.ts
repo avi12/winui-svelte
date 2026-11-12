@@ -156,7 +156,6 @@ function abortedError() {
 /** The web's `Animation` over an element's control: play, pause, finish, cancel, reverse, rate and `finished`. */
 export class Animation extends HandlerEventTarget {
   id = "";
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- the standard member name
   readonly pending = false;
   readonly replaceState = "active";
   private effectValue: KeyframeEffect | null;

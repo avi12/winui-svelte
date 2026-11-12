@@ -85,7 +85,6 @@ function setUp({ isReduced = false } = {}) {
       const known = visuals.get(element);
       const isKnown = known !== undefined;
       if (isKnown) {
-        // oxlint-disable-next-line typescript/consistent-type-assertions -- a stand-in for a Visual
         return known as unknown as ReturnType<ImplicitLayoutHost["visualOf"]>;
       }
 
@@ -94,7 +93,6 @@ function setUp({ isReduced = false } = {}) {
         implicitAnimations: null
       };
       visuals.set(element, visual);
-      // oxlint-disable-next-line typescript/consistent-type-assertions -- a stand-in for a Visual
       return visual as unknown as ReturnType<ImplicitLayoutHost["visualOf"]>;
     },
     isMotionReduced: () => state.isReduced,
@@ -130,7 +128,6 @@ function setUp({ isReduced = false } = {}) {
 }
 
 function child(name: string) {
-  // oxlint-disable-next-line typescript/consistent-type-assertions -- a stand-in for a UIElement
   return { name } as unknown as UIElement;
 }
 

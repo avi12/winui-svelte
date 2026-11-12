@@ -372,7 +372,6 @@ export class Vector3Member extends Vector3Expression {
   }
 
   /** The third component. */
-  // oxlint-disable-next-line id-length -- the component's name in Vector3, as x and y are
   get z() {
     return new ScalarExpression(memberNode({
       node: this,
@@ -455,7 +454,6 @@ export function reference<const Members extends ReferenceMembers>({ name, member
       member: compositionPath(member)
     })
   )]);
-  // oxlint-disable-next-line typescript/consistent-type-assertions -- Object.fromEntries loses each member's kind
   return Object.fromEntries(entries) as Reference<Members>;
 }
 

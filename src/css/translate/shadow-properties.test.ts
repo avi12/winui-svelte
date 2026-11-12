@@ -134,7 +134,6 @@ test("the window shadow is drawn by the host, and put back when the write change
     return handler?.({
       control: {},
       value: write.value,
-      // oxlint-disable-next-line typescript/consistent-type-assertions -- the handler never touches the seam
       native: {} as unknown as WriteSeam,
       refreshText() {}
     });

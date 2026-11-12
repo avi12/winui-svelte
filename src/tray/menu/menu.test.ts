@@ -32,7 +32,6 @@ function separator(id: string) {
   } satisfies MenuItem;
 }
 
-// eslint-disable-next-line no-restricted-syntax -- a recursive function needs its return type written
 function shape(entries: readonly ResolvedMenuItem[]): string[] {
   const names = entries.map(entry => (entry.kind === MenuItemKind.SUBMENU ? `${entry.id}[${shape(entry.items).join(",")}]` : entry.id));
   return names;

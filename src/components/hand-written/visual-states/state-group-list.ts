@@ -22,7 +22,6 @@ export class StateGroupList<Group> {
   private collection: GroupCollection<Group> | null = null;
 
   /** Puts a group at a position, in the element's collection as well once bound. */
-  // eslint-disable-next-line no-restricted-syntax -- the renderer calls a vector's insertAt(position, item)
   insertAt(position: number, group: Group) {
     this.groups.splice(position, 0, group);
     this.collection?.insertAt(position, group);

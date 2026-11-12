@@ -13,7 +13,6 @@ const bindingModule = /^#winui\/|dist[/]bindings/u;
  * Rollup's `treeshake.moduleSideEffects` hook: a binding module is pure, and
  * everything else is kept as the bundler would.
  */
-// eslint-disable-next-line no-restricted-syntax -- Rollup's signature: the module, and whether it is external
 export function hasSideEffects(id: string, isExternal: boolean) {
   return !isExternal || !bindingModule.test(id);
 }

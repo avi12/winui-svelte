@@ -297,7 +297,6 @@ export interface FileSystemFileHandleExtras {
 
 declare global {
   // The extras join the standard handles wherever this module is imported.
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type -- declaration merging is the point
   interface FileSystemFileHandle extends FileSystemFileHandleExtras {}
   interface FileSystemHandle {
     /** The full path on disk; a WinUI extra. */

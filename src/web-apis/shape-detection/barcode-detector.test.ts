@@ -93,7 +93,6 @@ test("an unsupported or empty formats list throws a TypeError, as on the web", (
 });
 
 test("detect rejects a source that is not an image with a TypeError", async () => {
-  // oxlint-disable-next-line typescript/consistent-type-assertions -- a caller outside the types may pass anything
   await assert.rejects(new BarcodeDetector().detect({ nothing: true } as unknown as ImageData), TypeError);
 });
 

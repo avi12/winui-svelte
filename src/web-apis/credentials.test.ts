@@ -188,7 +188,6 @@ interface Decoded {
   end: number;
 }
 
-// eslint-disable-next-line no-restricted-syntax -- a recursive function needs its return type written
 function decodeCbor({ bytes, start = 0 }: {
   bytes: Uint8Array;
   start?: number;

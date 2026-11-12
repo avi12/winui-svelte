@@ -10,7 +10,6 @@ export interface OperationProgressEventInit {
  * `abort` and `loadend`, as `XMLHttpRequest` and `FileReader` fire them.
  */
 export class OperationProgressEvent extends Event {
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- the web ProgressEvent name
   readonly lengthComputable: boolean;
   readonly loaded: number;
   readonly total: number;

@@ -71,7 +71,6 @@ export interface ShareInit extends ShareExtras {
 
 declare global {
   // The extras join the standard ShareData wherever this module is imported.
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type -- declaration merging is the point
   interface ShareData extends ShareExtras {}
 }
 

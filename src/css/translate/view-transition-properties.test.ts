@@ -84,7 +84,6 @@ test("the write names the control through the host, and its undo takes the name 
   const undo = handler?.({
     control,
     value: "hero",
-    // oxlint-disable-next-line typescript/consistent-type-assertions -- the handler never touches the seam
     native: {} as unknown as WriteSeam,
     refreshText() {}
   });

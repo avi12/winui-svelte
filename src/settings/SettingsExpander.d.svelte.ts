@@ -8,5 +8,4 @@ export type { SettingsExpanderProps };
  * `SettingsCard`s) slide open below it.
  */
 declare const SettingsExpander: Component<SettingsExpanderProps, Record<string, never>, "isExpanded">;
-// eslint-disable-next-line no-restricted-exports -- Svelte declares a component as the default export
 export default SettingsExpander;

@@ -350,13 +350,11 @@ export async function createImageBitmap(
 
 /** One sequence of frames in an image file; a Windows image file has exactly one. */
 export class ImageTrack {
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- the standard member name
   readonly animated: boolean;
   readonly frameCount: number;
 
   /** `Infinity` for an animation: Windows does not say how often a GIF loops. */
   readonly repetitionCount: number;
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- the standard member name
   selected = true;
 
   constructor(frameCount: number) {
@@ -613,7 +611,6 @@ export interface CanvasEncoders {
 
 declare module "#src/win2d/context-2d/canvas-element.js" {
   // The encoders join the canvas wherever this module is imported.
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type -- declaration merging is the point
   interface CanvasElement extends CanvasEncoders {}
 }
 

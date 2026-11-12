@@ -287,7 +287,6 @@ export function installNetwork(options: NetworkInstallOptions = {}) {
     if (hasNativeOnLine) {
       Object.defineProperty(navigator, "onLine", previousOnLine);
     } else {
-      // eslint-disable-next-line no-restricted-syntax -- the one typed way to delete a property of any object
       Reflect.deleteProperty(navigator, "onLine");
     }
 

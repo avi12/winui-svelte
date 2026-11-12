@@ -54,7 +54,6 @@
     log("attach");
     return () => log("detach");
   }
-  // eslint-disable-next-line no-restricted-syntax -- Svelte's action signature is (node, parameter)
   function useLog(_node: unknown, parameter: string) {
     log(`use:${parameter}`);
     return { destroy: () => log("use-destroy") };

@@ -59,7 +59,6 @@ export class DataTransferItemList {
   }
 
   /** Adds a text format (`add("hello", "text/plain")`) or a file (`add(file)`). */
-  // eslint-disable-next-line no-restricted-syntax -- the web's DataTransferItemList.add(data, type)
   add(data: string | NativeFile, type?: string) {
     const isText = typeof data === "string";
     if (isText) {
@@ -160,7 +159,6 @@ export class DataTransfer {
   }
 
   /** Puts the text of a format; a source does this in `ondragstart`. */
-  // eslint-disable-next-line no-restricted-syntax -- the web's DataTransfer.setData(type, value)
   setData(type: string, value: string) {
     this.deferred.delete(type);
     this.strings.set(type, value);

@@ -52,12 +52,10 @@ export interface PushSubscriptionOptionsInit {
 
 /** What a push subscription was made with. */
 export class PushSubscriptionOptions {
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- the standard member name
   readonly userVisibleOnly: boolean;
   readonly applicationServerKey: ArrayBuffer | null;
 
   /** Made by `PushManager.subscribe`. */
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- the standard member name
   constructor({ userVisibleOnly, applicationServerKey }: {
     userVisibleOnly: boolean;
     applicationServerKey: ArrayBuffer | null;

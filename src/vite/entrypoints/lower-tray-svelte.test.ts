@@ -43,7 +43,6 @@ function load(markup: string) {
     .replace(/^import .*$/mu, "")
     .replace(/^export function/mu, "function")
     .replace("export default", "const tray =");
-  // oxlint-disable-next-line typescript/no-implied-eval -- runs the lowered tray module to read the menu it builds
   const make = new Function("defineTray", "LoweredMenuItemKind", `${code}
 return { menu: tray.menu, toggleAutostart };`);
   const loaded: {

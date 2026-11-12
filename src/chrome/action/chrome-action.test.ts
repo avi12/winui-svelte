@@ -65,7 +65,7 @@ test("setIcon swaps the icon, for one path or a theme pair", async () => {
   const imageData: unknown = {
     imageData: {}
   };
-  await assert.rejects(action.setIcon(imageData as never)); // oxlint-disable-line -- proves a wrong shape is refused
+  await assert.rejects(action.setIcon(imageData as never));
 });
 
 test("badge color takes channels or hex, with Chrome's red as the default", async () => {

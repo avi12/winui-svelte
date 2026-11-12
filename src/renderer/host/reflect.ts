@@ -30,7 +30,6 @@ function isMethod(value: NativeValue): value is NativeMethod {
  * @param key - The member's name.
  * @returns The member, or `undefined` when `target` has no members to read.
  */
-// eslint-disable-next-line no-restricted-syntax -- an accessor, positional like Reflect.get
 export function read(target: NativeValue, key: string) {
   return isRecord(target) ? target[key] : undefined;
 }
@@ -44,7 +43,6 @@ export function read(target: NativeValue, key: string) {
  * @returns What the method returns.
  * @throws {TypeError} When `target` has no such method.
  */
-// eslint-disable-next-line no-restricted-syntax -- an accessor, positional like Reflect.apply
 export function call(target: NativeValue, key: string, ...values: NativeValue[]) {
   const method = read(target, key);
   if (!isMethod(method)) {
@@ -61,7 +59,6 @@ export function call(target: NativeValue, key: string, ...values: NativeValue[])
  * @param key - The member's name.
  * @param value - What to set it to.
  */
-// eslint-disable-next-line no-restricted-syntax -- an accessor, positional like Reflect.set
 export function write(target: object, key: string, value: NativeValue) {
   Object.assign(target, { [key]: value });
 }

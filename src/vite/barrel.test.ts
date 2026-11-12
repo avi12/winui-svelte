@@ -20,15 +20,12 @@ function transformOf({ barrel, importer, code, command }: {
 }) {
   const plugin = barrelImports();
   // The hooks use only the command, parse and resolve of Rollup's contexts.
-  // oxlint-disable-next-line typescript/consistent-type-assertions
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- see above
   plugin.configResolved.call(undefined as never, { command } as ResolvedConfig);
   const context = {
     parse: parseAst,
     resolve: () => Promise.resolve({ id: barrel })
   };
   // The plugin context is Rollup's; the hook uses only parse and resolve.
-  // oxlint-disable-next-line typescript/consistent-type-assertions
   return plugin.transform.call(context as never, code, importer);
 }
 

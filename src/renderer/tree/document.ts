@@ -102,7 +102,6 @@ function createElement(name: string) {
 function createDocument() {
   return {
     // What web-apis/page put on the global `document` stays reachable through the prototype.
-    // eslint-disable-next-line @typescript-eslint/naming-convention -- the literal's prototype
     __proto__: globalThis.document ?? {
       addEventListener() {},
       removeEventListener() {}
@@ -172,7 +171,6 @@ export function mountOnTree<Native, Props extends object>({
   activateRenderer(renderer);
   // The typings name the DOM's Element as a mount target; the shim's
   // fragment stands in for one.
-  // oxlint-disable-next-line typescript/consistent-type-assertions
   const mountTarget = target as unknown as Element;
   return mount(component, {
     target: mountTarget,

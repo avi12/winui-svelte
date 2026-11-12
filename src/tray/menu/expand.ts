@@ -41,7 +41,6 @@ function childrenOf<ItemId extends string>(item: MenuItem<ItemId>) {
  */
 export function expandMenu<ItemId extends string>({ items }: { readonly items: ReadonlyArray<MenuItem<ItemId>> }) {
   const seen = new Set<string>();
-  // eslint-disable-next-line no-restricted-syntax -- a recursive function needs its return type written
   function expandList({ list, parentId }: {
     readonly list: ReadonlyArray<MenuItem<ItemId>>;
     readonly parentId: ItemId | typeof ROOT_ID;

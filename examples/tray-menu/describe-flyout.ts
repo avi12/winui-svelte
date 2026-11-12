@@ -96,7 +96,6 @@ function describeItem(item: MenuFlyoutItemBase) {
   return { type: separator === null ? "unknown" : "separator" };
 }
 
-// eslint-disable-next-line no-restricted-syntax -- a recursive function needs its return type written
 function describeItems(items: ItemVector | null): object[] {
   const described: object[] = [];
   const hasItems = items !== null;

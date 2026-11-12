@@ -3,7 +3,6 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 // WinUI names its members in UpperCamelCase
-/* eslint-disable @typescript-eslint/naming-convention */
 const Modifiers = {
   None: 0,
   Control: 1,
@@ -11,7 +10,6 @@ const Modifiers = {
   Shift: 4,
   High: 2147483648
 } as const;
-/* eslint-enable @typescript-eslint/naming-convention */
 
 test("an enum prop takes a member by its WinUI name or its value", () => {
   assert.equal(

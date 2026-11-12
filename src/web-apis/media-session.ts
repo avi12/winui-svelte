@@ -97,9 +97,7 @@ export interface MediaSessionExtras {
 
 declare global {
   // The extras join the standard types wherever this module is imported.
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type -- declaration merging is the point
   interface MediaMetadataInit extends MediaMetadataExtras {}
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type -- declaration merging is the point
   interface MediaSession extends MediaSessionExtras {}
 }
 

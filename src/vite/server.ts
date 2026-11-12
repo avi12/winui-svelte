@@ -162,7 +162,6 @@ class WindowEnvironment extends DevEnvironment {
     });
   }
 
-  // eslint-disable-next-line no-restricted-syntax -- Vite's DevEnvironment.fetchModule is positional.
   override async fetchModule(id: string, importer?: string, options?: FetchFunctionOptions) {
     const resolved = await this.pluginContainer.resolveId(id, importer);
     const file = resolved?.id.replace(queryOrHash, "");

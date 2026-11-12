@@ -9,7 +9,6 @@ import { test } from "node:test";
 
 test("Next and Previous throw instead of reaching WinUI", () => {
   const fake = {};
-  // oxlint-disable-next-line -- the call throws before it reads the element
   const within = fake as UIElement;
   for (const direction of [FocusNavigationDirection.Next, FocusNavigationDirection.Previous]) {
     assert.throws(() => moveFocus({

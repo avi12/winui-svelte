@@ -32,7 +32,6 @@ export interface SpeechRecognitionExtras {
 
 declare global {
   // The extras join the standard type wherever this module is imported.
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type -- declaration merging is the point
   interface SpeechRecognition extends SpeechRecognitionExtras {}
 }
 
@@ -200,9 +199,7 @@ export class SpeechGrammarList {
 
 /** The standard `SpeechRecognition`: listens to the microphone and reports what was said. */
 export class SpeechRecognition extends HandlerEventTarget {
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- the standard member name
   continuous = false;
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- the standard member name
   interimResults = false;
   lang = "";
   maxAlternatives = 1;

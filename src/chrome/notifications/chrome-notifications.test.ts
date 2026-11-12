@@ -240,7 +240,6 @@ test("create rejects options that fail the check", async () => {
         }
       ];
       for (const options of bad) {
-        // oxlint-disable-next-line typescript/consistent-type-assertions -- proves zod rejects it
         await assert.rejects(notifications.create("x", options as never), Error);
       }
     }

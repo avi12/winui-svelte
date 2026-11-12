@@ -69,7 +69,6 @@ export function visualStatesWith(fill: StateFiller) {
   const applied = new WeakMap<object, Applied>();
   // The states' brushes change with the rules that match, not with the
   // template's own events, so they are written again only when those change.
-  // eslint-disable-next-line no-restricted-syntax -- positional: the entry chunk's size budget never rises
   function drive(element: StateElement, rules: RankedRule[], native: WriteSeam) {
     const plan = planVisualStates({
       elementType: element.elementType,

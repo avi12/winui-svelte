@@ -217,7 +217,6 @@ export function defineMessaging<TProtocolMap>({
         pending.set(id, {
           // The same trust as onMessage below: the answer is taken to be its
           // message's declared return type.
-          // oxlint-disable-next-line typescript/consistent-type-assertions
           resolve: answer => resolve(answer as Parameters<typeof resolve>[0]),
           reject,
           timer
@@ -248,7 +247,6 @@ export function defineMessaging<TProtocolMap>({
 
       // The wire carries JSON the protocol map describes but cannot check: the
       // frame's data is taken to be its message's data, as webext-core does.
-      // oxlint-disable-next-line typescript/consistent-type-assertions
       handlers.set(type, frame => handler(frame as Parameters<typeof handler>[0]));
       return () => {
         handlers.delete(type);

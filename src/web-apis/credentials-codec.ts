@@ -125,7 +125,6 @@ function head({ major, length }: {
  * @param value - The value.
  * @returns The encoding.
  */
-// eslint-disable-next-line no-restricted-syntax -- a recursive function needs its return type written
 export function encodeCbor(value: CborValue): Uint8Array {
   const isNumber = typeof value === "number";
   if (isNumber) {

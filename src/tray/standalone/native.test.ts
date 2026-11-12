@@ -1,5 +1,4 @@
 import { createMenuBuilder, menuTextOf } from "./native.ts";
-// eslint-disable-next-line no-restricted-imports -- the test reads the real menu handles back with user32
 import { DynWin32, DynWin32Unsafe } from "@microsoft/dynwinrt/win32/unsafe";
 import { resolveMenu } from "#src/tray/menu/resolve.js";
 import { MenuItemKind } from "#src/tray/menu/types.js";

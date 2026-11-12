@@ -187,7 +187,6 @@ function isVisible<ItemId extends string>(item: MenuItem<ItemId>) {
  * @param options - `nodes`: the expanded items of the menu; `parentId`: its id; `stage`: the profile step.
  * @returns The lines to draw.
  */
-// eslint-disable-next-line no-restricted-syntax -- a recursive function needs its return type written
 export function resolveNodes<ItemId extends string>({ nodes, parentId, stage }: {
   readonly nodes: ReadonlyArray<ExpandedItem<ItemId>>;
   readonly parentId: ItemId | typeof ROOT_ID;

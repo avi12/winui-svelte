@@ -50,7 +50,6 @@ export class ChromeNotifications {
    * @returns The id.
    * @throws {Error} For options that fail the check, or when notifications are not allowed.
    */
-  // eslint-disable-next-line no-restricted-syntax -- the shape of chrome.notifications.create
   async create(notificationId: string | undefined, options: ChromeNotificationOptions) {
     const complete = parseComplete(options);
     const isNamed = notificationId !== undefined && notificationId !== "";
@@ -71,7 +70,6 @@ export class ChromeNotifications {
    * @returns False when there is no such notification.
    * @throws {Error} For options that fail the check.
    */
-  // eslint-disable-next-line no-restricted-syntax -- the shape of chrome.notifications.update
   async update(notificationId: string, options: ChromeNotificationOptions) {
     const changes = parseChanges(options);
     const current = this.shown.get(notificationId);

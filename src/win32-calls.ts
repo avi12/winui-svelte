@@ -130,7 +130,6 @@ export function bindDll<const Functions extends Readonly<Record<string, Signatur
   type Called = {
     readonly [Name in keyof Functions]: (...values: ArgumentsOf<Functions[Name][1]>) => Results[Functions[Name][2]];
   };
-  // oxlint-disable-next-line typescript/consistent-type-assertions -- Object.fromEntries loses the types of each row
   return Object.fromEntries(rows) as unknown as Called;
 }
 

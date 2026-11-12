@@ -203,7 +203,6 @@ function nativeSensors() {
  * @returns A backend for `installSensors`.
  */
 export function windowsSensorBackend(sensors: WindowsSensors = nativeSensors()) {
-  /* eslint-disable @typescript-eslint/naming-convention -- the kinds are the Generic Sensor API's own names */
   const openers: { [Kind in SensorKind]: () => SensorChannel<SensorValues[Kind]> | null } = {
     "accelerometer"() {
       const native = sensors.accelerometer();
@@ -286,7 +285,6 @@ export function windowsSensorBackend(sensors: WindowsSensors = nativeSensors()) 
       });
     }
   };
-  /* eslint-enable @typescript-eslint/naming-convention */
   return {
     isAvailable(kind) {
       return openers[kind]() !== null;
@@ -464,7 +462,6 @@ class AxisSensor<Kind extends "accelerometer" | "gyroscope" | "magnetometer"> ex
     return this.value?.y ?? null;
   }
 
-  // oxlint-disable-next-line eslint/id-length -- the standard member name
   get z() {
     return this.value?.z ?? null;
   }

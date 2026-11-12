@@ -476,7 +476,6 @@ export function installScreen(options: ScreenInstallOptions = {}) {
     if (hasPreviousRatio) {
       Object.defineProperty(globalThis, "devicePixelRatio", previousRatio);
     } else {
-      // eslint-disable-next-line no-restricted-syntax -- the one typed way to delete a property of any object
       Reflect.deleteProperty(globalThis, "devicePixelRatio");
     }
 

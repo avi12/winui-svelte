@@ -17,7 +17,6 @@ interface ProtocolHandlerExtras {
 
 declare global {
   // The methods join the standard Navigator wherever this module is imported.
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type -- declaration merging is the point
   interface Navigator extends ProtocolHandlerExtras {}
 }
 
@@ -47,7 +46,6 @@ function requireTemplate(url: string) {
  * @returns The function that takes the two methods away again.
  */
 export function installProtocolHandlers(options: RegistrationOptions = {}) {
-  // eslint-disable-next-line no-restricted-syntax -- the web API's own positional signature
   function registerProtocolHandler(scheme: string, url: string) {
     requireTemplate(url);
     addProtocol({
@@ -56,7 +54,6 @@ export function installProtocolHandlers(options: RegistrationOptions = {}) {
     });
   }
 
-  // eslint-disable-next-line no-restricted-syntax -- the web API's own positional signature
   function unregisterProtocolHandler(scheme: string, url: string) {
     requireTemplate(url);
     removeProtocol({

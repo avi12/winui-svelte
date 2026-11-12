@@ -223,7 +223,6 @@ const propertyHandler: ProxyHandler<Storage> = {
       storage: target,
       property
     });
-    // eslint-disable-next-line no-restricted-syntax -- the one typed way to forward a property read
     return isStored ? target.getItem(String(property)) : Reflect.get(target, property, receiver);
   },
   set(target, property, value) {

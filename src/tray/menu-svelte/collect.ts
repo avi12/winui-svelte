@@ -3,7 +3,6 @@ import { ElementNode, NodeType } from "#src/renderer/tree/dom.js";
 import { MenuItemKind } from "#src/tray/menu/types.js";
 import type { MenuItem } from "#src/tray/menu/types.js";
 
-// eslint-disable-next-line no-restricted-syntax -- a recursive function needs its return type written
 function itemsUnder<Native>(parent: ElementNode<Native>): MenuItem[] {
   const items: MenuItem[] = [];
   for (const child of parent.children) {

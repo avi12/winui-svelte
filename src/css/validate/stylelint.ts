@@ -23,7 +23,6 @@ function ignoredCodes(secondary: unknown) {
   return Array.isArray(list) ? list.filter(item => typeof item === "string") : [];
 }
 
-// eslint-disable-next-line no-restricted-syntax -- stylelint calls a rule with (primary, secondary)
 function checkSheets(primary: unknown, secondary: unknown) {
   return (root: Root, result: PostcssResult) => {
     const isEnabled = stylelint.utils.validateOptions(result, RULE_NAME, { actual: primary }, {

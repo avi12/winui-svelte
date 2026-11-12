@@ -48,11 +48,8 @@ export class DragEvent {
   readonly clientY: number;
   readonly offsetX: number;
   readonly offsetY: number;
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- the web's DragEvent member
   readonly altKey: boolean;
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- the web's DragEvent member
   readonly ctrlKey: boolean;
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- the web's DragEvent member
   readonly shiftKey: boolean;
   private isDefaultPrevented = false;
   private isPropagationStopped = false;

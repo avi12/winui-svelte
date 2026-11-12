@@ -75,7 +75,6 @@ export class MediaQueryList {
   }
 
   /** Adds a `change` listener. */
-  // eslint-disable-next-line no-restricted-syntax -- the web's signature
   addEventListener(type: string, listener: ChangeListener | null) {
     const isChange = type === "change" && listener !== null;
     if (!isChange) {
@@ -87,7 +86,6 @@ export class MediaQueryList {
   }
 
   /** Removes a `change` listener. */
-  // eslint-disable-next-line no-restricted-syntax -- the web's signature
   removeEventListener(type: string, listener: ChangeListener | null) {
     const isChange = type === "change" && listener !== null;
     if (!isChange) {

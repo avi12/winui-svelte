@@ -14,7 +14,6 @@ const suggestedKeySchema = z.union([
 ]);
 
 const commandDefinitionSchema = z.object({
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- the manifest's own key
   suggested_key: suggestedKeySchema.optional(),
   description: z.string().optional(),
   global: z.boolean().optional()

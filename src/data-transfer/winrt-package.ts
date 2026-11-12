@@ -37,7 +37,6 @@ const FORMAT_OF_KIND = {
 async function bytesOfBitmap(view: DataPackageView) {
   const reference = await view.getBitmapAsync();
   const stream = await reference.openReadAsync();
-  // oxlint-disable-next-line typescript/consistent-type-assertions -- the generated type names the interface only
   const reader = new DataReader(stream as unknown as IInputStream);
   const chunks: Uint8Array[] = [];
   for (;;) {

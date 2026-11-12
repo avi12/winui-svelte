@@ -29,7 +29,6 @@ function svelteRootParent() {
  * The resolve hook alone: Svelte resolves to its browser build, from the
  * installation `WINUI_SVELTE_SVELTE_ROOT` names when it is set.
  */
-// eslint-disable-next-line no-restricted-syntax -- the signature of Node's resolve hook
 export function resolveSvelte(
   specifier: string,
   context: ResolveHookContext,

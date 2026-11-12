@@ -214,7 +214,6 @@ export async function runUiaClient<T>({ use, backend }: {
         assertAlive();
         const isText = name === UiaPatternName.text;
         const pattern = isText ? textPatternOf(handle) : valuePatternOf(handle);
-        // oxlint-disable-next-line typescript/consistent-type-assertions -- the name picks the pattern
         return pattern as UiaPatterns[Name] | null;
       }
     };

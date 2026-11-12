@@ -8,5 +8,4 @@ export interface VisualStateGroupsProps {
 }
 
 declare const VisualStateGroups: Component<VisualStateGroupsProps>;
-// eslint-disable-next-line no-restricted-exports -- Svelte declares a component as the default export
 export default VisualStateGroups;

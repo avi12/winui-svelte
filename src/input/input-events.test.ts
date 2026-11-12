@@ -92,12 +92,10 @@ function fakePointerArguments() {
 }
 
 function asPointerArguments(fake: object) {
-  // oxlint-disable-next-line -- a fake stands for the WinUI class: only the members read above exist
   return fake as PointerArguments;
 }
 
 function asElement(fake: object) {
-  // oxlint-disable-next-line -- a fake stands for the control: the adapters call only the members faked
   return fake as UIElement;
 }
 
@@ -117,7 +115,6 @@ function fakeKey({ key, isExtendedKey = false, scanCode = 0, isHeld = false, isK
       isKeyReleased
     }
   };
-  // oxlint-disable-next-line -- the fields read only key and keyStatus
   return fake as KeyArguments;
 }
 
@@ -376,7 +373,6 @@ test("pointer capture goes through the pointer the element heard, by id", () => 
     }
   }
   const control = new CapturingControl();
-  // oxlint-disable-next-line -- the fake has the three members the capture reads
   const captureControl = control as unknown as CaptureControl;
   assert.throws(() => setPointerCapture({
     control: captureControl,

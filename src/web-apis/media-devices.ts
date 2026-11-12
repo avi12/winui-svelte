@@ -299,7 +299,6 @@ export class MediaStreamTrack extends HandlerEventTarget {
   readonly kind: "audio" | "video";
   readonly id = crypto.randomUUID();
   readonly label: string;
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- the standard member name
   readonly muted = false;
   contentHint = "";
   private isEnabledNow = true;

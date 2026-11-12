@@ -8,7 +8,6 @@ function labelOf<ItemId extends string>(item: MenuItem<ItemId>) {
   return item.kind === MenuItemKind.SEPARATOR ? "" : valueOf(item.label);
 }
 
-// eslint-disable-next-line no-restricted-syntax -- a recursive function needs its return type written
 function describeList<ItemId extends string>(
   nodes: ReadonlyArray<ExpandedItem<ItemId>>
 ): Array<MenuItemDescription<ItemId>> {

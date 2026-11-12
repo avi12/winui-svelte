@@ -14,7 +14,6 @@ const messageSchema = z.object({
 const messagesFileSchema = z.record(z.string(), messageSchema);
 
 const manifestLocaleSchema = z.object({
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- the manifest's own key
   default_locale: z.string().min(1).optional()
 }).loose();
 

@@ -28,7 +28,6 @@ const resultFileSchema = z.object({
       file: z.string(),
       line: z.number(),
       offset: z.number(),
-      // eslint-disable-next-line @typescript-eslint/naming-convention -- the runner's own key
       problem_class: z.object({
         id: z.string(),
         severity: z.string()

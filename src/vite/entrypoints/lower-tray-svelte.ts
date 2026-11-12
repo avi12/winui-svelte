@@ -46,7 +46,6 @@ interface FoundRune {
   readonly start: number;
 }
 
-// eslint-disable-next-line no-restricted-syntax -- a recursive function needs its return type written
 function findRune(node: unknown): FoundRune | undefined {
   if (Array.isArray(node)) {
     return node.map(findRune).find(found => found !== undefined);

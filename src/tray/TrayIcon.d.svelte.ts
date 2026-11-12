@@ -14,5 +14,4 @@ interface TrayIconComponent {
 }
 
 declare const TrayIcon: TrayIconComponent;
-// eslint-disable-next-line no-restricted-exports -- Svelte declares a component as the default export
 export default TrayIcon;

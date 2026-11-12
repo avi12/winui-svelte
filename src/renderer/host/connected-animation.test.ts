@@ -5,7 +5,6 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 function element(name: string) {
-  // oxlint-disable-next-line typescript/consistent-type-assertions -- a stand-in for a UIElement
   return { name } as unknown as UIElement;
 }
 
@@ -13,7 +12,6 @@ class FakeHost implements ConnectedAnimationHost {
   readonly prepared = new Map<string, UIElement>();
   readonly started: UIElement[] = [];
 
-  // eslint-disable-next-line no-restricted-syntax -- the host interface's own signature
   prepareToAnimate(key: string, source: UIElement) {
     this.prepared.set(key, source);
   }

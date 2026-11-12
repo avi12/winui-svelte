@@ -29,7 +29,6 @@ function isCallable(value: unknown): value is (...args: unknown[]) => unknown {
   return typeof value === "function";
 }
 
-// eslint-disable-next-line no-restricted-syntax -- a type predicate cannot destructure its subject
 function isKeyOf<Target extends object>(target: Target, key: PropertyKey): key is keyof Target {
   return key in target;
 }

@@ -119,7 +119,6 @@ export abstract class DomNode<Native> {
     this.renderer.remove(this);
   }
 
-  // eslint-disable-next-line no-restricted-syntax -- a DOM method; `this` is typing only
   before(this: TreeNode<Native>, ...nodes: Array<AnyNode<Native>>) {
     const { parent } = this;
     if (!parent) {
@@ -141,26 +140,22 @@ export abstract class DomNode<Native> {
 
 /** What an element and a fragment share: they hold children. */
 abstract class DomParent<Native> extends DomNode<Native> {
-  // eslint-disable-next-line no-restricted-syntax -- a DOM method; `this` is typing only
   appendChild(this: ParentNode<Native>, child: AnyNode<Native>) {
     this.renderer.insert(this, child, null);
     return child;
   }
 
-  // eslint-disable-next-line no-restricted-syntax -- a DOM method; `this` is typing only
   append(this: ParentNode<Native>, ...nodes: Array<AnyNode<Native>>) {
     for (const node of nodes) {
       this.renderer.insert(this, node, null);
     }
   }
 
-  // eslint-disable-next-line no-restricted-syntax -- a DOM method; `this` is typing only
   insertBefore(this: ParentNode<Native>, child: AnyNode<Native>, anchor: TreeNode<Native> | null) {
     this.renderer.insert(this, child, anchor);
     return child;
   }
 
-  // eslint-disable-next-line no-restricted-syntax -- a DOM method; `this` is typing only
   removeChild(this: ParentNode<Native>, child: TreeNode<Native>) {
     this.renderer.remove(child);
     return child;
@@ -182,7 +177,6 @@ abstract class DomParent<Native> extends DomNode<Native> {
 
   // An element and a fragment are the only classes of this one.
   private asParent() {
-    // oxlint-disable-next-line typescript/consistent-type-assertions
     return this as unknown as ParentNode<Native>;
   }
 }
@@ -221,7 +215,6 @@ abstract class DomCharacterData<Native> extends DomNode<Native> {
 
   set data(text: string) {
     // A text node and a comment are the only classes of this one.
-    // oxlint-disable-next-line typescript/consistent-type-assertions
     this.renderer.setText(this as unknown as TextNode<Native> | CommentNode<Native>, text);
   }
 
@@ -338,7 +331,6 @@ export class ElementNode<Native> extends DomParent<Native> {
     return this.attributes.has(name);
   }
 
-  // eslint-disable-next-line no-restricted-syntax -- the DOM's setAttribute(name, value)
   setAttribute(name: string, value: NativeValue) {
     this.renderer.setAttribute(this, name, value);
   }
@@ -347,7 +339,6 @@ export class ElementNode<Native> extends DomParent<Native> {
     this.renderer.removeAttribute(this, name);
   }
 
-  // eslint-disable-next-line no-restricted-syntax -- the DOM's addEventListener(type, handler)
   addEventListener(type?: string, handler?: NativeValue) {
     const isTyped = type !== undefined;
     if (isTyped) {
@@ -355,7 +346,6 @@ export class ElementNode<Native> extends DomParent<Native> {
     }
   }
 
-  // eslint-disable-next-line no-restricted-syntax -- the DOM's removeEventListener(type, handler)
   removeEventListener(type?: string, handler?: NativeValue) {
     const isTyped = type !== undefined;
     if (isTyped) {

@@ -144,7 +144,6 @@ export class ChromeWindows {
    * @param queryOptions - Accepted and ignored.
    * @returns The window; rejects when there is none with that id.
    */
-  // eslint-disable-next-line no-restricted-syntax -- chrome.windows.get(windowId, queryOptions) is positional
   async get(windowId: number, queryOptions?: GetWindowInfo) {
     parseOrThrow({
       schema: getInfoSchema,
@@ -206,7 +205,6 @@ export class ChromeWindows {
    * @param updateInfo - What to change.
    * @returns The window after the change.
    */
-  // eslint-disable-next-line no-restricted-syntax -- chrome.windows.update(windowId, updateInfo) is positional
   async update(windowId: number, updateInfo: UpdateWindowInfo) {
     const info = parseOrThrow({
       schema: updateSchema,

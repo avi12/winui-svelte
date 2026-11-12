@@ -255,9 +255,7 @@ test("a throwing callback does not stop the others and is rethrown as an uncaugh
 
 test("setTimeout rejects what is not a function", () => {
   const { scheduler } = createFakeDriver();
-  // oxlint-disable-next-line typescript/consistent-type-assertions -- the point is a value the types refuse
   assert.throws(() => scheduler.setTimeout("alert(1)" as never, 1), { code: "ERR_INVALID_ARG_TYPE" });
-  // oxlint-disable-next-line typescript/consistent-type-assertions -- the point is a value the types refuse
   assert.throws(() => scheduler.setImmediate(undefined as never), { code: "ERR_INVALID_ARG_TYPE" });
 });
 
@@ -288,7 +286,6 @@ test("clearImmediate stops an immediate", () => {
 test("many timers fire in order, and clearing most of them leaves the rest", () => {
   const { scheduler, advance } = createFakeDriver();
   const fired: number[] = [];
-  // eslint-disable-next-line no-restricted-syntax -- Array.from dictates the callback signature
   function schedule(_: unknown, index: number) {
     return scheduler.setTimeout(() => fired.push(index), MANY_TIMERS - index);
   }

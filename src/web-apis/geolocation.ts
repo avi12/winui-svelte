@@ -129,7 +129,6 @@ export interface GeolocationOptionExtras {
 
 declare global {
   // The extras join the standard options wherever this module is imported.
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type -- declaration merging is the point
   interface PositionOptions extends GeolocationOptionExtras {}
 }
 

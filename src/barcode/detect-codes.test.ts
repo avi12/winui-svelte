@@ -443,7 +443,6 @@ test("nothing readable, or bad input, gives an empty array and never throws", ()
   );
   assert.deepEqual(
     detectCodes({
-      // oxlint-disable-next-line typescript/consistent-type-assertions -- a caller outside the types may pass anything
       pixels: undefined as unknown as Uint8Array,
       width: 5,
       height: 5

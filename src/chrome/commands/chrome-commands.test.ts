@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention -- Chrome's own manifest keys */
 import type { HotkeyEvent } from "#src/app/hotkeys/index.js";
 import assert from "node:assert/strict";
 import { test } from "node:test";

@@ -439,6 +439,5 @@ export function createTrayCore<const Extras extends readonly TrayExtra[]>(option
     }
   };
   const added = options.extras.flatMap(extra => "extend" in extra ? [extra.extend(context)] : []);
-  // oxlint-disable-next-line typescript/consistent-type-assertions -- Object.assign loses the members the extras add
   return Object.assign(base, ...added) as TrayHandle<Extras>;
 }

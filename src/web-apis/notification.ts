@@ -139,7 +139,6 @@ export interface NotificationInit extends NotificationExtras {
 
 declare global {
   // The extras join the standard options wherever this module is imported.
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type -- declaration merging is the point
   interface NotificationOptions extends NotificationExtras {}
 }
 
@@ -322,11 +321,8 @@ export class Notification extends HandlerEventTarget {
   readonly data: unknown;
   readonly dir: "auto" | "ltr" | "rtl";
   readonly lang: string;
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- the standard member name
   readonly renotify: boolean;
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- the standard member name
   readonly silent: boolean | null;
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- the standard member name
   readonly requireInteraction: boolean;
   readonly timestamp: number;
   readonly vibrate: readonly number[];

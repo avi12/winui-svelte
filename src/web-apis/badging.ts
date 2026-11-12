@@ -52,7 +52,6 @@ export interface BadgingExtras {
 
 declare global {
   // The extra joins the standard Navigator wherever this module is imported.
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type -- declaration merging is the point
   interface Navigator extends BadgingExtras {}
 }
 

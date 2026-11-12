@@ -143,7 +143,6 @@ export function createStandaloneTray<
   const ItemId extends string,
   const Extras extends readonly TrayExtra[] = readonly []
 >(options: StandaloneTrayOptions<ItemId, Extras> & StandaloneTraySeams) {
-  // oxlint-disable-next-line typescript/consistent-type-assertions -- no extras is the empty tuple, Extras' default
   const extras = (options.extras ?? []) as unknown as Extras;
   const native = options.native ?? createTrayNative({ writeBalloon: extras.find(isBalloons)?.writeBalloon });
   const defer = options.defer ?? setImmediate;

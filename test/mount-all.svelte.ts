@@ -114,7 +114,6 @@ type Linked = () => void;
 type Connect = (control: object, props: object, bound: object) => Linked;
 
 // Held until the process ends: a timer whose wrapper is collected stops.
-// eslint-disable-next-line svelte/prefer-svelte-reactivity -- not component state
 const heldTimers = new Set<object>();
 
 // A native failure takes the process down without a message, so the last
@@ -160,7 +159,6 @@ function componentNames() {
 }
 
 async function loadConnectors() {
-  // eslint-disable-next-line svelte/prefer-svelte-reactivity -- not component state
   const connectors = new Map<string, Connect>();
   for (const name of componentNames()) {
     const loaded: Record<string, NativeValue> = await import(`#src/components/generated/controls/${name}.svelte.js`);
@@ -1561,7 +1559,6 @@ function unmetSlots({ controls, expectations }: {
 // Children and snippet props through the renderer: each fills the property
 // it stands for, and what a snippet stops rendering leaves it again.
 function checkSlotsThroughRenderer(failures: Failure[]) {
-  // eslint-disable-next-line svelte/prefer-svelte-reactivity -- not component state
   const controls = new Map<string, object>();
   const phases: Array<{
     isShown: boolean;

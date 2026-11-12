@@ -16,7 +16,6 @@ import { test } from "node:test";
 
 function standIn() {
   const visual = {};
-  // oxlint-disable-next-line typescript/consistent-type-assertions -- a stand-in for a Visual, kept to bind by name
   return visual as unknown as CompositionObject;
 }
 

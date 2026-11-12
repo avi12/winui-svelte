@@ -151,7 +151,6 @@ function siblingsOf<ItemId extends string>({ descriptions, parentId, profile }: 
   return [...first, ...declared.filter(description => !first.has(description))];
 }
 
-// eslint-disable-next-line no-restricted-syntax -- a recursive function needs its return type written
 function rowsUnder<ItemId extends string>({ descriptions, parentId, profile, depth }: {
   readonly descriptions: ReadonlyArray<MenuItemDescription<ItemId>>;
   readonly parentId: ItemId | "";
@@ -257,7 +256,6 @@ export function moveItem<ItemId extends string>({ profile, descriptions, id, dir
   return {
     ...profile,
     // Object.entries gives string keys; they are the ids and "" that the profile already held
-    // oxlint-disable-next-line typescript/consistent-type-assertions -- see above
     order: order as MenuProfile<ItemId>["order"]
   } satisfies MenuProfile<ItemId>;
 }

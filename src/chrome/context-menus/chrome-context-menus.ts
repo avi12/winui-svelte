@@ -76,7 +76,6 @@ export class ChromeContextMenus {
    * @throws {Error} Rejects for an unknown item, a bad shape, a missing parent or a parent that is the item or
    * under it.
    */
-  // eslint-disable-next-line no-restricted-syntax -- chrome.contextMenus.update(id, properties) is positional
   async update(id: string | number, properties: UpdateProperties) {
     const entry = this.entryOf(id);
     const parsed = parseUpdate(properties);

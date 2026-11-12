@@ -63,7 +63,6 @@ function waitFor<T>({ signal, begin }: {
  * with `AbortSignal` support.
  */
 export function createPromiseTimers(timers: Scheduler) {
-  // eslint-disable-next-line no-restricted-syntax -- mirrors the positional signature of node:timers/promises
   function setTimeout<T = void>(delay?: number, value?: T, options: PromiseTimerOptions = {}) {
     return waitFor<T | undefined>({
       signal: options.signal,
@@ -79,7 +78,6 @@ export function createPromiseTimers(timers: Scheduler) {
     });
   }
 
-  // eslint-disable-next-line no-restricted-syntax -- mirrors the positional signature of node:timers/promises
   function setImmediate<T = void>(value?: T, options: PromiseTimerOptions = {}) {
     return waitFor<T | undefined>({
       signal: options.signal,
@@ -95,7 +93,6 @@ export function createPromiseTimers(timers: Scheduler) {
     });
   }
 
-  // eslint-disable-next-line no-restricted-syntax -- mirrors the positional signature of node:timers/promises
   async function* setInterval<T = void>(delay?: number, value?: T, options: PromiseTimerOptions = {}) {
     const { signal } = options;
     const abortedBefore = abortedSignal(signal);

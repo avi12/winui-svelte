@@ -8,7 +8,6 @@ import { projectAs, releaseProjected } from "#winui/lifetime";
 
 type Projection<Args extends object> = Parameters<typeof projectAs<Args>>[1];
 
-// eslint-disable-next-line no-restricted-syntax -- a type predicate cannot destructure its subject
 function hasMember<Args extends object>(value: object, member: string): value is Args {
   return member in value;
 }

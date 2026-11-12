@@ -76,7 +76,6 @@ test("the manifest, id and URLs come from package.json", () => {
   const runtime = runtimeOf();
   assert.equal(runtime.id, "demo-app");
   assert.deepEqual(runtime.getManifest(), {
-    // eslint-disable-next-line @typescript-eslint/naming-convention -- Chrome's own key
     manifest_version: 3,
     name: "demo-app",
     version: "1.2.3",
@@ -283,7 +282,6 @@ async function withRegisteredHost({ run, origins }: {
         name: "com.example.echo",
         path: "echo-host.exe",
         type: "stdio",
-        // eslint-disable-next-line @typescript-eslint/naming-convention -- the manifest's own key
         ...origins === undefined ? {} : { allowed_origins: origins }
       })
     );

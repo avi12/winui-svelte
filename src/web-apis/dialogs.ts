@@ -227,7 +227,6 @@ export async function showConfirm(message: unknown = "") {
  * @returns The text, or `null` when the user cancelled.
  * @throws {DOMException} `InvalidStateError` when no window was given to `useDialogWindow`.
  */
-// oxlint-disable-next-line max-params -- positional like the web prompt, so that a browser library calls it unchanged
 export async function showPrompt(message: unknown = "", defaultValue = "") {
   const context = currentContext();
   const answer = await showIn({
@@ -298,7 +297,6 @@ export function installDialogs(options: DialogInstallOptions = {}) {
     }),
     defineProperty({
       name: "prompt",
-      // oxlint-disable-next-line max-params -- the web's prompt(message, default) is positional
       value: (message?: unknown, defaultValue?: string) => showPrompt(message, defaultValue)
     })
   ];

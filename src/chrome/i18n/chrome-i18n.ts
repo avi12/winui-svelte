@@ -88,7 +88,6 @@ export class ChromeI18n {
    * @param substitutions - Up to nine values for `$1` to `$9`.
    * @returns The text, or an empty string when no locale has the name.
    */
-  // eslint-disable-next-line no-restricted-syntax -- the shape of chrome.i18n.getMessage
   getMessage(messageName: string, substitutions?: string | readonly string[]) {
     const predefined = this.predefined(messageName.toLowerCase());
     const isPredefined = predefined !== undefined;

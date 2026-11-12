@@ -63,7 +63,6 @@ test("get takes a key, keys, defaults or nothing", async () => {
   });
   assert.deepEqual(await storage.local.get(), await storage.local.get(null));
   assert.deepEqual(await storage.local.getKeys(), ["a", "b", "c"]);
-  // oxlint-disable-next-line typescript/consistent-type-assertions -- proves zod rejects it
   await assert.rejects(storage.local.get(5 as never));
 });
 
@@ -271,6 +270,5 @@ test("setAccessLevel keeps the level and rejects an unknown one", async () => {
   assert.equal(storage.session.accessLevel, AccessLevel.TRUSTED_CONTEXTS);
   await storage.session.setAccessLevel({ accessLevel: AccessLevel.TRUSTED_AND_UNTRUSTED_CONTEXTS });
   assert.equal(storage.session.accessLevel, AccessLevel.TRUSTED_AND_UNTRUSTED_CONTEXTS);
-  // oxlint-disable-next-line typescript/consistent-type-assertions -- proves zod rejects it
   await assert.rejects(storage.session.setAccessLevel({ accessLevel: "NOPE" as never }));
 });

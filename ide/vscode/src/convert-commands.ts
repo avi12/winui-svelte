@@ -106,7 +106,6 @@ async function convertSelection({ clicked, selected }: {
   );
 }
 
-// eslint-disable-next-line no-restricted-syntax -- VS Code calls an explorer command with (clicked, selected)
 function runConvertSelection(clicked: Uri | undefined, selected: Uri[] | undefined) {
   return convertSelection({
     clicked,

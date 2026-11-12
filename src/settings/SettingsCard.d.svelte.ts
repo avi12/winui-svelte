@@ -8,5 +8,4 @@ export type { SettingsCardProps };
  * its control on the right, and with `isClickEnabled` the whole card a button.
  */
 declare const SettingsCard: Component<SettingsCardProps, Record<string, never>, "">;
-// eslint-disable-next-line no-restricted-exports -- Svelte declares a component as the default export
 export default SettingsCard;

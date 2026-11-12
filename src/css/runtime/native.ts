@@ -29,8 +29,6 @@ interface ListLike {
   removeAt(index: number): void;
 }
 
-/* eslint-disable @typescript-eslint/naming-convention -- CssWinui mirrors WinUI's projected, PascalCase names. */
-
 /**
  * The WinUI the CSS runtime touches: the package's WinUI import site (the
  * module namespace), so the runtime names no binding path.
@@ -62,8 +60,6 @@ export interface CssWinui {
     Star: number;
   };
 }
-
-/* eslint-enable @typescript-eslint/naming-convention */
 
 // A color animation names the brush of the element (`Background.(SolidColorBrush.Color)`):
 // the runtime targets the element's own brush by its Color, whatever the element's type.

@@ -108,7 +108,6 @@ class StateSlot<State extends StateShape> implements HostState<State> {
 
   // The one place the app's State meets the wire.
   private root() {
-    // oxlint-disable-next-line typescript/consistent-type-assertions -- the host is trusted to send State
     return this.cell.current as State | undefined;
   }
 

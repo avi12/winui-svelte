@@ -64,7 +64,6 @@ function localizedConstructor({ original, languages }: {
         languages
       })
     ),
-    // eslint-disable-next-line no-restricted-syntax -- a Proxy trap forwards a construction only through Reflect
     construct: (target, args) => Reflect.construct(
       target, withDefault({
         args,

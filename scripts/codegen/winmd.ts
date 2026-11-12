@@ -808,7 +808,6 @@ export class WinMdFile {
     };
   }
 
-  // eslint-disable-next-line no-restricted-syntax -- recursive: TypeScript cannot infer its own return type
   private readType(reader: BlobReader): TypeSignature {
     const element = reader.byte();
     const primitive = PRIMITIVE_NAMES.get(element);

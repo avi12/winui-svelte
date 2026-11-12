@@ -52,7 +52,6 @@ test("a bad count is a TypeError and a refusing Windows is NotSupportedError", a
   try {
     await assert.rejects(navigator.setAppBadge(-1), TypeError);
     await assert.rejects(navigator.setAppBadge(1.5), TypeError);
-    // oxlint-disable-next-line typescript/consistent-type-assertions -- proves a value outside the type is refused
     await assert.rejects(navigator.setAppBadgeGlyph("nope" as never), TypeError);
   } finally {
     uninstall();

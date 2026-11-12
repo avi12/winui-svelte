@@ -83,7 +83,6 @@ const lockFileSchema = z.object({
       version: z.union([z.string(), z.number()])
     })
   ),
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- the lock file's own key.
   nuget_cache_dir: z.string()
 });
 

@@ -31,7 +31,6 @@ export interface ClassName {
 // retained ones. Last, the run adds the files and keeps the names.
 const TRAILING_NAMESPACES = new Set(["Microsoft.UI.Composition.SystemBackdrops"]);
 
-// eslint-disable-next-line no-restricted-syntax -- the comparator Array.sort calls
 function compareNamespaces(left: BindingEntry, right: BindingEntry) {
   const trailing = Number(TRAILING_NAMESPACES.has(left.namespace)) - Number(TRAILING_NAMESPACES.has(right.namespace));
   return trailing || left.namespace.localeCompare(right.namespace);

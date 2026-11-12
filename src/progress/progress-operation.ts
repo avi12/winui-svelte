@@ -282,15 +282,12 @@ export class ProgressOperation<Result = void> extends HandlerEventTarget
    * @param onrejected - Called with the reason of a failure or cancel.
    * @returns The promise of what the callbacks return.
    */
-  /* eslint-disable no-restricted-syntax -- then() has the two parameters PromiseLike dictates */
-  // oxlint-disable-next-line unicorn/no-thenable -- an operation is awaitable on purpose
   then<Fulfilled = Result, Rejected = never>(
     onfulfilled?: ((value: Result) => Fulfilled | PromiseLike<Fulfilled>) | null,
     onrejected?: ((reason: unknown) => Rejected | PromiseLike<Rejected>) | null
   ) {
     return this.result.then(onfulfilled, onrejected);
   }
-  /* eslint-enable no-restricted-syntax */
 
   subscribe(run: (snapshot: ProgressSnapshot) => void) {
     return subscribeTo({

@@ -22,7 +22,6 @@ roInitialize();
 type Callback = (sender: unknown, args: unknown) => void;
 
 class FakeControl implements DropControl, DragControl {
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- WinUI's AllowDrop
   allowDrop = false;
   canDrag = false;
   readonly xamlRoot = null;
@@ -60,13 +59,11 @@ function fakeView() {
     contains: (format: string) => format === "Text",
     availableFormats: null
   };
-  // oxlint-disable-next-line typescript/consistent-type-assertions -- a stand-in for a sealed WinRT class
   return view as unknown as DataPackageView;
 }
 
 class FakeArgs implements DropArgs {
   acceptedOperation: number = DataPackageOperation.None;
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- WinUI's Handled
   handled = false;
   isCompleted = false;
   readonly dataView: DataPackageView;

@@ -93,7 +93,6 @@ function fakeNative() {
   };
 }
 
-// eslint-disable-next-line no-restricted-syntax -- a recursive function needs its return type written
 function find({ items, id }: {
   readonly items: readonly ResolvedMenuItem[];
   readonly id: string;
@@ -122,7 +121,6 @@ function find({ items, id }: {
   return undefined;
 }
 
-// eslint-disable-next-line no-restricted-syntax -- a recursive function needs its return type written
 function names(items: readonly ResolvedMenuItem[]): string[] {
   return items.map(item => (item.kind === MenuItemKind.SUBMENU ? `${item.id}[${names(item.items).join(",")}]` : item.id));
 }

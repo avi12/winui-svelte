@@ -29,11 +29,9 @@ const WHEEL_DELTA = 120;if (IS_AVAILABLE) {
 }
 
 const fakeSender = {} satisfies Partial<UIElement>;
-// oxlint-disable-next-line -- a fake stands for the WinUI class: the handlers read only what it carries
 const SENDER = fakeSender as UIElement;
 
 function asPointerArguments(fake: object) {
-  // oxlint-disable-next-line -- the same fake, for the arguments
   return fake as PointerRoutedEventArgs;
 }
 
@@ -78,7 +76,6 @@ function setup() {
   const calls: string[] = [];
   const handlers = pointerHandlers({
     canvas,
-    // oxlint-disable-next-line -- the fake stands for the control: only the arguments' getCurrentPoint is read
     element: () => control as UIElement,
     user: {
       onpointerpressed() {

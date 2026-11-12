@@ -99,9 +99,7 @@ function isNumberOrMissing(value: number | undefined) {
 
 /** A button of the standard mapping. */
 export class GamepadButton {
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- the standard member name
   readonly pressed: boolean;
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- the standard member name
   readonly touched: boolean;
   readonly value: number;
 
@@ -239,7 +237,6 @@ export class Gamepad {
   readonly index: number;
   readonly mapping = "standard";
   readonly vibrationActuator: GamepadHapticActuator;
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- the standard member name
   connected = true;
   timestamp: number;
   axes: readonly number[] = Array.from<number>({ length: STANDARD_AXES }).fill(0);

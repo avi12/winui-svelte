@@ -46,7 +46,6 @@ function spawnNative() {
   const extension = import.meta.url.endsWith(".ts") ? "ts" : "js";
   const moduleUrl = new URL(`./worker-job.${extension}`, import.meta.url).href;
   const source = `import(${JSON.stringify(moduleUrl)}).then(module => module.runUiaWorker())`;
-  // oxlint-disable-next-line typescript/consistent-type-assertions -- Worker's overloads are wider than the part used
   return new Worker(source, { eval: true }) as unknown as UiaWorkerHandle;
 }
 
