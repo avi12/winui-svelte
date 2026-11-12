@@ -50,7 +50,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/incremental` | `src/incremental/index.ts` | `createIncrementalSource()`, `IncrementalSource`, `IncrementalStatus`, `IncrementalState` (opt-in; see Incremental loading) |
 | `winui-svelte/image-search` | `src/image-search/index.ts` | `openImageSearch()`, `imageSearchUrl()`, `buildImageSearchRequest()`, `ImageSearchEngine` (opt-in; see Image search) |
 | `winui-svelte/downloads` | `src/downloads/index.ts` | `Downloads` (`chrome.downloads`), `fetchToFile()`, `markOfTheWeb()`, `DownloadError` (opt-in; see Downloads) |
-| `winui-svelte/updater` | `src/updater/index.ts` | `Updater`, `createRelease()`, `fetchFeed()`, `compareVersions()`: Squirrel-style per-user updates (opt-in; see Updater) |
+| `winui-svelte/updater` | `src/updater/index.ts` | `Updater`, `install()`, `uninstall()`, `createRelease()`, `fetchFeed()`, `compareVersions()`: Squirrel-style per-user install and updates (opt-in; see Updater) |
 | `winui-svelte/security` | `src/security/index.ts` | `protectData()`, `unprotectData()`, `wipe()`, `ProtectionScope`, `DataProtectionError`: Windows DPAPI, compatible with .NET `ProtectedData` (opt-in; see Security) |
 | `winui-svelte/chrome/runtime` | `src/chrome/runtime/index.ts` | `Runtime` (`chrome.runtime`), `Port`, `InstallReason`, the native messaging codec (opt-in; see Chrome runtime) |
 | `winui-svelte/chrome/notifications` | `src/chrome/notifications/index.ts` | `ChromeNotifications` (`chrome.notifications`), `NotificationTemplateType`, `NotificationPermissionLevel` (opt-in; see Chrome notifications) |
@@ -4512,6 +4512,17 @@ await createRelease({
 - `new Updater({ root, feedUrl, currentVersion, executable })` has
   `checkForUpdate()`, `stage(release)`, `update()` (both), `restart({ version })`
   and `prune()`
+- `install({ id, displayName, publisher, version, root, launcher })` makes the
+  app an installed program: an entry in Add or remove programs (current user,
+  no administrator rights) whose Uninstall runs the `launcher` with
+  `uninstallArguments` (`--uninstall` by default), and a Start menu shortcut;
+  call it again after an update to refresh the version shown
+- `uninstall({ id, displayName, root })` removes the entry and the shortcut and
+  deletes the root from a detached command a few seconds later, so the running
+  launcher is free by then; do the app's own cleanup (startup entry, protocol
+  handlers, native messaging) first
+- The `launcher` is a stable program in the root, not inside an `app-x.y.z`
+  folder, so the entry and the shortcut survive updates
 - A download is checked against the feed's size and SHA-256, unpacked into
   `app-x.y.z.staging` and renamed into place last, so a crash never leaves a
   half version
