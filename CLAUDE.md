@@ -33,7 +33,7 @@ allowlist, and `pnpm pack --dry-run` must not list it)
 | Braces | Always, body on its own line | `if` always braced | Both agree: braces on every `if`/`else`/`for`/`while`, K&R, body on the next line |
 | Constants | `CONSTANT_CASE` | `SCREAMING_SNAKE_CASE` | Same thing |
 | Enums | `enum` allowed, no `const enum` | Strings are enums | A closed set of values is an `as const` object plus its union type (`export const X = { A: "a" } as const; export type X = typeof X[keyof typeof X]`): the package runs under Node's type stripping with `erasableSyntaxOnly`, which forbids `enum`. Never `const enum` |
-| Imports | Relative within the project, no deep `../../../` | `@` alias over `../` | Relative imports (`./x`, `../x`): the build compiles each file in place, and a path alias would need a second map for `dist`. The one subpath import is `#winui/*`, the bindings an app generates for itself. Keep `../` chains short by keeping folders shallow |
+| Imports | Relative within the project, no deep `../../../` | `@` alias over `../` | Vite-style: `@/` is the project root (`@/src/x.js`), `./x` for a sibling in the same folder, never `../`; the lint rule bans `../`; `package.json` subpath imports must start with `#`, so `@/` needs a `tsconfig` `paths` entry and the build must rewrite it in `dist` (until it does, `#src/*` stands in). The other subpath import is `#winui/*`, the bindings an app generates for itself |
 | Parameters | n/a | 2+ parameters take one destructured object | Adopt it, public API included. Exempt: key/value accessors and callbacks whose signature WinUI or Svelte dictates, and the classes that mirror the Canvas 2D API (`src/win2d/context-2d`: `Context2D`, `Path2D`, `CanvasElement`, `CanvasGradient`), whose methods are positional so that a library written for a browser canvas calls them unchanged; and the classes that mirror a Web API (`src/web-apis`: `Notification`, `NotificationClickEvent`, `PermissionStatus`, and the next), whose constructors and methods keep the spec's positional signatures and member names (`silent`, `requireInteraction`, `onclick`) so that a library written for a browser calls them unchanged; a WinUI extra is an optional member of the options object, never a positional parameter |
 
 # Other languages
@@ -104,11 +104,17 @@ Never write against a guide "because the file is small": the style is the same e
 
 # Linting
 After each change run `pnpm lint` and `pnpm test`
-Fix what they flag; never silence a rule to pass
+Fix what they flag; never silence a rule to pass: a lint-disable comment is an error in oxlint and ESLint ignores it, so an exemption goes in the config (`.oxlintrc.json`, `eslint.config.js`) with its reason, never at the line
 After anything that removes or rewires code, run the dead-code audit (`pnpm fallow`) and clean up the orphans by hand
 
-- `pnpm lint` runs every step even when an earlier one fails, so one run lists everything: `build`, oxlint (type-aware), ESLint, stylelint, `check` (tsc and `svelte-check`), `check:editor` (the VS Code Svelte language server's diagnostics), `check:webstorm` (WebStorm's own inspections, see below), fallow, `gen:components:check` and `check:package` (publint and are-the-types-wrong on the packed tarball)
+- `pnpm lint` runs every step even when an earlier one fails, so one run lists everything: `build`, oxlint (type-aware), ESLint, stylelint, `check` (`tsc` and `svelte-check`; `tsrs --noEmit` cannot stand in for `tsc` yet, see below), `check:editor` (the VS Code Svelte language server's diagnostics), `check:webstorm` (WebStorm's own inspections, see below), fallow, `gen:components:check` and `check:package` (publint and are-the-types-wrong on the packed tarball)
   It exits 1 if any failed
+- The shared rules live in the private repository `avi12/lint-config`, installed from a tag as `github:avi12/lint-config#vX.Y.Z&path:/packages/<name>`: `eslint-config-avi12` (ESLint: what oxlint cannot do, the Svelte layer, the custom layout rules, JSDoc and tree shaking), `oxlint-config-avi12` and `oxlint-plugin-naming` (oxlint, with `naming/convention`), `stylelint-config-avi12` and `fallow-config-avi12`
+  This repository keeps only what is its own, as small overrides: the `native.ts` files that may import Win32, the platform and Chrome API files whose positional signatures a library written for a browser relies on, the codegen exclusions, `#src/*` imports, the `taskbarTheme` JSDoc tag and the Kotlin plugin
+  A shared rule that is wrong is fixed in that repository, tagged, and the tag bumped here; never worked around
+  Every exemption is a file list in the config, so a new one is a decision visible in a diff, and `naming/convention` takes `allowedNames` and `fileOverrides` that each carry a reason
+- ESLint reads no type information (that is what made each worker take 1.5 GB); the rules that need types run in type-aware oxlint
+- `tsrs --noEmit` is not used for `pnpm check`: tsrs's bundled `lib.dom` already declares `navigator.serial`, so `src/web-apis/serial.ts` collides with it (TS2717, and three follow-on errors in `serial.test.ts`), while TypeScript 6's `lib.dom` does not have it; switch when both agree
 - Type-aware oxlint rules run through `tsrs-lint` (tsrs, a Rust port of TypeScript 7), never Go's tsgolint: `scripts/lint/type-aware-environment.ts` is the one place that points oxlint at it, and `pnpm lint:oxlint`, `pnpm lint:fix` and `pnpm lint:summary` all go through it; run `oxlint --type-aware` by hand only with that environment
 - `pnpm lint:fix` runs the fixers over the whole tree (ESLint `--fix`, which also removes unused imports, then oxlint `--fix`)
   The pre-commit hook (simple-git-hooks, installed by `pnpm install`, config in `lint-staged.config.js`) runs the same fixers and `pnpm fallow:audit` on the staged files; never skip it
@@ -128,7 +134,7 @@ After anything that removes or rewires code, run the dead-code audit (`pnpm fall
   After it installs, the user starts WebStorm to load the plugin: a relaunch alone loads whatever zip was installed last, so a new build must be installed first
 - The VS Code extension (`ide/vscode`, TypeScript, never in the npm package) is built and installed by `pnpm install:vscode-extension` (`scripts/editor/install-vscode-extension.ts`, which runs `code --install-extension`); run it when the user asks to install or update the extension, then tell them to reload the VS Code window
 - Every rule below is an error
-  The rules live in `eslint-config/google-style.js` (ESLint, applied to `.ts` and `.svelte`) and `.oxlintrc.json`; the compiler flags in `tsconfig.json`
+  The rules live in `eslint-config-avi12` and `oxlint-config-avi12` (from `avi12/lint-config`), with this repository's overrides in `eslint.config.js` and `.oxlintrc.json`; the compiler flags in `tsconfig.json`
 
 ## What the tools enforce
 - **Compiler:** `strict`, `exactOptionalPropertyTypes`, `noUncheckedIndexedAccess`, `noPropertyAccessFromIndexSignature`, `noImplicitOverride`, `noImplicitReturns`, `noUncheckedSideEffectImports`, `verbatimModuleSyntax`, unreachable code and unused locals
@@ -143,9 +149,9 @@ After anything that removes or rewires code, run the dead-code audit (`pnpm fall
 ## What no tool enforces (review catches it)
 - The Google guides for Markdown, JSON, XML, PowerShell and YAML (see "Other languages"): no linter runs over them yet, so review is the gate
   Check every new or edited file of those kinds against its row before committing; if a violation can be found by a script, add the check to `pnpm lint` instead of relying on review
-- A type assertion with a one-line reason: oxlint's rule is stricter and allows none, so a genuinely needed assertion takes a `// oxlint-disable-next-line` with the reason
+- A type assertion with a one-line reason: oxlint's rule is stricter and allows none, so a genuinely needed assertion goes in the `typescript/consistent-type-assertions` file list of `.oxlintrc.json`
 - An `if` whose condition is a call with an unclear intent: only compound conditions and comparisons are flagged
-- A function with 2+ parameters that is an exempt shape (a key/value accessor, a callback whose signature WinUI or Svelte dictates): the rule flags it, and the disable comment carries the reason
+- A function with 2+ parameters that is an exempt shape (a key/value accessor, a callback whose signature WinUI or Svelte dictates): the rule flags it, and the file joins the matching list in `eslint.config.js`
 - A boolean named `allowDrop`-style because it mirrors a WinUI property: the prefix rule covers variables, parameters and class properties, not interface or object-literal keys
 - JSDoc on an export of an internal module that no entry point re-exports: the rule asks for it anyway; its description is not judged
 - DRY, single source of truth, separation of concerns, "inline a variable used once", and "no comment that restates the code"
