@@ -1,10 +1,11 @@
-import { appFolder, installedVersions } from "./install-layout.ts";
+import { appFolder, installedVersions, packagesFolder } from "./install-layout.ts";
 import { stageRelease } from "./stage-release.ts";
 import type { Release } from "./update-feed.ts";
 import { fetchFeed, newestRelease } from "./update-feed.ts";
+import { lockPath, withUpdateLock } from "./update-lock.ts";
 import { compareVersions } from "./version.ts";
 import { spawn } from "node:child_process";
-import { rm } from "node:fs/promises";
+import { readdir, rm } from "node:fs/promises";
 import path from "node:path";
 
 /** What `Updater` takes. */
@@ -67,13 +68,16 @@ export class Updater {
    */
   stage(release: Release) {
     const { root, feedUrl, fetch: fetchImpl } = this.options;
-    return stageRelease({
+    return withUpdateLock({
       root,
-      baseUrl: feedUrl,
-      release,
-      ...fetchImpl && {
-        fetch: fetchImpl
-      }
+      run: () => stageRelease({
+        root,
+        baseUrl: feedUrl,
+        release,
+        ...fetchImpl && {
+          fetch: fetchImpl
+        }
+      })
     });
   }
 
@@ -116,7 +120,7 @@ export class Updater {
 
   /**
    * Removes every version except the running one and the newest installed;
-   * a folder still in use stays for the next run.
+   * a folder still in use stays for the next run. Downloaded zips are deleted too.
    */
   async prune() {
     const { root, currentVersion } = this.options;
@@ -133,6 +137,20 @@ export class Updater {
           force: true
         }
       ).catch(() => undefined));
+    await Promise.all(removals);
+    await this.clearPackages();
+  }
+
+  private async clearPackages() {
+    const { root } = this.options;
+    const folder = packagesFolder(root);
+    const names = await readdir(folder).catch(() => []);
+    const removals = names
+      .map(name => path.join(folder, name))
+      .filter(file => file !== lockPath(root))
+      .map(file => rm(file, {
+        force: true
+      }).catch(() => undefined));
     await Promise.all(removals);
   }
 }

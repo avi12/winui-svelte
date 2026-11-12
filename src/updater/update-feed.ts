@@ -18,6 +18,20 @@ export type Release = z.infer<typeof releaseSchema>;
 /** The `releases.json` an update host serves next to the zips. */
 export type UpdateFeed = z.infer<typeof feedSchema>;
 
+const DEFAULT_FEED_FILE = "releases.json";
+
+/**
+ * The file name a channel's feed has: `releases.json`, or `releases.<channel>.json`
+ * for a named one such as `beta`. The one place the name is decided, for the
+ * publisher and for the address the app is given.
+ *
+ * @param channel - The channel, or undefined for the default one.
+ * @returns The feed's file name.
+ */
+export function feedFileName(channel?: string) {
+  return channel === undefined ? DEFAULT_FEED_FILE : `releases.${channel}.json`;
+}
+
 /**
  * Reads and validates a feed.
  *

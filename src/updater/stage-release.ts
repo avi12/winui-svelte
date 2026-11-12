@@ -1,14 +1,22 @@
 import { appFolder, packagesFolder } from "./install-layout.ts";
 import type { Release } from "./update-feed.ts";
 import { unzipTo } from "./zip-tool.ts";
+import { requestDownload } from "#src/downloads/fetch-to-file.js";
 import { createHash } from "node:crypto";
-import { createWriteStream } from "node:fs";
-import { mkdir, rename, rm } from "node:fs/promises";
+import { createReadStream, createWriteStream } from "node:fs";
+import { mkdir, rename, rm, stat } from "node:fs/promises";
 import path from "node:path";
 import { Readable } from "node:stream";
 import { pipeline } from "node:stream/promises";
 
 const STAGING_SUFFIX = ".staging";
+const PARTIAL_SUFFIX = ".partial";
+
+async function sha256Of(file: string) {
+  const hash = createHash("sha256");
+  await pipeline(createReadStream(file), hash);
+  return hash.digest("hex");
+}
 
 async function downloadVerified({ url, target, release, fetchImpl }: {
   url: string;
@@ -16,28 +24,34 @@ async function downloadVerified({ url, target, release, fetchImpl }: {
   release: Release;
   fetchImpl: typeof fetch;
 }) {
-  const response = await fetchImpl(url);
-  const body = response.body;
-  const isUnusable = !response.ok || body === null;
-  if (isUnusable) {
-    throw new Error(`Update package ${url} answered HTTP ${response.status}`);
+  const partial = `${target}${PARTIAL_SUFFIX}`;
+  const existing = await stat(partial).then(({ size }) => size, () => 0);
+  const isResumable = existing > 0 && existing < release.size;
+  const download = await requestDownload({
+    url,
+    offset: isResumable ? existing : 0,
+    fetch: fetchImpl
+  });
+  const { body } = download.response;
+  const hasNoBody = body === null;
+  if (hasNoBody) {
+    throw new TypeError(`Update package ${url} has no body`);
   }
 
-  const hash = createHash("sha256");
-  let received = 0;
-  const source = Readable.from(body);
-  source.on("data", (chunk: Buffer) => {
-    hash.update(chunk);
-    received += chunk.byteLength;
-  });
-  await pipeline(source, createWriteStream(target));
-  const isDamaged = received !== release.size || hash.digest("hex") !== release.sha256;
+  await pipeline(
+    Readable.from(body), createWriteStream(partial, {
+      flags: download.offset > 0 ? "a" : "w"
+    })
+  );
+  const isDamaged = (await stat(partial)).size !== release.size || await sha256Of(partial) !== release.sha256;
   if (isDamaged) {
-    await rm(target, {
+    await rm(partial, {
       force: true
     });
     throw new Error(`Update package ${release.file} failed its size or SHA-256 check`);
   }
+
+  await rename(partial, target);
 }
 
 /**

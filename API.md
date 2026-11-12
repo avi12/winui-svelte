@@ -4523,11 +4523,26 @@ await createRelease({
   handlers, native messaging) first
 - The `launcher` is a stable program in the root, not inside an `app-x.y.z`
   folder, so the entry and the shortcut survive updates
-- A download is checked against the feed's size and SHA-256, unpacked into
+- `handleLifecycle({ argv, handlers })` runs the handler for a launcher event
+  (`--winui-svelte-install|updated|obsolete|uninstall <version>`, the
+  `LifecycleEvent` values) and returns true when it was one, so the app exits
+  after doing its own setup or cleanup; handlers get 30 seconds for install
+  and uninstall, 15 for updated and obsolete; `parseLifecycle(argv)` only
+  reads the event
+- `launchState()` reports `isFirstRun` and `isRestarted` from the
+  `WINUI_SVELTE_FIRST_RUN` and `WINUI_SVELTE_RESTARTED` variables the launcher
+  sets
+- A download goes to `<file>.partial` and continues with a Range request after
+  an interruption, then is checked against the feed's size and SHA-256, unpacked into
   `app-x.y.z.staging` and renamed into place last, so a crash never leaves a
   half version
-- `prune()` keeps the running and the newest version; a folder still in use
-  stays for the next run
+- Staging holds an exclusive lock file in `packages` (`UpdateLockedError` when a
+  live process has it, a dead owner's lock is taken over), so the app and its
+  launcher never download or apply at once
+- `prune()` keeps the running and the newest version and deletes the downloaded
+  zips; a folder still in use stays for the next run
+- A channel is a feed file name: `feedFileName("beta")` is `releases.beta.json`,
+  and `createRelease({ channel })` writes it; the app's `feedUrl` names the same file
 - Not done: delta packages, and a root launcher that picks the newest folder
   (the app's shortcut or launcher starts `installedVersions(root)[0]`)
 - Most apps use it through `chrome.runtime`: `requestUpdateCheck`,

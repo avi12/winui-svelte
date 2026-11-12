@@ -1,12 +1,11 @@
 import type { UpdateFeed } from "./update-feed.ts";
-import { parseFeed, withRelease } from "./update-feed.ts";
+import { feedFileName, parseFeed, withRelease } from "./update-feed.ts";
 import { parseVersion } from "./version.ts";
 import { zipFolder } from "./zip-tool.ts";
 import { createHash } from "node:crypto";
 import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-const FEED_FILE = "releases.json";
 const JSON_INDENT = 2;
 
 async function existingFeed(feedPath: string) {
@@ -26,11 +25,13 @@ async function existingFeed(feedPath: string) {
  * `releases.json`, ready to upload to any static host. Run it from a release
  * script; the folder it writes is what the app's update address serves.
  *
- * @param options - The built app's folder, its name and version, and the folder to write into.
+ * @param options - The built app's folder, its name and version, the folder to write into and an
+ *   optional channel (`beta` writes `releases.beta.json`).
  * @returns The release entry that was recorded.
  */
-export async function createRelease({ appDirectory, name, version, outputDirectory }: {
+export async function createRelease({ appDirectory, name, version, outputDirectory, channel }: {
   appDirectory: string;
+  channel?: string;
   name: string;
   version: string;
   outputDirectory: string;
@@ -52,7 +53,7 @@ export async function createRelease({ appDirectory, name, version, outputDirecto
     sha256,
     size: (await stat(zip)).size
   };
-  const feedPath = path.join(outputDirectory, FEED_FILE);
+  const feedPath = path.join(outputDirectory, feedFileName(channel));
   const feed = withRelease({
     feed: await existingFeed(feedPath),
     release
