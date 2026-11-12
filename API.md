@@ -50,6 +50,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/incremental` | `src/incremental/index.ts` | `createIncrementalSource()`, `IncrementalSource`, `IncrementalStatus`, `IncrementalState` (opt-in; see Incremental loading) |
 | `winui-svelte/image-search` | `src/image-search/index.ts` | `openImageSearch()`, `imageSearchUrl()`, `buildImageSearchRequest()`, `ImageSearchEngine` (opt-in; see Image search) |
 | `winui-svelte/downloads` | `src/downloads/index.ts` | `Downloads` (`chrome.downloads`), `fetchToFile()`, `markOfTheWeb()`, `DownloadError` (opt-in; see Downloads) |
+| `winui-svelte/updater` | `src/updater/index.ts` | `Updater`, `createRelease()`, `fetchFeed()`, `compareVersions()`: Squirrel-style per-user updates (opt-in; see Updater) |
 | `winui-svelte/security` | `src/security/index.ts` | `protectData()`, `unprotectData()`, `wipe()`, `ProtectionScope`, `DataProtectionError`: Windows DPAPI, compatible with .NET `ProtectedData` (opt-in; see Security) |
 | `winui-svelte/chrome/runtime` | `src/chrome/runtime/index.ts` | `Runtime` (`chrome.runtime`), `Port`, `InstallReason`, the native messaging codec (opt-in; see Chrome runtime) |
 | `winui-svelte/chrome/notifications` | `src/chrome/notifications/index.ts` | `ChromeNotifications` (`chrome.notifications`), `NotificationTemplateType`, `NotificationPermissionLevel` (opt-in; see Chrome notifications) |
@@ -4488,6 +4489,39 @@ Unverified, and why
 - The engines' terms govern use; the helper sets no browser headers and keeps
   no cookies
 
+## Updater (`winui-svelte/updater`)
+
+Squirrel-style updates for a per-user install: no installer, no administrator
+rights, no certificate; versions sit side by side as `app-x.y.z` folders under
+one root, for example `%LOCALAPPDATA%MyApp`
+
+```ts
+import { createRelease } from "winui-svelte/updater";
+
+await createRelease({
+  appDirectory: "dist-app",
+  name: "my-app",
+  version: "1.2.0",
+  outputDirectory: "release"
+});
+```
+
+- `createRelease` zips the built app with the `tar.exe` Windows ships and adds
+  it to `releases.json` (version, file, SHA-256, size); upload the folder to
+  any static host
+- `new Updater({ root, feedUrl, currentVersion, executable })` has
+  `checkForUpdate()`, `stage(release)`, `update()` (both), `restart({ version })`
+  and `prune()`
+- A download is checked against the feed's size and SHA-256, unpacked into
+  `app-x.y.z.staging` and renamed into place last, so a crash never leaves a
+  half version
+- `prune()` keeps the running and the newest version; a folder still in use
+  stays for the next run
+- Not done: delta packages, and a root launcher that picks the newest folder
+  (the app's shortcut or launcher starts `installedVersions(root)[0]`)
+- Most apps use it through `chrome.runtime`: `requestUpdateCheck`,
+  `onUpdateAvailable` and `reload` of `winui-svelte/chrome/runtime`
+
 ## Downloads (`winui-svelte/downloads`)
 
 Downloads on the two APIs an app already knows: the web's `fetch` with the File
@@ -4716,14 +4750,21 @@ const answer = await runtime.sendMessage({ hello: "world" });
 - `onSuspend` fires when the process exits, the only suspend a desktop app
   has; `suspendSource` changes what it listens to; `dispose()` stops it and
   closes the links
-- `reload()` is `relaunch` of `winui-svelte/app`
+- `reload()` starts the version `requestUpdateCheck` unpacked and exits this
+  one, else it is `relaunch` of `winui-svelte/app`; `exitApp` changes how
+  the process ends
+- `requestUpdateCheck()` resolves `{ status, version? }` (`UpdateCheckStatus`:
+  `update_available`, `no_update`, `throttled`), and `onUpdateAvailable` fires
+  with `{ version }` once the new version is unpacked; give the runtime
+  `updates: { root, feedUrl, executable }` to turn it on (without it the answer
+  is `no_update`), the work is `Updater` of `winui-svelte/updater` (see Updater)
 - The protocol's pieces are exported for a host written in Node:
   `encodeNativeMessage(message)`, `NativeMessageDecoder` (`push(chunk)` returns
   the messages a chunk completed), `NativeMessageError`, `MAX_HOST_MESSAGE_BYTES`
   and `NATIVE_HOST_REGISTRY_KEY`, the registry key below `HKEY_CURRENT_USER`
   that holds the hosts
 - Not mirrored: `onMessageExternal`, `onConnectExternal`, `onSuspendCanceled`,
-  `onUpdateAvailable`, `requestUpdateCheck`, `restart`, `setUninstallURL`,
+  `restart`, `setUninstallURL`,
   `openOptionsPage`, `getContexts`, `getPackageDirectoryEntry`
 - The single-instance pipe stays the way a second copy of the app reaches the
   first (`startActivation`); contexts of one copy talk over their transports

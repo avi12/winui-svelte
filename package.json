@@ -216,6 +216,10 @@
       "types": "./dist/downloads/index.d.ts",
       "default": "./dist/downloads/index.js"
     },
+    "./updater": {
+      "types": "./dist/updater/index.d.ts",
+      "default": "./dist/updater/index.js"
+    },
     "./image-search": {
       "types": "./dist/image-search/index.d.ts",
       "default": "./dist/image-search/index.js"

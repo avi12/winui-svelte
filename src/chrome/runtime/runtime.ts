@@ -7,6 +7,8 @@ import { MessageEvent } from "./message-event.ts";
 import { connectNativeHost, sendNativeHostMessage } from "./native-host.ts";
 import type { NativeHostSetup } from "./native-host.ts";
 import { Port } from "./port.ts";
+import { RuntimeUpdates } from "./updates.ts";
+import type { RuntimeUpdateSource } from "./updates.ts";
 import { relaunch } from "#src/app/relaunch.js";
 import { onStartup } from "#src/app/schedule/events.js";
 import { ChromeEvent } from "#src/downloads/chrome-event.js";
@@ -59,6 +61,12 @@ export interface RuntimeOptions extends IdentitySources, Omit<NativeHostSetup, "
 
   /** The CPU architecture name Node reports; `process.arch` by default. */
   readonly architecture?: string;
+
+  /** Where `requestUpdateCheck` looks for a newer version; none by default, and then it answers `no_update`. */
+  readonly updates?: RuntimeUpdateSource;
+
+  /** Ends this process after `reload` started a newer version; `process.exit` by default. */
+  readonly exitApp?: () => void;
 }
 
 /**
@@ -87,13 +95,22 @@ export class Runtime {
   /** Fires when Windows started the app at sign-in. */
   readonly onStartup = onStartup;
 
+  /** Fires when `requestUpdateCheck` has unpacked a newer version; `reload` starts it. */
+  readonly onUpdateAvailable: RuntimeUpdates["onUpdateAvailable"];
+
   private readonly options: RuntimeOptions;
   private readonly links = new Set<RuntimeLink>();
   private readonly stopSuspend: (() => void) | undefined;
+  private readonly updates: RuntimeUpdates;
   private cachedIdentity: AppIdentity | undefined;
 
   constructor(options: RuntimeOptions = {}) {
     this.options = options;
+    this.updates = new RuntimeUpdates({
+      source: options.updates,
+      currentVersion: this.getManifest().version
+    });
+    this.onUpdateAvailable = this.updates.onUpdateAvailable;
     const { suspendSource } = options;
     const source = suspendSource === undefined ? stopAtProcessExit : suspendSource;
     this.stopSuspend = source?.(() => this.onSuspend.dispatch());
@@ -286,8 +303,24 @@ export class Runtime {
     return details;
   }
 
-  /** Starts a new copy of the app and exits this one. */
+  /**
+   * Asks the update feed for a newer version and unpacks it beside the
+   * running one; `onUpdateAvailable` fires when there is one.
+   *
+   * @returns `update_available` with the version, `no_update` or `throttled`.
+   */
+  requestUpdateCheck() {
+    return this.updates.requestUpdateCheck();
+  }
+
+  /** Starts the newer version `requestUpdateCheck` unpacked, else a new copy of this one, and exits this one. */
   reload() {
+    const isUpdating = this.updates.startStaged();
+    if (isUpdating) {
+      (this.options.exitApp ?? (() => process.exit(0)))();
+      return;
+    }
+
     (this.options.relaunchApp ?? relaunch)();
   }
 
