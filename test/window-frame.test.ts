@@ -174,6 +174,7 @@ test("a window opens hidden, and the frame props set what Windows holds for it",
     assert.equal(shaped["isLayered"], true, "click-through needs a layered window");
     assert.equal(shaped["isExcludedFromCapture"], true);
     assert.equal(shaped["isAlwaysOnTop"], true);
+    assert.equal(shaped["isTopmostStyle"], true, "isAlwaysOnTop set while the window was hidden still gives it the topmost style once shown");
     const clip = shaped["clipSize"];
     assert.ok(clip !== null && typeof clip === "object" && !Array.isArray(clip), "cornerRadius clips the window to a region");
     assert.ok(Number(clip["width"]) > 0 && Number(clip["height"]) > 0);
@@ -367,6 +368,53 @@ test("cover puts a borderless window exactly over the primary display, or a regi
     const resizable = await covered({ example });
     const gap = resizable.bounds.width - Number(resizable.client["width"]);
     assert.ok(gap > 0 && gap <= 2 * RESIZE_FRAME, "without isResizable={false} the resize frame shrinks the client area");
+
+    example.send({ cmd: "close" });
+    assert.equal(await example.exited, 0);
+  } finally {
+    example.kill();
+  }
+});
+
+test("cover places a hidden window before it first shows, and oncovered fires once it is visible", {
+  skip: !IS_WINDOWS_APP_SDK_RESTORED || !IS_COVER_TEST_WANTED && "set WINUI_SVELTE_COVER_TEST=1: the window covers the screen",
+  timeout: TIMEOUT_MILLISECONDS
+}, async () => {
+  const example = ExampleProcess.start({
+    entry: "examples/window-frame/main.ts",
+    flags: ["--hidden", "true"],
+    env: FOREGROUND
+  });
+  try {
+    const covering = {
+      cmd: "frame",
+      isBorderless: true,
+      isResizable: false,
+      isActivatable: false,
+      isToolWindow: true,
+      cover: true
+    };
+    const hidden = await example.ask({
+      command: {
+        ...covering,
+        isHidden: true
+      },
+      kind: "frame"
+    });
+    assert.equal(hidden["isVisible"], false);
+    assert.equal(hidden["coveredCount"], 0, "oncovered waits for the window to be visible");
+
+    const shown = await example.ask({
+      command: {
+        ...covering,
+        isHidden: false
+      },
+      kind: "frame"
+    });
+    const whole = await covered({ example });
+    assert.equal(shown["isVisible"], true);
+    assert.equal(shown["coveredCount"], 1, "oncovered fires once, when the window shows");
+    assert.deepEqual(shown["coveredBounds"], whole.display, "the window was placed over the display");
 
     example.send({ cmd: "close" });
     assert.equal(await example.exited, 0);

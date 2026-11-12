@@ -26735,6 +26735,14 @@
               }
             },
             {
+              "name": "cover",
+              "description": "Covers a display, or a rectangle of one (the options `handle.cover` takes): the window is placed before it first shows, so it never flashes at the wrong place or scale, and again whenever the display or the region changes. It wins over `placement`, `stateKey` and centering, and is ignored in a background run. A covering window also needs `isBorderless` and `isResizable={false}`."
+            },
+            {
+              "name": "oncovered",
+              "description": "The window is placed by `cover` and visible, with the bounds applied in device pixels: once when it first shows (after `isHidden` turns false, if it opened hidden) and again after each new placement of a shown window."
+            },
+            {
               "name": "presentation",
               "description": "In its frame (the default), full screen, or a small always-on-top overlay. The size limits and the buttons below are for the windowed one, and are set again when the window goes back to it.",
               "value": {

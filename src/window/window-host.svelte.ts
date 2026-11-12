@@ -27,6 +27,8 @@ import {
   WindowPresentation,
   WindowTheme
 } from "./chrome.ts";
+import type { CoverOptions } from "./cover.ts";
+import { coverWindow } from "./cover.ts";
 import type { SizeUnit } from "./css-pixels.ts";
 import { SizeUnit as SizeUnitKind, toDevicePixels, toWindowPixels } from "./css-pixels.ts";
 import {
@@ -37,6 +39,7 @@ import {
   ExtendedStyle,
   joinAppUserModel,
   ownWindow,
+  placeTopmost,
   WindowStyle
 } from "./native.ts";
 import { createScaleTracker } from "./scale.ts";
@@ -230,6 +233,23 @@ export interface WindowProps {
   isAlwaysOnTop?: boolean | undefined;
 
   /**
+   * Covers a display, or a rectangle of one (the options `handle.cover`
+   * takes): the window is placed before it first shows, so it never flashes at
+   * the wrong place or scale, and again whenever the display or the region
+   * changes. It wins over `placement`, `stateKey` and centering, and is
+   * ignored in a background run. A covering window also needs
+   * `isBorderless` and `isResizable={false}`.
+   */
+  cover?: CoverOptions | undefined;
+
+  /**
+   * The window is placed by `cover` and visible, with the bounds applied in
+   * device pixels: once when it first shows (after `isHidden` turns false, if
+   * it opened hidden) and again after each new placement of a shown window.
+   */
+  oncovered?: ((bounds: WindowBounds) => void) | undefined;
+
+  /**
    * In its frame (the default), full screen, or a small always-on-top overlay.
    * The size limits and the buttons below are for the windowed one, and are set
    * again when the window goes back to it.
@@ -385,6 +405,8 @@ class WindowHost {
   private isClipApplied = false;
   private isTopApplied = false;
   private hasShown = false;
+  private appliedCoverKey: string | null = null;
+  private coveredBounds: WindowBounds | null = null;
   private readonly keeper: WindowStateKeeper | null;
   private isFitting = false;
   private scroller: ScrollViewer | null = null;
@@ -445,6 +467,7 @@ class WindowHost {
       this.placeFirst();
     }
 
+    $effect(() => this.syncCover());
     $effect(() => this.syncSize());
     $effect(() => this.fitToContent());
     this.syncOwner();
@@ -914,6 +937,7 @@ class WindowHost {
     const isHiddenNow = !appWindow.isVisible;
     if (isHiddenNow) {
       this.showWindow();
+      this.reportCovered();
     }
   }
 
@@ -943,6 +967,12 @@ class WindowHost {
     const { props } = this;
     const { appWindow } = this.handle.window;
     const { scale } = this.handle;
+    const isCoverGiven = props.cover !== undefined && !this.isKeptInBackground;
+    if (isCoverGiven) {
+      this.applyCover();
+      return;
+    }
+
     const isRestored = this.keeper?.restore({ isPresentationFree: props.presentation === undefined }) === true;
     if (isRestored) {
       return;
@@ -979,6 +1009,54 @@ class WindowHost {
       size,
       scale
     });
+  }
+
+  // The key of what `cover` asks for, so that a new object with the same
+  // display and region is not placed again.
+  private coverKey() {
+    const { cover } = this.props;
+    if (!isGiven(cover)) {
+      return null;
+    }
+
+    const { display, region } = cover;
+    const { x, y, width, height } = region ?? {};
+    return [String(display), x, y, width, height].join(",");
+  }
+
+  private applyCover() {
+    const { cover } = this.props;
+    if (!isGiven(cover)) {
+      return;
+    }
+
+    this.coveredBounds = coverWindow({
+      appWindow: this.handle.appWindow,
+      ...cover
+    });
+    this.appliedCoverKey = this.coverKey();
+  }
+
+  private syncCover() {
+    const key = this.coverKey();
+    const isToCover = key !== null && key !== this.appliedCoverKey && !this.isKeptInBackground;
+    if (!isToCover) {
+      return;
+    }
+
+    this.applyCover();
+    this.reportCovered();
+  }
+
+  private reportCovered() {
+    const { coveredBounds } = this;
+    const isReady = coveredBounds !== null && this.hasShown && this.handle.appWindow.isVisible;
+    if (!isReady) {
+      return;
+    }
+
+    this.coveredBounds = null;
+    this.props.oncovered?.(coveredBounds);
   }
 
   private placeAt({ placement, size, scale }: {
@@ -1286,6 +1364,7 @@ class WindowHost {
     }
 
     this.hasShown = true;
+    this.reportCovered();
     this.syncShape();
     this.reportBounds();
   }
@@ -1297,6 +1376,17 @@ class WindowHost {
       window.appWindow.showWithActivation(false);
     } else {
       window.activate();
+    }
+
+    this.keepOnTop();
+  }
+
+  // WinUI's IsAlwaysOnTop, set while the window was hidden, leaves it out of
+  // the topmost band; showing it brings it in.
+  private keepOnTop() {
+    const isToRaise = this.props.isAlwaysOnTop === true && this.isWindowed;
+    if (isToRaise) {
+      placeTopmost(this.handle.appWindow.id.value);
     }
   }
 }

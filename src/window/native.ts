@@ -123,10 +123,12 @@ export function virtualScreen() {
 /**
  * The extended window style bits the window chrome sets (`WS_EX_*`): a tool
  * window has no taskbar button or Alt+Tab entry, a no-activate window is never
- * activated by a click, and a transparent layered window lets clicks through.
+ * activated by a click, a transparent layered window lets clicks through, and
+ * a topmost window stays above the windows that are not.
  */
 export const ExtendedStyle = {
   toolWindow: 0x80n,
+  topmost: 0x8n,
   noActivate: 0x08000000n,
   transparent: 0x20n,
   layered: 0x80000n
@@ -200,6 +202,25 @@ const SWP_NOACTIVATE = 0x0010;
 const SWP_FRAMECHANGED = 0x0020;
 const FRAME_CHANGED_FLAGS = SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED;
 const NO_WINDOW_ABOVE = 0n;
+const HWND_TOPMOST = 0xFFFFFFFFFFFFFFFFn;
+const KEEP_BOUNDS_AND_FOCUS_FLAGS = SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE;
+
+/**
+ * Puts the window `hwnd` in the topmost band (the topmost extended style and
+ * the z-order together), without moving, sizing or activating it. WinUI's
+ * `IsAlwaysOnTop` set while the window is hidden leaves it out of that band.
+ */
+export function placeTopmost(hwnd: bigint) {
+  setWindowPosition.invoke([
+    DynWin32.handle(hwnd),
+    DynWin32.handle(HWND_TOPMOST),
+    DynWin32.i32(0),
+    DynWin32.i32(0),
+    DynWin32.i32(0),
+    DynWin32.i32(0),
+    DynWin32.u32(KEEP_BOUNDS_AND_FOCUS_FLAGS)
+  ]);
+}
 
 /**
  * Turns the window style bits `styles` (`WindowStyle`) of the window `hwnd` on

@@ -8,6 +8,7 @@
   import { TextBlock, Window } from "winui-svelte/components";
   import type { WindowHandle } from "winui-svelte/components";
   import { hideToTray, restoreFromTray } from "winui-svelte/tray";
+  import type { WindowBounds } from "winui-svelte/window";
   import {
     DockDisplay,
     exitApplication,
@@ -20,6 +21,7 @@
     WindowProps,
     | "anchor"
     | "cornerRadius"
+    | "cover"
     | "isActivatable"
     | "isAlwaysOnTop"
     | "isBorderless"
@@ -51,6 +53,7 @@
   const size = elementSize();
   let isTrayOnClose = false;
   let closeRequests = 0;
+  const coveredReports: WindowBounds[] = [];
   let extraLines = $state(0);
   function extraText() {
     return Array.from({ length: extraLines }, (_, iLine) => `Line ${iLine}`).join("\n");
@@ -105,6 +108,10 @@
       hasBorder: overlapped?.hasBorder,
       hasTitleBar: overlapped?.hasTitleBar,
       isAlwaysOnTop: overlapped?.isAlwaysOnTop,
+      isTopmostStyle: hasExtendedStyles({
+        hwnd,
+        styles: ExtendedStyle.topmost
+      }),
       presenterKind: presenter.kind,
       bounds: {
         x: appWindow.position.x,
@@ -138,7 +145,9 @@
       elementHeight: size.height,
       desiredHeight: size.desiredHeight,
       ...frameReadback(),
-      closeRequests
+      closeRequests,
+      coveredCount: coveredReports.length,
+      coveredBounds: coveredReports.at(-1) ?? null
     });
   }
 
@@ -161,6 +170,7 @@
         anchor: optionalAnchor(command["anchor"]),
         sizeToContent: optionalSizeToContent(command["sizeToContent"]),
         cornerRadius: optionalNumber(command["cornerRadius"]),
+        cover: command["cover"] === true ? { display: DockDisplay.primary } : undefined,
         isActivatable: optionalBoolean(command["isActivatable"]),
         isAlwaysOnTop: optionalBoolean(command["isAlwaysOnTop"]),
         isBorderless: optionalBoolean(command["isBorderless"]),
@@ -249,6 +259,7 @@
   activate={false}
   anchor={frame.anchor}
   cornerRadius={frame.cornerRadius}
+  cover={frame.cover}
   isActivatable={frame.isActivatable}
   isAlwaysOnTop={frame.isAlwaysOnTop}
   isBorderless={frame.isBorderless}
@@ -260,6 +271,7 @@
   isToolWindow={frame.isToolWindow}
   onclosed={() => exitApplication()}
   onclosing={refuseClose}
+  oncovered={bounds => coveredReports.push(bounds)}
   sizeToContent={frame.sizeToContent}
   title="Window frame example"
   bind:handle
