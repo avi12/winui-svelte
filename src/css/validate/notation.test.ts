@@ -2,13 +2,13 @@ import { validateComponent } from "./validate.ts";
 import { NOTATIONS } from "#src/css/parse/notation.js";
 import { loadWinuiCatalogue } from "#src/css/translate/catalogue.js";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
 import { test } from "node:test";
+import { fileURLToPath } from "node:url";
 import stylelint from "stylelint";
 
 const resources = loadWinuiCatalogue();
 const CONFIG_PATH = new URL("../../../.stylelintrc.json", import.meta.url);
-const CONFIG: unknown = JSON.parse(readFileSync(CONFIG_PATH, "utf8"));
+const CONFIG = await stylelint.resolveConfig(fileURLToPath(CONFIG_PATH));
 const NOTATION_RULES: readonly string[] = Object.values(NOTATIONS).map(({ stylelintRule }) => stylelintRule);
 const PROBE_FILE = "probe.svelte";
 
@@ -81,11 +81,8 @@ function component(css: string) {
 }
 
 function configuredRules() {
-  const hasRules = typeof CONFIG === "object" && CONFIG !== null && "rules" in CONFIG;
-  const rules: unknown = hasRules ? CONFIG.rules : {};
-  const isRecord = typeof rules === "object" && rules !== null;
-  const entries = isRecord ? Object.entries(rules) : [];
-  return Object.fromEntries(entries.filter(([name]) => NOTATION_RULES.includes(name)));
+  const rules = CONFIG?.rules ?? {};
+  return Object.fromEntries(Object.entries(rules).filter(([name]) => NOTATION_RULES.includes(name)));
 }
 
 async function stylelintFlags(css: string) {
@@ -108,7 +105,7 @@ function compilerRejects(css: string) {
   }).some(({ severity }) => severity === "error");
 }
 
-test(".stylelintrc.json carries each notation of the table", () => {
+test("the resolved stylelint config carries each notation of the table", () => {
   const rules = configuredRules();
   for (const { stylelintRule, stylelintValue } of Object.values(NOTATIONS)) {
     const setting = rules[stylelintRule];

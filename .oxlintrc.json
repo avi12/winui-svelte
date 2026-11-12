@@ -1,66 +1,266 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": [
-    "typescript",
-    "unicorn",
-    "oxc",
-    "import"
+  "extends": [
+    "./node_modules/oxlint-config-avi12/oxlint.json",
+    "./node_modules/oxlint-plugin-naming/preset.json"
   ],
-  "categories": {
-    "correctness": "error"
-  },
-  "env": {
-    "node": true,
-    "builtin": true
-  },
   "rules": {
-    "no-void": ["error", { "allowAsStatement": true }],
-    "prefer-const": "error",
-    "no-nested-ternary": "error",
-    "curly": ["error", "all"],
-    "object-shorthand": ["error", "always", { "avoidExplicitReturnArrows": true }],
-    "id-length": ["error", {
-      "min": 3,
-      "exceptions": ["_", "i", "j", "x", "y", "id", "to", "on", "ok", "T"],
-      "properties": "never"
-    }],
-    "func-style": ["error", "declaration", { "allowArrowFunctions": false }],
-    "arrow-body-style": ["error", "as-needed"],
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          {
+            "group": [
+              "../*",
+              "./../*"
+            ],
+            "message": "Import through #src/* instead of a parent-relative ../ path."
+          }
+        ]
+      }
+    ],
     "no-control-regex": "off",
-    "typescript/no-explicit-any": "error",
-    "typescript/ban-ts-comment": "error",
     "typescript/no-floating-promises": "error",
     "typescript/unbound-method": "off",
     "typescript/await-thenable": "off",
     "typescript/no-base-to-string": "off",
     "typescript/restrict-template-expressions": "off",
     "typescript/no-useless-default-assignment": "off",
-    "typescript/no-unused-vars": ["error", {
-      "varsIgnorePattern": "^_",
-      "argsIgnorePattern": "^_",
-      "caughtErrorsIgnorePattern": "^_",
-      "ignoreRestSiblings": true
-    }],
-    "typescript/consistent-type-assertions": ["error", { "assertionStyle": "never" }],
-    "import/first": "error",
-    "import/no-cycle": ["error", { "ignoreTypes": true }],
-    "import/default": "off"
+    "typescript/consistent-type-assertions": [
+      "error",
+      {
+        "assertionStyle": "never"
+      }
+    ],
+    "import/default": "off",
+    "naming/convention": [
+      "error",
+      {
+        "allowedNames": [
+          {
+            "reason": "Chrome extension manifest and native-messaging keys are snake_case",
+            "names": [
+              "manifest_version",
+              "suggested_key",
+              "allowed_origins",
+              "default_locale",
+              "_execute_action"
+            ]
+          },
+          {
+            "reason": "Names that an external tool or file dictates",
+            "names": [
+              "problem_class",
+              "nuget_cache_dir",
+              "$schema",
+              "__proto__"
+            ]
+          },
+          {
+            "reason": "Web platform members the Web API mirrors keep the spec's names (CLAUDE.md, Which rules win)",
+            "names": [
+              "renotify",
+              "silent",
+              "requireInteraction",
+              "animated",
+              "selected",
+              "visible",
+              "continuous",
+              "interimResults",
+              "lengthComputable",
+              "userVisibleOnly",
+              "muted",
+              "localService",
+              "default",
+              "pending",
+              "pressed",
+              "touched",
+              "connected",
+              "altKey",
+              "ctrlKey",
+              "shiftKey"
+            ]
+          },
+          {
+            "reason": "WinUI properties and enum members keep WinUI's own casing",
+            "names": [
+              "allowDrop",
+              "handled",
+              "None",
+              "Control",
+              "Menu",
+              "Shift",
+              "High",
+              "BrandBrush",
+              "Application",
+              "ResourceDictionary",
+              "Style",
+              "Storyboard",
+              "CompositeTransform",
+              "SolidColorBrush",
+              "XamlReader",
+              "PropertyValue",
+              "FrameworkElement",
+              "ColumnDefinition",
+              "RowDefinition",
+              "GridUnitType",
+              "Auto",
+              "Pixel",
+              "Star"
+            ]
+          },
+          {
+            "reason": "Generic Sensor API sensor kinds are the spec's hyphenated keys",
+            "names": [
+              "absolute-orientation",
+              "relative-orientation",
+              "ambient-light"
+            ]
+          },
+          {
+            "reason": "ESLint visitor keys are AST node names",
+            "names": [
+              "ObjectExpression",
+              "ObjectPattern",
+              "ExportDeclaration"
+            ]
+          },
+          {
+            "reason": "The bit width of a PE file is a name, not a boolean question",
+            "names": [
+              "is64Bit"
+            ]
+          }
+        ]
+      }
+    ]
   },
   "overrides": [
     {
-      "files": ["**/*.test.ts", "test/**/*.ts"],
+      "files": [
+        "**/*.test.ts",
+        "test/**/*.ts"
+      ],
       "rules": {
         "typescript/no-floating-promises": "off"
+      }
+    },
+    {
+      "files": [
+        "src/barcode/test-support/**",
+        "src/renderer/testing/**",
+        "src/state/test-support/**",
+        "src/devices/test-support/**"
+      ],
+      "rules": {
+        "no-magic-numbers": "off",
+        "id-length": "off"
+      }
+    },
+    {
+      "files": [
+        "**/*.d.svelte.ts", "src/svelte.d.ts",
+        "**/*.svelte",
+        "examples/**/entrypoints/tray.ts",
+        "examples/**/entrypoints/tray/index.ts"
+      ],
+      "rules": {
+        "no-restricted-exports": "off"
+      }
+    },
+    {
+      "files": [
+        "src/composition/expression.ts",
+        "src/web-apis/sensors.ts"
+      ],
+      "rules": {
+        "id-length": [
+          "error",
+          {
+            "min": 3,
+            "exceptions": [
+              "_",
+              "i",
+              "j",
+              "x",
+              "y",
+              "z",
+              "id",
+              "to",
+              "on",
+              "ok",
+              "T"
+            ],
+            "properties": "never"
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "src/components/convert.ts",
+        "src/web-apis/*.ts",
+        "src/app/activation/protocol-handlers.ts"
+      ],
+      "rules": {
+        "typescript/no-empty-object-type": "off"
+      }
+    },
+    {
+      "files": [
+        "examples/counter/app-types.ts"
+      ],
+      "rules": {
+        "typescript/consistent-type-definitions": "off"
+      }
+    },
+    {
+      "files": [
+        "src/progress/progress-operation.ts"
+      ],
+      "rules": {
+        "unicorn/no-thenable": "off"
+      }
+    },
+    {
+      "files": [
+        "**/*.test.ts",
+        "test/**/*.ts",
+        "src/renderer/tree/document.ts",
+        "src/renderer/tree/dom.ts",
+        "src/win32-calls.ts",
+        "src/composition/expression.ts",
+        "src/composition/targets.ts",
+        "src/tray/tray-core.ts",
+        "src/messaging/messaging.ts",
+        "src/tray/menu-svelte/edit-profile.ts",
+        "src/tray/standalone/standalone-tray.ts",
+        "src/tray/menu/profile.ts",
+        "src/data-transfer/winrt-package.ts",
+        "src/automation/worker.ts",
+        "src/automation/client.ts",
+        "src/automation/native.ts",
+        "src/state/channel.svelte.ts",
+        "src/renderer/testing/**"
+      ],
+      "rules": {
+        "typescript/consistent-type-assertions": "off"
+      }
+    },
+    {
+      "files": [
+        "src/**/*.test.ts"
+      ],
+      "rules": {
+        "func-style": "off",
+        "typescript/no-implied-eval": "off"
       }
     }
   ],
   "ignorePatterns": [
-    "node_modules/**",
-    "dist/**",
-    "eslint-rules/**",
     ".winapp/**",
-    ".worktrees/**",
     "ide/webstorm/**",
-    ".verify/**"
+    "src/components/generated/**",
+    "src/components/fluent-glyph.ts"
   ]
 }

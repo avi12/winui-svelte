@@ -43,7 +43,7 @@ const STEPS: Step[] = [
     needs: []
   },
   {
-    name: "lint:eslint:full",
+    name: "lint:eslint",
     needs: [BUILD]
   },
   {

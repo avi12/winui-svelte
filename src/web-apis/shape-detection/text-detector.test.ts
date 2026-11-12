@@ -32,7 +32,7 @@ if (IS_AVAILABLE) {
   initWindowsAppSdk();
 }
 
-const { ImageBitmap, installImageCodecs } = await import("../images.ts");
+const { ImageBitmap, installImageCodecs } = await import("#src/web-apis/images.js");
 const { TextDetector, installTextDetector } = await import("./index.ts");
 const { ImageData } = await import("#src/win2d/context-2d/image-data.js");
 const languages = IS_AVAILABLE ? TextDetector.availableOcrLanguages() : [];
