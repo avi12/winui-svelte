@@ -40,3 +40,8 @@ export {
   visibleRegion
 } from "./selector.ts";
 export type { Rectangle, Size } from "#src/capture/region.js";
+export type { TextSelection, TextSelectorState } from "./text-selector.ts";
+export { createTextSelector, reduceTextSelector, textSelection } from "./text-selector.ts";
+export type { RecognizedLine, SelectableWord, WordRange } from "./text-words.ts";
+export { DEFAULT_WORD_REACH, joinWords, selectableWords, wordAt, wordsBetween, wordsInRegion } from "./text-words.ts";
+export { bracketPath, DEFAULT_BRACKET_ARM, DEFAULT_SELECTION_RADIUS, pointsText, scrimPath } from "./overlay-geometry.ts";

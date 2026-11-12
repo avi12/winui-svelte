@@ -46,7 +46,7 @@ monorepo needs no build step (the repository is a pnpm workspace, see
 | `winui-svelte/win32` | `src/win32/index.ts` | `bindDll()`, `bind()`, `hasPackageIdentity()` and the memory helpers (opt-in escape hatch; see Win32 seam) |
 | `winui-svelte/app/jump-list` | `src/app/jump-list/index.ts` | `setJumpListTasks()`, `clearJumpList()` (opt-in; see Jump list tasks) |
 | `winui-svelte/data-transfer` | `src/data-transfer/index.ts` | `enableDragEvents()`, `dropzone`, `draggable`, `filePicker`, `pickFiles`, `pickSaveFile`, `clipboard`, `launchUri` / `launchFile` / `openFolder` / `revealInExplorer`, `share`, `NativeFile`, `DataTransfer`, `DragEvent` (opt-in; see Data transfer) |
-| `winui-svelte/selection` | `src/selection/index.ts` | `createSelector()`, `reduceSelector()`, `selectionResult()`, `hoverCursor()`, `SelectionShape`, the selection geometry (`lassoRegion`, `moveRegion`, `resizeRegion`, `pixelRegion`) and `CroppedView` (opt-in; see Selection overlay) |
+| `winui-svelte/selection` | `src/selection/index.ts` | `createSelector()`, `reduceSelector()`, `selectionResult()`, `hoverCursor()`, `SelectionShape`, the selection geometry (`lassoRegion`, `moveRegion`, `resizeRegion`, `pixelRegion`) text selection over OCR words and `CroppedView` (opt-in; see Selection overlay) |
 | `winui-svelte/incremental` | `src/incremental/index.ts` | `createIncrementalSource()`, `IncrementalSource`, `IncrementalStatus`, `IncrementalState` (opt-in; see Incremental loading) |
 | `winui-svelte/image-search` | `src/image-search/index.ts` | `openImageSearch()`, `imageSearchUrl()`, `buildImageSearchRequest()`, `ImageSearchEngine` (opt-in; see Image search) |
 | `winui-svelte/downloads` | `src/downloads/index.ts` | `Downloads` (`chrome.downloads`), `fetchToFile()`, `markOfTheWeb()`, `DownloadError` (opt-in; see Downloads) |
@@ -5240,9 +5240,58 @@ if (result) {
 - Defaults: `DEFAULT_CORNER_REACH` (grab distance of a corner),
   `DEFAULT_LASSO_PADDING` (margin around a lasso), `DEFAULT_MINIMUM_SIZE`
   (smallest region), `DEFAULT_MINIMUM_STROKE` and `DEFAULT_MINIMUM_STEP`
-  (shortest lasso and drag that count)
-- Not here: drawing the scrim, brackets or an action bar, text selection and
-  OCR; those belong to the app
+  (shortest lasso and drag that count), `DEFAULT_SELECTION_RADIUS` and
+  `DEFAULT_BRACKET_ARM` (the overlay's corner radius and bracket length),
+  `DEFAULT_WORD_REACH` (how far from a word a press still takes it)
+- `SelectionOverlay` (`winui-svelte/components`) draws a selector's state
+  over a frozen picture; see below
+- Text over OCR words: `selectableWords`, `wordAt`, `wordsBetween`,
+  `wordsInRegion`, `joinWords` and the `createTextSelector`,
+  `reduceTextSelector` and `textSelection` reducer; see below
+- Not here: an action bar, OCR itself (`TextDetector`) and the pointer wiring;
+  those belong to the app
+
+### `SelectionOverlay`
+
+```svelte
+<SelectionOverlay {image} state={selector} />
+```
+
+A frozen `image` stretched over the area, a dim scrim with the selection cut
+out of it (one even-odd `Path`, so the hole stays clear at any opacity), a
+2px accent edge and four rounded corner brackets on the selection, and the loop
+being drawn with a soft glow
+It takes no pointer: the app feeds `reduceSelector` and passes its state;
+`radius` and `arm` (the bracket length) override the defaults
+Fades and the bracket entrance are CSS transitions and `@keyframes`, so
+`prefers-reduced-motion` flattens them
+The path data comes from `scrimPath`, `bracketPath` and `pointsText`, which
+are exported for a custom drawing
+
+### Text selection over OCR words
+
+```ts
+const words = selectableWords(await new TextDetector().detect(image));
+let state = createTextSelector(words);
+state = reduceTextSelector({ state, event });   // the events reduceSelector takes
+const chosen = textSelection(state);            // { range: { start, end }, text }
+```
+
+- `selectableWords(lines)` flattens `TextDetector` lines into words in reading
+  order, each tagged with its line; a right-to-left line stays in logical order,
+  so joined text reads correctly
+- `wordAt({ words, point, reach })` is the nearest word within `reach` of the
+  point (0 by default: the point must be on the word)
+- `wordsBetween({ words, from, to })` is the inclusive range between two words,
+  across lines, in either direction
+- `wordsInRegion({ words, region })` lists the words whose centre is in a
+  rectangle
+- `joinWords({ words, range })` joins with spaces and breaks the line where the
+  line changes
+- A press on a word anchors there, a drag extends to the nearest word, a press
+  off every word clears
+- The lasso box a loop makes (padded, clamped, ignored below a minimum) is
+  `lassoRegion`, with `DEFAULT_LASSO_PADDING` and `DEFAULT_MINIMUM_STROKE`
 
 ## Data transfer (`winui-svelte/data-transfer`)
 

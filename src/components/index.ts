@@ -48,3 +48,5 @@ export type { SizeToContent, WindowAnchor } from "#src/window/anchor.js";
 export type { SizeUnit } from "#src/window/css-pixels.js";
 export type { WindowHandle } from "#src/window/window-handle.js";
 export type { WindowBounds, WindowPlacement } from "#src/window/window-host.svelte.js";
+export { default as SelectionOverlay } from "./hand-written/selection/SelectionOverlay.svelte";
+export type { SelectionOverlayProps } from "./hand-written/selection/SelectionOverlay.d.svelte.ts";

@@ -3772,6 +3772,7 @@
     {"owner":"RatingItemImageInfoProps","name":"pointerOverPlaceholderImage","forms":["string"],"components":["RatingItemImageInfo"]},
     {"owner":"RatingItemImageInfoProps","name":"unsetImage","forms":["string"],"components":["RatingItemImageInfo"]},
     {"owner":"ResolvedLabelled","name":"icon","forms":["string","pixels"],"components":[]},
+    {"owner":"SelectionOverlayProps","name":"image","forms":["string"],"components":["SelectionOverlay"]},
     {"owner":"TaskbarOverlayOptions","name":"icon","forms":["string"],"components":[]},
     {"owner":"TaskbarPictures","name":"forDarkTaskbar","forms":["string"],"components":[]},
     {"owner":"TaskbarPictures","name":"forLightTaskbar","forms":["string"],"components":[]},
