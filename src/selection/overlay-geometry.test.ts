@@ -1,4 +1,4 @@
-import { bracketPath, pointsText, scrimPath } from "./overlay-geometry.ts";
+import { bracketPath, handlePoints, pointsText, scrimPath } from "./overlay-geometry.ts";
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
@@ -57,4 +57,29 @@ test("pointsText joins pairs", () => {
       }
     ]), "1,2 3.5,4"
   );
+});
+
+test("handlePoints are the four corners and the four edge middles", () => {
+  const points = handlePoints({
+    x: 10,
+    y: 20,
+    width: 100,
+    height: 60
+  });
+  assert.equal(points.length, 8);
+  assert.deepEqual(points.find(point => point.name === "top"), {
+    name: "top",
+    x: 60,
+    y: 20
+  });
+  assert.deepEqual(points.find(point => point.name === "bottom-right"), {
+    name: "bottom-right",
+    x: 110,
+    y: 80
+  });
+  assert.deepEqual(points.find(point => point.name === "left"), {
+    name: "left",
+    x: 10,
+    y: 50
+  });
 });

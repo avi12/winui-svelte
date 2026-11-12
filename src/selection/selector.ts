@@ -1,3 +1,5 @@
+import type { ResizeEdge } from "./edges.ts";
+import { DEFAULT_EDGE_REACH, gripEdge, isHorizontalEdge, nearestEdge } from "./edges.ts";
 import type { CornerGrip, Point } from "./geometry.ts";
 import {
   DEFAULT_CORNER_REACH,
@@ -45,7 +47,9 @@ export const SelectionCursor = {
   draw: "crosshair",
   move: "move",
   resizeFalling: "nwse-resize",
-  resizeRising: "nesw-resize"
+  resizeRising: "nesw-resize",
+  resizeVertical: "ns-resize",
+  resizeHorizontal: "ew-resize"
 } as const;
 /** A CSS cursor name, one of the `SelectionCursor` values. */
 export type SelectionCursor = typeof SelectionCursor[keyof typeof SelectionCursor];
@@ -55,6 +59,8 @@ export const SelectorEventKind = {
   pointerDown: "pointerDown",
   pointerMove: "pointerMove",
   pointerUp: "pointerUp",
+  nudge: "nudge",
+  resizeBy: "resizeBy",
   clear: "clear"
 } as const;
 
@@ -70,6 +76,16 @@ export type SelectorEvent =
   }
   /** The press ended, or the pointer capture was lost: either way the gesture is over. */
   | { readonly kind: typeof SelectorEventKind.pointerUp }
+  /** Moves the selection by `delta`, kept inside the area; ignored with no selection or a gesture under way. */
+  | {
+    readonly kind: typeof SelectorEventKind.nudge;
+    readonly delta: Point;
+  }
+  /** Moves the bottom right corner by `delta`, within the minimum size and the area; ignored like a nudge. */
+  | {
+    readonly kind: typeof SelectorEventKind.resizeBy;
+    readonly delta: Point;
+  }
   /** Drops the selection, for a new start. */
   | { readonly kind: typeof SelectorEventKind.clear };
 
@@ -95,6 +111,9 @@ export interface SelectorOptions {
 
   /** How close to a corner a press takes hold of it to resize; 28 by default. */
   readonly cornerReach?: number;
+
+  /** How close to an edge, between the corners, a press takes hold of it to resize; `DEFAULT_EDGE_REACH` by default. */
+  readonly edgeReach?: number;
 }
 
 /** The numbers a selector runs with, every option filled in. */
@@ -105,6 +124,7 @@ export interface SelectorLimits {
   readonly padding: number;
   readonly minimumSize: number;
   readonly cornerReach: number;
+  readonly edgeReach: number;
 }
 
 /** Everything a selector knows. Treat it as read-only: `reduceSelector` makes the next one. */
@@ -152,7 +172,8 @@ export function createSelector(options: SelectorOptions) {
       minimumStroke: options.minimumStroke ?? DEFAULT_MINIMUM_STROKE,
       padding: options.padding ?? DEFAULT_LASSO_PADDING,
       minimumSize: options.minimumSize ?? DEFAULT_MINIMUM_SIZE,
-      cornerReach: options.cornerReach ?? DEFAULT_CORNER_REACH
+      cornerReach: options.cornerReach ?? DEFAULT_CORNER_REACH,
+      edgeReach: options.edgeReach ?? DEFAULT_EDGE_REACH
     },
     phase: SelectionPhase.idle,
     stroke: [],
@@ -186,6 +207,23 @@ function grabSelection({ state, point }: {
       resizeGrip: gripCorner({
         selection,
         corner
+      })
+    } satisfies SelectorState;
+  }
+
+  const edge = nearestEdge({
+    selection,
+    point,
+    reach: state.limits.edgeReach
+  });
+  const isOnEdge = edge !== undefined;
+  if (isOnEdge) {
+    return {
+      ...state,
+      phase: SelectionPhase.resize,
+      resizeGrip: gripEdge({
+        selection,
+        edge
       })
     } satisfies SelectorState;
   }
@@ -375,12 +413,79 @@ export function reduceSelector({ state, event }: {
       });
     case SelectorEventKind.pointerUp:
       return pressEnded(state);
+    case SelectorEventKind.nudge:
+      return nudged({
+        state,
+        delta: event.delta
+      });
+    case SelectorEventKind.resizeBy:
+      return resizedBy({
+        state,
+        delta: event.delta
+      });
     case SelectorEventKind.clear:
       return createSelector({
         bounds: state.bounds,
         ...state.limits
       });
   }
+}
+
+function nudged({ state, delta }: {
+  state: SelectorState;
+  delta: Point;
+}) {
+  const { selection } = state;
+  const isIdle = state.phase === SelectionPhase.idle && selection !== undefined;
+  if (!isIdle) {
+    return state;
+  }
+
+  return {
+    ...state,
+    selection: moveRegion({
+      selection,
+      grip: {
+        x: 0,
+        y: 0
+      },
+      pointer: {
+        x: selection.x + delta.x,
+        y: selection.y + delta.y
+      },
+      bounds: state.bounds
+    })
+  } satisfies SelectorState;
+}
+
+function resizedBy({ state, delta }: {
+  state: SelectorState;
+  delta: Point;
+}) {
+  const { selection } = state;
+  const isIdle = state.phase === SelectionPhase.idle && selection !== undefined;
+  if (!isIdle) {
+    return state;
+  }
+
+  return {
+    ...state,
+    selection: resizeRegion({
+      grip: gripCorner({
+        selection,
+        corner: {
+          x: selection.x + selection.width,
+          y: selection.y + selection.height
+        }
+      }),
+      pointer: {
+        x: selection.x + selection.width + delta.x,
+        y: selection.y + selection.height + delta.y
+      },
+      bounds: state.bounds,
+      minimumSize: state.limits.minimumSize
+    })
+  } satisfies SelectorState;
 }
 
 /**
@@ -426,9 +531,15 @@ export function selectionResult(state: SelectorState) {
   } satisfies SelectionResult;
 }
 
+function edgeCursor(edge: ResizeEdge) {
+  const isHorizontal = isHorizontalEdge(edge);
+  return isHorizontal ? SelectionCursor.resizeVertical : SelectionCursor.resizeHorizontal;
+}
+
 /**
  * The cursor that fits a press at a point: a diagonal resize arrow over a
- * corner, the four-way move arrow over the rest of the selection, the drawing
+ * corner, a vertical or horizontal one over an edge, the four-way move arrow
+ * over the rest of the selection, the drawing
  * cross everywhere else.
  *
  * @param options - The state and the pointer's point.
@@ -451,6 +562,16 @@ export function hoverCursor({ state, point }: {
   });
   const isAwayFromCorners = corner === undefined;
   if (isAwayFromCorners) {
+    const edge = nearestEdge({
+      selection,
+      point,
+      reach: state.limits.edgeReach
+    });
+    const isOnEdge = edge !== undefined;
+    if (isOnEdge) {
+      return edgeCursor(edge);
+    }
+
     const isInside = rectangleContains({
       rectangle: selection,
       point

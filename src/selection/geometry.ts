@@ -7,12 +7,15 @@ export interface Point {
   readonly y: number;
 }
 
-/** A corner being dragged: the opposite corner stays put as the anchor. */
+/** A corner or an edge being dragged: the opposite corner or edge stays put as the anchor. */
 export interface CornerGrip {
   readonly anchor: Point;
 
-  /** Plus or minus one per axis: which way from the anchor the grabbed corner lies. */
+  /** Plus or minus one per axis, away from the anchor; 0 on the axis an edge leaves alone. */
   readonly direction: Point;
+
+  /** The length the selection keeps along an axis whose direction is 0; left out for a corner. */
+  readonly held?: Point;
 }
 
 /** The distance a press may be from a corner and still take hold of it. */
@@ -331,8 +334,27 @@ function reachAlong({ anchor, pointer, direction, limit, minimumSize }: {
   return Math.min(Math.max(anchor + extent * direction, 0), limit);
 }
 
+function reachOrHold({ direction, held, ...reach }: {
+  anchor: number;
+  pointer: number;
+  direction: number;
+  held: number;
+  limit: number;
+  minimumSize: number;
+}) {
+  const isHeld = direction === 0;
+  if (isHeld) {
+    return reach.anchor + held;
+  }
+
+  return reachAlong({
+    ...reach,
+    direction
+  });
+}
+
 /**
- * The selection with the grabbed corner at the pointer, never smaller than
+ * The selection with the grabbed corner or edge at the pointer, never smaller than
  * `minimumSize` and never past the edge of `bounds`.
  *
  * @param options - The grip, the pointer, the area and the smallest side.
@@ -344,17 +366,23 @@ export function resizeRegion({ grip, pointer, bounds, minimumSize = DEFAULT_MINI
   bounds: Size;
   minimumSize?: number;
 }) {
-  const left = reachAlong({
+  const held = grip.held ?? {
+    x: 0,
+    y: 0
+  };
+  const left = reachOrHold({
     anchor: grip.anchor.x,
     pointer: pointer.x,
     direction: grip.direction.x,
+    held: held.x,
     limit: bounds.width,
     minimumSize
   });
-  const top = reachAlong({
+  const top = reachOrHold({
     anchor: grip.anchor.y,
     pointer: pointer.y,
     direction: grip.direction.y,
+    held: held.y,
     limit: bounds.height,
     minimumSize
   });

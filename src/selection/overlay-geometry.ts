@@ -7,6 +7,15 @@ export const DEFAULT_SELECTION_RADIUS = 24;
 /** How far each bracket runs along an edge. */
 export const DEFAULT_BRACKET_ARM = 44;
 
+/** The diameter of a grab handle. */
+export const DEFAULT_HANDLE_SIZE = 14;
+
+/** The scrim's opacity with nothing selected. */
+export const DEFAULT_SCRIM_OPACITY = 0.35;
+
+/** The scrim's opacity once a selection is cut out of it. */
+export const DEFAULT_SELECTED_SCRIM_OPACITY = 0.6;
+
 const PATH_DECIMALS = 3;
 const EVEN_ODD_FILL = "F0";
 
@@ -157,4 +166,60 @@ export function bracketPath({ size, arm = DEFAULT_BRACKET_ARM, radius = DEFAULT_
  */
 export function pointsText(points: readonly Point[]) {
   return points.map(formatPoint).join(" ");
+}
+
+/**
+ * Where the eight grab handles sit on a selection: the four corners and the
+ * middle of each edge, the same places `reduceSelector` takes hold of.
+ *
+ * @param selection - The selection, in the overlay's pixels.
+ * @returns The handles, each with a stable name and its centre.
+ */
+export function handlePoints(selection: Rectangle) {
+  const right = selection.x + selection.width;
+  const bottom = selection.y + selection.height;
+  const centerX = selection.x + selection.width / 2;
+  const centerY = selection.y + selection.height / 2;
+  return [
+    {
+      name: "top-left",
+      x: selection.x,
+      y: selection.y
+    },
+    {
+      name: "top",
+      x: centerX,
+      y: selection.y
+    },
+    {
+      name: "top-right",
+      x: right,
+      y: selection.y
+    },
+    {
+      name: "right",
+      x: right,
+      y: centerY
+    },
+    {
+      name: "bottom-right",
+      x: right,
+      y: bottom
+    },
+    {
+      name: "bottom",
+      x: centerX,
+      y: bottom
+    },
+    {
+      name: "bottom-left",
+      x: selection.x,
+      y: bottom
+    },
+    {
+      name: "left",
+      x: selection.x,
+      y: centerY
+    }
+  ];
 }

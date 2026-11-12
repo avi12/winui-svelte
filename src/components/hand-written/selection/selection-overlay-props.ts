@@ -14,4 +14,13 @@ export interface SelectionOverlayProps {
 
   /** How far each bracket runs along an edge; `DEFAULT_BRACKET_ARM` by default. */
   arm?: number;
+
+  /** The diameter of each grab handle; `DEFAULT_HANDLE_SIZE` by default. */
+  handleSize?: number;
+
+  /** The scrim's opacity, 0 to 1, with nothing selected; `DEFAULT_SCRIM_OPACITY` by default. */
+  scrimOpacity?: number;
+
+  /** The scrim's opacity once something is selected; `DEFAULT_SELECTED_SCRIM_OPACITY` by default. */
+  selectedScrimOpacity?: number;
 }

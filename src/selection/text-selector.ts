@@ -75,7 +75,9 @@ export function reduceTextSelector({ state, event }: {
     } satisfies TextSelectorState;
   }
 
-  if (!state.isDragging) {
+  const isMove = event.kind === SelectorEventKind.pointerMove;
+  const isDraggedMove = isMove && state.isDragging;
+  if (!isDraggedMove) {
     return state;
   }
 
