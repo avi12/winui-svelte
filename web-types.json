@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/web-types",
   "name": "winui-svelte",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "framework": "svelte",
   "description-markup": "markdown",
   "contributions": {
@@ -26904,6 +26904,42 @@
             {
               "name": "onmiddleclick",
               "description": "Told of a middle click."
+            },
+            {
+              "name": "onkeyselect",
+              "description": "Told when Enter or Space selects the focused icon (the shell's NIN_KEYSELECT)."
+            },
+            {
+              "name": "onpointerdown",
+              "description": "Told of a button press on the icon; `button` says which."
+            },
+            {
+              "name": "onpointerup",
+              "description": "Told of a button release on the icon; `button` says which."
+            },
+            {
+              "name": "onpointermove",
+              "description": "Told while the pointer moves over the icon."
+            },
+            {
+              "name": "onpointerenter",
+              "description": "Told when the pointer rests on the icon long enough for the shell to open its rich tooltip."
+            },
+            {
+              "name": "onpointerleave",
+              "description": "Told when the shell closes that rich tooltip because the pointer left."
+            },
+            {
+              "name": "onballoonshow",
+              "description": "Told when a balloon from `notify` appears."
+            },
+            {
+              "name": "onballoontimeout",
+              "description": "Told when a balloon goes away unclicked."
+            },
+            {
+              "name": "onballoonclick",
+              "description": "Told when the user clicks a balloon."
             },
             {
               "name": "tooltip",
