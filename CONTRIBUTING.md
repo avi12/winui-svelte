@@ -58,7 +58,8 @@ Build once before `pnpm check` or the examples
 | Command | What it does |
 | --- | --- |
 | `pnpm build` | compiles `src` into `dist/` (what is published); returns in about 2 seconds when nothing it reads changed since the last build (`pnpm build --force` rebuilds) |
-| `pnpm lint` | every check, side by side (at most 4 at once, never two of the memory-heavy ones (`tsc` with `svelte-check`, the editor check, the tarball check) together, and WebStorm alone at the end, the steps that read `dist/` after the build, each step's output printed whole when it ends) and all of them even when one fails: build, oxlint, ESLint (the house rules in `CLAUDE.md`, from `avi12/lint-config`), stylelint, `tsc`, `svelte-check`, the editor checks (VS Code and WebStorm), fallow, the generated-files check and the tarball check |
+| `pnpm lint:full` | `pnpm lint` plus the memory-heavy IDE inspections (`check:editor`, `check:webstorm`, `check:webstorm-plugin`); CI and a release run it |
+| `pnpm lint` | every light check, side by side (at most 4 at once, never two of the memory-heavy ones (`tsc` with `svelte-check`, the editor check, the tarball check) together, and WebStorm alone at the end, the steps that read `dist/` after the build, each step's output printed whole when it ends) and all of them even when one fails: build, oxlint, ESLint (the house rules in `CLAUDE.md`, from `avi12/lint-config`), stylelint, `tsc`, `svelte-check`, fallow, the generated-files check and the tarball check |
 | `pnpm lint:eslint` | ESLint at two workers with a cache under `.verify`; it reads no type information, so a cached result never lags a change in another file; the shared rules come from `eslint-config-avi12` in the public `avi12/lint-config` repository, installed from a tag |
 | `pnpm lint:fix` | the fixers over the whole tree: ESLint `--fix` (which also removes unused imports), then oxlint `--fix` |
 | `pnpm fallow:audit` | fallow on what changed against `HEAD` only |

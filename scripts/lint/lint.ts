@@ -11,6 +11,7 @@ import path from "node:path";
 const PACKAGE_ROOT = path.join(import.meta.dirname, "..", "..");
 const MAX_PARALLEL = 4;
 const BUILD = "build";
+const IS_FULL = process.argv.includes("--full");
 
 interface StepResult {
   isOk: boolean;
@@ -22,6 +23,7 @@ interface Step {
   needs: string[];
   isAlone?: true;
   isHeavy?: true;
+  isFullOnly?: true;
 }
 
 // `isAlone`: WebStorm resolves types under a timeout, so a loaded machine makes
@@ -29,18 +31,22 @@ interface Step {
 // `isHeavy`: a step that holds gigabytes (a TypeScript program, many checker
 // processes); at most one runs at a time, so the peak is the largest of them,
 // not their sum.
+// `isFullOnly`: the IDE inspections hold the most memory (WebStorm about
+// 5 GB), so only `pnpm lint:full`, which CI and a release run, includes them.
 // Longest first, so the slow ones start while the short ones fill the gaps.
 // Those that import `winui-svelte` read dist/, so they wait for the build.
-const STEPS: Step[] = [
+const ALL_STEPS: Step[] = [
   {
     name: "check:webstorm",
     needs: [BUILD],
-    isAlone: true
+    isAlone: true,
+    isFullOnly: true
   },
   {
     name: "check:webstorm-plugin",
     needs: [],
-    isAlone: true
+    isAlone: true,
+    isFullOnly: true
   },
   {
     name: BUILD,
@@ -58,7 +64,8 @@ const STEPS: Step[] = [
   {
     name: "check:editor",
     needs: [BUILD],
-    isHeavy: true
+    isHeavy: true,
+    isFullOnly: true
   },
   {
     name: "check:package",
@@ -94,6 +101,8 @@ const STEPS: Step[] = [
     needs: []
   }
 ];
+
+const STEPS = ALL_STEPS.filter(({ isFullOnly }) => IS_FULL || isFullOnly !== true);
 
 function runStep(name: string) {
   const invocation = pnpmInvocation(["run", name]);

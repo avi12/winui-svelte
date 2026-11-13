@@ -107,7 +107,7 @@ After each change run `pnpm lint` and `pnpm test`
 Fix what they flag; never silence a rule to pass: a lint-disable comment is an error in oxlint and ESLint ignores it, so an exemption goes in the config (`.oxlintrc.json`, `eslint.config.js`) with its reason, never at the line
 After anything that removes or rewires code, run the dead-code audit (`pnpm fallow`) and clean up the orphans by hand
 
-- `pnpm lint` runs every step even when an earlier one fails, so one run lists everything: `build`, oxlint (type-aware), ESLint, stylelint, `check` (`tsc` and `svelte-check`; `tsrs --noEmit` cannot stand in for `tsc` yet, see below), `check:editor` (the VS Code Svelte language server's diagnostics), `check:webstorm` (WebStorm's own inspections, see below), fallow, `gen:components:check` and `check:package` (publint and are-the-types-wrong on the packed tarball)
+- `pnpm lint` runs every light step, and `pnpm lint:full` adds `check:editor`, `check:webstorm` and `check:webstorm-plugin` (the IDE inspections, the heaviest); both run every step even when an earlier one fails, so one run lists everything: `build`, oxlint (type-aware), ESLint, stylelint, `check` (`tsc` and `svelte-check`; `tsrs --noEmit` cannot stand in for `tsc` yet, see below), `check:editor` (the VS Code Svelte language server's diagnostics), `check:webstorm` (WebStorm's own inspections, see below), fallow, `gen:components:check` and `check:package` (publint and are-the-types-wrong on the packed tarball)
   It exits 1 if any failed
   The memory-heavy steps (`lint:eslint`, `check` and `check:editor`) are marked `isHeavy` in `scripts/lint/lint.ts` and never run together, so the peak memory is the largest one, not their sum
 - The shared rules live in the public repository `avi12/lint-config`, installed from a tag as `github:avi12/lint-config#vX.Y.Z&path:/packages/<name>`: `eslint-config-avi12` (ESLint, which since v0.4 lints only `.svelte` files: the Svelte layer; every rule oxlint can run, including the custom layout rules, JSDoc and tree shaking, runs in oxlint), `oxlint-config-avi12` and `oxlint-plugin-naming` (oxlint, with `naming/convention`), `stylelint-config-avi12` and `fallow-config-avi12`
@@ -123,7 +123,7 @@ After anything that removes or rewires code, run the dead-code audit (`pnpm fall
   Use it to pick an area and watch its count fall
 - `pnpm build` fails only when tsc emitted nothing; type errors are `pnpm check`'s to report
 - `pnpm check:webstorm` runs WebStorm's own command-line inspection, headless, over a shadow copy of the working tree (`scripts/editor/check-webstorm.ts`), with the checks listed in `scripts/editor/webstorm/profile.xml` (the one list; add a check by naming its inspection id)
-  It is mandatory wherever WebStorm is installed
+  It is mandatory in `pnpm lint:full` wherever WebStorm is installed; `pnpm lint:full` must pass before a release and runs in CI, while the default `pnpm lint` omits it (with `check:editor` and `check:webstorm-plugin`) to keep memory low
   Where it is not (CI, a VS Code-only machine) it says so and passes with exit 0; `--require` makes a missing WebStorm a failure
   It never touches a running WebStorm: it starts an instance of its own with config, system, plugin and log folders under `.verify/webstorm`, and only ever stops the pid it started
   It runs with the TypeScript language service on, as WebStorm does by default, so type errors stay `tsc`'s and `svelte-check`'s to report; it adds the Svelte plugin's checks, unresolved references and imports, and unused and unreachable code

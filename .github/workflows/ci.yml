@@ -28,7 +28,7 @@ jobs:
           path: .winapp
           key: winapp-${{ hashFiles('winapp.yaml', 'package.json') }}
       - run: pnpm restore
-      - run: pnpm lint
+      - run: pnpm lint:full
       - run: pnpm test
       - run: pnpm build
 
