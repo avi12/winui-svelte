@@ -13,19 +13,12 @@
   let isShown = $state(true);
   const LABELS = ["One", "Two", "Three"];
 
-  function tileOf({ label, i }: { label: string; i: number }) {
-    return {
-      id: i + 1,
-      label
-    };
-  }
+  const INITIAL_TILES = LABELS.map((label, i) => ({
+    id: i + 1,
+    label
+  }));
 
-  let tiles = $state(
-                LABELS.map((label, i) => tileOf({
-    label,
-    i 
-  }))
-              );
+  let tiles = $state(INITIAL_TILES);
 
   function shuffle() {
     tiles = tiles.toSorted(() => Math.random() - HALF);
