@@ -254,6 +254,9 @@ import { startDev } from "winui-svelte/dev";
 //
 //   node main.ts
 
+const WINDOW_WIDTH = 480;
+const WINDOW_HEIGHT = 320;
+
 process.exitCode = await startDev({
   root: import.meta.dirname,
   configFile: `${import.meta.dirname}/vite.config.ts`,
@@ -261,8 +264,8 @@ process.exitCode = await startDev({
   window: {
     title: "Hello",
     size: {
-      width: 480,
-      height: 320
+      width: WINDOW_WIDTH,
+      height: WINDOW_HEIGHT
     },
     isBackground: process.env["WINUI_SVELTE_BACKGROUND"] === "1"
   }
