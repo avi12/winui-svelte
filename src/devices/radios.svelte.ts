@@ -103,7 +103,7 @@ export function radios(options: RadiosOptions = {}) {
     error: null
   });
   let isStopped = false;
-  let unsubscribeStates: Array<() => void> = [];
+  let unsubscribeStates: (() => void)[] = [];
 
   async function load() {
     const found = await list();

@@ -9,10 +9,10 @@ import { test } from "node:test";
 // with UiaTimeout, the worker is ended, and the next call gets a new one.
 
 function fakeWorkers() {
-  const spawned: Array<{
+  const spawned: {
     isTerminated: boolean;
     isHung: boolean;
-  }> = [];
+  }[] = [];
   function spawn() {
     const state = {
       isTerminated: false,

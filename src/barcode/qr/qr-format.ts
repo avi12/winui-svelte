@@ -54,11 +54,11 @@ function bitsAt({ matrix, indexes }: {
 }
 
 function formatWords() {
-  const words: Array<{
+  const words: {
     readonly level: number;
     readonly mask: number;
     readonly word: number;
-  }> = [];
+  }[] = [];
   for (let level = 0; level < LEVEL_COUNT; level++) {
     for (let mask = 0; mask < MASK_COUNT; mask++) {
       words.push({

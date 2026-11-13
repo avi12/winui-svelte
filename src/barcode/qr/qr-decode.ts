@@ -11,7 +11,7 @@ const MASK_PERIOD = 3;
 const ROW_PERIOD = 2;
 
 // ISO/IEC 18004 table 10: the eight data mask patterns, true where a module flips.
-const MASK_CONDITIONS: ReadonlyArray<(position: Point) => boolean> = [
+const MASK_CONDITIONS: readonly ((position: Point) => boolean)[] = [
   ({ x, y }) => (x + y) % 2 === 0,
   ({ y }) => y % 2 === 0,
   ({ x }) => x % MASK_PERIOD === 0,

@@ -62,7 +62,7 @@ export class LicenseWatcher extends HandlerEventTarget {
 
   /** The failure of the last poll, or null. */
   error: unknown = null;
-  private readonly stops: Array<() => void> = [];
+  private readonly stops: (() => void)[] = [];
   private lastKey: string | null = null;
 
   constructor({ window, pollMilliseconds, backend = windowsStoreBackend() }: WatchLicenseOptions = {}) {

@@ -181,7 +181,7 @@ test("local and session publish the 10 MiB quota and enforce it", async () => {
 test("onChanged fires per area with old and new values, and combined with the area name", async () => {
   const { storage } = made();
   const areaEvents: StorageChanges[] = [];
-  const combined: Array<[StorageChanges, string]> = [];
+  const combined: [StorageChanges, string][] = [];
   storage.local.onChanged.addListener(changes => areaEvents.push(changes));
   storage.onChanged.addListener((changes, areaName) => combined.push([changes, areaName]));
   await storage.local.set({ a: 1 });

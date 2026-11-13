@@ -148,7 +148,7 @@ class Channel<Action extends Json, Extra extends object> implements HostChannel<
   // meets the wire (an `instanceof` hands the slot back as that State).
   private readonly slots = new Map<string, object>();
   private isClosed = false;
-  private readonly closedListeners: Array<() => void> = [];
+  private readonly closedListeners: (() => void)[] = [];
 
   constructor({ transport, onError = writeToStderr, onClosed }: HostChannelSetup) {
     this.messaging = defineMessaging<StateProtocol<Action> & Extra>({

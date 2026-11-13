@@ -205,7 +205,7 @@ export async function subscribeToCharacteristic({ characteristic, onValue, mode 
  * the `signal`, and unsubscribes.
  *
  * @param options - The characteristic, `mode`, and a `signal`.
- * @returns An async iterable of the bytes of each notification.
+ * @yields The bytes of one notification.
  */
 export async function* characteristicValues({ characteristic, mode, signal }: {
   characteristic: NotifyingCharacteristic;

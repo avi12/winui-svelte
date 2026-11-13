@@ -52,10 +52,10 @@ test("the flags exclude every condition not asked for", () => {
 });
 
 test("the registration carries the quoted command line, and a refusal throws", () => {
-  const registered: Array<{
+  const registered: {
     commandLine: string;
     flags: number;
-  }> = [];
+  }[] = [];
   registerRestart({
     arguments: ["--mode", "after crash"],
     conditions: [RestartCondition.update],

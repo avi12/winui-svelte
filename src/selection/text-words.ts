@@ -23,10 +23,10 @@ export interface SelectableWord {
  * `selectableWords` reads.
  */
 export interface RecognizedLine {
-  readonly words: ReadonlyArray<{
+  readonly words: readonly {
     readonly rawValue: string;
     readonly boundingBox: Rectangle;
-  }>;
+  }[];
 }
 
 /** An inclusive run of word indices, `start` never past `end`. */

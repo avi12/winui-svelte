@@ -127,7 +127,7 @@ class DropBinding {
   private lastEffect: DropEffectName = DropEffect.none;
   private isOver = false;
   private readonly control: DropControl;
-  private readonly stops: Array<() => void>;
+  private readonly stops: (() => void)[];
   private readonly onEmpty: () => void;
   private readonly leaveWindow: () => void;
 
@@ -387,7 +387,7 @@ class DropBinding {
     }
   }
 
-  private filter(dropped: ReadonlyArray<DataTransfer["files"][number]>) {
+  private filter(dropped: readonly DataTransfer["files"][number][]) {
     const hasZones = this.zones.size > 0;
     if (!hasZones) {
       return {
@@ -410,7 +410,7 @@ class DropBinding {
   }
 
   private reject({ rejected, args, transfer }: {
-    rejected: ReadonlyArray<DataTransfer["files"][number]>;
+    rejected: readonly DataTransfer["files"][number][];
     args: DropArgs;
     transfer: DataTransfer;
   }) {

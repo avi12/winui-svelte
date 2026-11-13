@@ -14,10 +14,10 @@ const { track } = await import("./test-support/track.svelte.ts");
 // it has no index signature.
 interface View extends Record<string, Json> {
   title: string;
-  cards: Array<{
+  cards: {
     title: string;
     isOn: boolean;
-  }>;
+  }[];
 }
 
 const initial: View = {
@@ -348,10 +348,10 @@ test("two names are two independent states", async () => {
 // The app's state as an interface, which TypeScript does not take for JSON.
 interface CardList {
   title: string;
-  cards: Array<{
+  cards: {
     title: string;
     isOn: boolean;
-  }>;
+  }[];
 }
 
 test("state typed as an interface is read like any other", async () => {

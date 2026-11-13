@@ -14,7 +14,7 @@ type Invocation = Parameters<Parameters<NonNullable<Backend>["onInvoked"]>[0]>[0
 function fakeBackend({ isEnabled = true } = {}) {
   const shown: Spec[] = [];
   const removed: number[] = [];
-  const updates: Array<{ progress: unknown }> = [];
+  const updates: { progress: unknown }[] = [];
   const state = { isFound: true };
   let invoked: ((invocation: Invocation) => void) | undefined;
   const backend = {

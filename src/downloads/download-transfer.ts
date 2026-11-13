@@ -29,10 +29,10 @@ async function sizeOf(location: string) {
   }
 }
 
-function headersOf(pairs: ReadonlyArray<{
+function headersOf(pairs: readonly {
   name: string;
   value: string;
-}> | undefined) {
+}[] | undefined) {
   const headers = new Headers();
   for (const { name, value } of pairs ?? []) {
     headers.append(name, value);

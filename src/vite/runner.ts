@@ -45,7 +45,7 @@ export function createWindowModuleRunner(port: MessagePort) {
 
   // An error is described by where it is (a compile error's file and line),
   // not dumped with everything it carries.
-  function log(...messages: Array<string | Error>) {
+  function log(...messages: (string | Error)[]) {
     const lines = messages.map(message => message instanceof Error ? describeError(message) : message);
     port.postMessage({
       type: "custom",

@@ -11,7 +11,7 @@ export type FormObject = Record<string, FieldValue | FieldValue[]>;
  * `Object.fromEntries(values)` and `new Map(values)` work.
  */
 export class FormValues {
-  private readonly entriesList: Array<[string, FieldValue]> = [];
+  private readonly entriesList: [string, FieldValue][] = [];
 
   constructor(entries: Iterable<readonly [string, FieldValue]> = []) {
     for (const [name, value] of entries) {

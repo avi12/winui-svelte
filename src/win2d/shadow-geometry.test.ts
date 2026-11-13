@@ -14,11 +14,11 @@ const LAYER = {
   color: "#80000000"
 };
 
-function bounds(commands: ReadonlyArray<{
+function bounds(commands: readonly {
   kind: string;
   x?: number;
   y?: number;
-}>) {
+}[]) {
   const horizontals = commands.flatMap(command => command.x === undefined ? [] : [command.x]);
   const verticals = commands.flatMap(command => command.y === undefined ? [] : [command.y]);
   return {

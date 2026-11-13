@@ -99,7 +99,7 @@ class FakeArgs implements DropArgs {
 
 function fakeSource({ kinds, files = [] }: {
   kinds: DataKind[];
-  files?: Array<ReturnType<typeof nativeFileOfBytes>>;
+  files?: ReturnType<typeof nativeFileOfBytes>[];
 }) {
   return {
     formats: () => [],

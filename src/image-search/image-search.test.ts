@@ -89,10 +89,10 @@ test("bad input is rejected by the schema", async () => {
 });
 
 test("an upload returns the redirect without following it", async () => {
-  const seen: Array<{
+  const seen: {
     url: string;
     init: RequestInit;
-  }> = [];
+  }[] = [];
   const url = await imageSearchUrl({
     engine: ImageSearchEngine.GOOGLE_LENS,
     image: {

@@ -237,11 +237,11 @@ test("options that are not Chrome's shape are refused", async () => {
 });
 
 test("headers, method and body reach the server", async () => {
-  const seen: Array<{
+  const seen: {
     method: string | undefined;
     token: string | string[] | undefined;
     body: string;
-  }> = [];
+  }[] = [];
   await withDownloads({
     handler({ request, response }) {
       const chunks: Buffer[] = [];
@@ -279,7 +279,7 @@ test("headers, method and body reach the server", async () => {
 });
 
 test("pause keeps the bytes and resume asks for the rest with a Range request", async () => {
-  const ranges: Array<string | undefined> = [];
+  const ranges: (string | undefined)[] = [];
   await withDownloads({
     handler({ request, response }) {
       ranges.push(request.headers.range);

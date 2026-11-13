@@ -95,7 +95,7 @@ class DragBinding {
   private stopTicking: (() => void) | undefined;
   private readonly control: DragControl;
   private readonly clock: () => DragClock;
-  private readonly stops: Array<() => void>;
+  private readonly stops: (() => void)[];
   private readonly onEmpty: () => void;
 
   constructor({ control, clock, onEmpty }: {

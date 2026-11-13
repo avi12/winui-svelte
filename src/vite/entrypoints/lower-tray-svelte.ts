@@ -216,7 +216,7 @@ function menuRootOf({ source, fragment, components }: {
 
 function readScripts({ source, scripts }: {
   source: Source;
-  scripts: ReadonlyArray<AST.Script | null>;
+  scripts: readonly (AST.Script | null)[];
 }) {
   const components = new Map<string, MenuComponent>();
   const retained: string[] = [];

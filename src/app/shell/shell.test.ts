@@ -24,7 +24,7 @@ function reasonOf(result: {
 
 function fakeBackend() {
   const recycled: string[][] = [];
-  const written: Array<ShortcutProperties & { path: string }> = [];
+  const written: (ShortcutProperties & { path: string })[] = [];
   const backend = {
     recycle(paths) {
       recycled.push([...paths]);

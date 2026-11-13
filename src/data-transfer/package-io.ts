@@ -123,7 +123,7 @@ export async function snapshotOf({ source, customFormats = [] }: {
 }) {
   const strings = new Map<string, string>();
   const files: NativeFile[] = [];
-  const tasks: Array<() => Promise<void>> = [];
+  const tasks: (() => Promise<void>)[] = [];
   if (source.has(Kinds.text)) {
     tasks.push(async () => {
       strings.set(FormatType.text, await source.readText());

@@ -98,7 +98,7 @@ function fakeButton(kind: ButtonKindOf = ButtonKind.SUBMIT) {
 function noop() {}
 
 function startForm(overrides: Partial<FormOptions> = {}) {
-  const submissions: Array<FormSubmission<unknown>> = [];
+  const submissions: FormSubmission<unknown>[] = [];
   const log: {
     invalid: string[][];
     resets: number;

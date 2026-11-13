@@ -13,7 +13,7 @@ function clone(value: Json) {
 
 function valueAt({ value, path }: {
   value: Json | undefined;
-  path: Array<string | number>;
+  path: (string | number)[];
 }) {
   let current = value;
   for (const key of path) {
@@ -190,7 +190,7 @@ test("bad operations throw PatchError and never touch the prototype", () => {
 });
 
 test("diff then apply reproduces the next value, for many shapes", () => {
-  const pairs: Array<[Json, Json]> = [
+  const pairs: [Json, Json][] = [
     [{ a: 1 }, { a: 2 }],
     [{ a: 1 }, { b: 1 }],
     [{ list: [1, 2, 3] }, { list: [1, 2, 3, 4] }],

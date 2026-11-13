@@ -25,7 +25,7 @@ interface CompiledSourceMap {
   version: number;
   file?: string;
   sources: string[];
-  sourcesContent?: Array<string | null>;
+  sourcesContent?: (string | null)[];
   names: string[];
   mappings: string;
 }
@@ -79,14 +79,14 @@ function isFailure(value: unknown): value is Error & SvelteDiagnostic {
 
 function reportWarnings({ context, warnings, filename }: {
   context: Rollup.TransformPluginContext;
-  warnings: ReadonlyArray<{
+  warnings: readonly {
     message: string;
     code: string;
     start?: {
       line: number;
       column: number;
     } | undefined;
-  }>;
+  }[];
   filename: string;
 }) {
   for (const warning of warnings) {

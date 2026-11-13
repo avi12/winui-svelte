@@ -30,9 +30,9 @@ function fakeSurface() {
     attention: false,
     isClosed: false
   };
-  const focusListeners: Array<(isFocused: boolean) => void> = [];
-  const boundsListeners: Array<() => void> = [];
-  const closedListeners: Array<() => void> = [];
+  const focusListeners: ((isFocused: boolean) => void)[] = [];
+  const boundsListeners: (() => void)[] = [];
+  const closedListeners: (() => void)[] = [];
   const surface: ChromeWindowSurface = {
     bounds: () => state.bounds,
     state: () => state.windowState,

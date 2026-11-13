@@ -17,10 +17,10 @@ const UNDETERMINED = "und";
 /** What `chrome.i18n.detectLanguage` resolves to. */
 export interface DetectedLanguages {
   readonly isReliable: boolean;
-  readonly languages: ReadonlyArray<{
+  readonly languages: readonly {
     readonly language: string;
     readonly percentage: number;
-  }>;
+  }[];
 }
 
 /**

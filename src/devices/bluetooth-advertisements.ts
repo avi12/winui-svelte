@@ -252,7 +252,7 @@ export function startAdvertisementScan({ options, onAdvertisement, onStopped }: 
  * `BluetoothScanAbortedError`.
  *
  * @param options - The scan's settings.
- * @returns An async iterable of advertisements, one per advertisement heard.
+ * @yields One advertisement heard.
  */
 export async function* scanBluetoothAdvertisements(options: AdvertisementScanOptions = {}) {
   const queue: BluetoothAdvertisement[] = [];

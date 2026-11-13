@@ -18,17 +18,17 @@ const COMMAND = {
 
 function fakeShell(current: string | null = APP_ID) {
   const calls: string[] = [];
-  const replaced: Array<{
+  const replaced: {
     appUserModelId: string;
-    links: ReadonlyArray<{
+    links: readonly {
       arguments: string;
       title: string;
       path: string;
       iconPath: string | null;
       iconIndex: number;
       description: string | null;
-    }>;
-  }> = [];
+    }[];
+  }[] = [];
   return {
     calls,
     replaced,
@@ -122,12 +122,12 @@ test("the AppUserModelID must be the process's own", () => {
 test("a bad id, a repeated id, an empty title and a remote icon are refused before the shell is called", () => {
   const { backend, calls } = fakeShell();
   function refuse({ tasks, message }: {
-    tasks: ReadonlyArray<{
+    tasks: readonly {
       id: string;
       title: string;
       arguments: readonly string[];
       icon?: string;
-    }>;
+    }[];
     message: RegExp;
   }) {
     assert.throws(() => setJumpListTasks({

@@ -61,15 +61,15 @@ function fakeCore() {
       parameterObjectAsJson: string;
     }) => void>()
   };
-  const protocolCalls: Array<{
+  const protocolCalls: {
     method: string;
     parameters: string;
-  }> = [];
-  const responses: Array<{
+  }[] = [];
+  const responses: {
     statusCode: number;
     reasonPhrase: string;
     headers: string;
-  }> = [];
+  }[] = [];
   const cookies: CookieLike[] = [];
   const calls: string[] = [];
   const settings = { areHostObjectsAllowed: true };
@@ -697,13 +697,13 @@ test("keys, clicks and typed text are built as Input protocol calls", async () =
 
 test("startWebView2 passes the environment and the controller options, and starts once", async () => {
   const { core } = fakeCore();
-  const started: Array<{
+  const started: {
     environment: unknown;
     options: {
       profileName: string;
       isInPrivateModeEnabled: boolean;
     } | undefined;
-  }> = [];
+  }[] = [];
   const control: WebView2Like = {
     coreWebView2: core,
     onCoreProcessFailed: () => () => undefined,
@@ -765,7 +765,7 @@ test("startWebView2 names both causes of 0x8007139F and lets a later call retry"
 
 function guarded(options: { maxCrashes?: number } = {}) {
   const first = fakeControl();
-  const rebuilt: Array<ReturnType<typeof fakeControl>> = [];
+  const rebuilt: ReturnType<typeof fakeControl>[] = [];
   const log: string[] = [];
   const guard = keepWebView2Alive({
     control: first.control,

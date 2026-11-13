@@ -101,7 +101,7 @@ function textOf({ context, node }: {
 
 function templateOf({ context, parts }: {
   context: MarkupContext;
-  parts: ReadonlyArray<AST.Text | AST.ExpressionTag>;
+  parts: readonly (AST.Text | AST.ExpressionTag)[];
 }) {
   const [only] = parts;
   const isPlainText = parts.length === 1 && only?.type === "Text";

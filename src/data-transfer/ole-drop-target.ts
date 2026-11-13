@@ -104,7 +104,7 @@ export function dropTargetInterface() {
 
 function callOf({ slot, args }: {
   slot: number;
-  args: ReadonlyArray<DynWinRTValue | null | undefined>;
+  args: readonly (DynWinRTValue | null | undefined)[];
 }) {
   const hasData = slot === DRAG_ENTER_SLOT || slot === DROP_SLOT;
   const [data, keys, packedPoint, allowed] = hasData ? args : [null, ...args];

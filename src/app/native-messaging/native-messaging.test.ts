@@ -64,7 +64,7 @@ function createFakeRegistry() {
 
 function register({ registry, browsers }: {
   registry: RegistryBackend;
-  browsers?: ReadonlyArray<(typeof NativeMessagingBrowser)[keyof typeof NativeMessagingBrowser]>;
+  browsers?: readonly (typeof NativeMessagingBrowser)[keyof typeof NativeMessagingBrowser][];
 }) {
   registerNativeMessagingHost({
     name: "com.example.notes",

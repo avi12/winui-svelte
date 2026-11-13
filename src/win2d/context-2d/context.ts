@@ -689,10 +689,10 @@ export class Context2D {
   roundRect(x: number, y: number, width: number, height: number, radii?: number | {
     x?: number;
     y?: number;
-  } | Array<number | {
+  } | (number | {
     x?: number;
     y?: number;
-  }>) {
+  })[]) {
     this.devicePath.roundRect(x, y, width, height, radii);
   }
 

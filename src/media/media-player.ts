@@ -80,7 +80,7 @@ export function createMediaPlayer(options: MediaPlayerOptions = {}) {
     }
   }
 
-  const unsubscriptions: Array<() => void> = [];
+  const unsubscriptions: (() => void)[] = [];
   const { state, stop } = observePlayback({
     player,
     poll: refresh => startTimer({
@@ -132,7 +132,7 @@ function subscribeAll({ player, handlers }: {
   player: MediaPlayer;
   handlers: PlayerHandlers;
 }) {
-  const subscriptions: Array<() => void> = [];
+  const subscriptions: (() => void)[] = [];
   for (const name of PLAYER_EVENTS) {
     const handler = handlers[name];
     const unsubscribe = handler === undefined ? undefined : call(player, name, handler);

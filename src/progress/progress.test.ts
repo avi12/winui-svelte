@@ -26,10 +26,10 @@ function isolated(options: ConstructorParameters<typeof ProgressOperation>[0] = 
 }
 
 function fakeTaskbar() {
-  const calls: Array<{
+  const calls: {
     state: string;
     value?: number | undefined;
-  }> = [];
+  }[] = [];
   return {
     calls,
     setProgress(options: {

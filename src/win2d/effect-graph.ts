@@ -77,6 +77,11 @@ export function drawableBlendModes() {
   return [...BLEND_ENUM.keys()].filter(mode => BLEND_MODES.has(mode));
 }
 
+const CHANNEL = {
+  ALPHA: 3,
+  OFFSET: 4
+} as const;
+
 // The entry of the CSS matrix (its rows are the output channels, its columns the inputs).
 function cell({ values, input, output }: {
   values: readonly number[];
@@ -107,7 +112,7 @@ function win2dMatrix(values: readonly number[]) {
     m14: cell({
       values,
       input: 0,
-      output: 3
+      output: CHANNEL.ALPHA
     }),
     m21: cell({
       values,
@@ -127,7 +132,7 @@ function win2dMatrix(values: readonly number[]) {
     m24: cell({
       values,
       input: 1,
-      output: 3
+      output: CHANNEL.ALPHA
     }),
     m31: cell({
       values,
@@ -147,47 +152,47 @@ function win2dMatrix(values: readonly number[]) {
     m34: cell({
       values,
       input: 2,
-      output: 3
+      output: CHANNEL.ALPHA
     }),
     m41: cell({
       values,
-      input: 3,
+      input: CHANNEL.ALPHA,
       output: 0
     }),
     m42: cell({
       values,
-      input: 3,
+      input: CHANNEL.ALPHA,
       output: 1
     }),
     m43: cell({
       values,
-      input: 3,
+      input: CHANNEL.ALPHA,
       output: 2
     }),
     m44: cell({
       values,
-      input: 3,
-      output: 3
+      input: CHANNEL.ALPHA,
+      output: CHANNEL.ALPHA
     }),
     m51: cell({
       values,
-      input: 4,
+      input: CHANNEL.OFFSET,
       output: 0
     }),
     m52: cell({
       values,
-      input: 4,
+      input: CHANNEL.OFFSET,
       output: 1
     }),
     m53: cell({
       values,
-      input: 4,
+      input: CHANNEL.OFFSET,
       output: 2
     }),
     m54: cell({
       values,
-      input: 4,
-      output: 3
+      input: CHANNEL.OFFSET,
+      output: CHANNEL.ALPHA
     })
   };
 }

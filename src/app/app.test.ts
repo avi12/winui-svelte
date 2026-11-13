@@ -60,7 +60,7 @@ function settle() {
 
 test("the first copy is primary and hears what a later copy sends until it releases", async () => {
   const { state, source } = fakeSource({ isPrimary: true });
-  const heard: Array<{ arguments: string[] }> = [];
+  const heard: { arguments: string[] }[] = [];
   let isWindowRaised = false;
   const single = claimInstance({
     key: "app.test",
@@ -218,12 +218,12 @@ test("on a real pipe the first opener serves and a later one delivers its line",
 
 function recordingSource() {
   const calls: string[] = [];
-  const shown: Array<{
+  const shown: {
     title: string;
     body?: string;
     tag?: string;
     arguments: ReadonlyMap<string, string>;
-  }> = [];
+  }[] = [];
   return {
     calls,
     shown,

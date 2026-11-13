@@ -478,7 +478,7 @@ test("the check digit makers agree with known codes", () => {
 });
 
 test("EAN-13, UPC-A, EAN-8 and Code 128 are read", () => {
-  const cases: ReadonlyArray<readonly [Symbology, string, readonly boolean[]]> = [
+  const cases: readonly (readonly [Symbology, string, readonly boolean[]])[] = [
     [Symbology.EAN_13, EAN_13, encodeEan(EAN_13)],
     [Symbology.EAN_13, EAN_13_PARITY_ZERO, encodeEan(EAN_13_PARITY_ZERO)],
     [Symbology.UPC_A, UPC_A, encodeEan(UPC_A)],

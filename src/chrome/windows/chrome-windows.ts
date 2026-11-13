@@ -30,7 +30,7 @@ export interface TrackOptions {
 interface Entry {
   readonly id: number;
   readonly surface: ChromeWindowSurface;
-  readonly stops: ReadonlyArray<() => void>;
+  readonly stops: readonly (() => void)[];
 }
 
 function definedSide({ key, value }: {

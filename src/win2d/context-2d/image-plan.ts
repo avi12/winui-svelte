@@ -44,7 +44,7 @@ function destinationNumbers({ given, image }: {
  */
 export function planImage({ image, numbers }: {
   image: Rectangle;
-  numbers: Array<number | undefined>;
+  numbers: (number | undefined)[];
 }) {
   const given = numbers.filter(value => value !== undefined);
   const isCropped = given.length === CROPPED_NUMBERS;

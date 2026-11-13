@@ -16,7 +16,7 @@ const BODY = Buffer.from("0123456789".repeat(100));
 const PARTIAL_BYTES = 300;
 
 interface Seen {
-  ranges: Array<string | undefined>;
+  ranges: (string | undefined)[];
 }
 
 interface Exchange {
