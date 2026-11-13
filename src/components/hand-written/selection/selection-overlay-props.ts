@@ -23,4 +23,10 @@ export interface SelectionOverlayProps {
 
   /** The scrim's opacity once something is selected; `DEFAULT_SELECTED_SCRIM_OPACITY` by default. */
   selectedScrimOpacity?: number;
+
+  /** Called once the `image` has decoded and can be painted; show the window then, so no bare surface flashes. */
+  onimageopened?: () => void;
+
+  /** Called with WinUI's error message when the `image` fails to load. */
+  onimagefailed?: (error: string) => void;
 }

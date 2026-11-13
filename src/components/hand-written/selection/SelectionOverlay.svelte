@@ -72,7 +72,12 @@
 
 <Grid class="overlay" isHitTestVisible={false}>
   {#if props.image !== undefined}
-    <Image source={props.image} stretch="Fill" />
+    <Image
+      onimagefailed={(_, args) => props.onimagefailed?.(args.errorMessage)}
+      onimageopened={() => props.onimageopened?.()}
+      source={props.image}
+      stretch="Fill"
+    />
   {/if}
   <Path style:opacity={view.scrimOpacity} class="scrim" data={view.scrim} />
   <Canvas class="layer">

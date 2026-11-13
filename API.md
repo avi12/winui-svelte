@@ -5325,6 +5325,9 @@ Custom properties are app-wide resources and the last sheet registered wins a
 key, so import the app's stylesheet after the components
 It takes no pointer: the app feeds `reduceSelector` and passes its state;
 `radius` and `arm` (the bracket length) override the defaults
+`onimageopened` fires once the `image` has decoded and can be painted, so an
+app keeps its window hidden until then; `onimagefailed` gets the error message
+as a string when the `image` cannot load
 Fades and the bracket entrance are CSS transitions and `@keyframes`, so
 `prefers-reduced-motion` flattens them
 The path data comes from `scrimPath`, `bracketPath` and `pointsText`, which
