@@ -69,11 +69,11 @@ test("a point past any edge is pulled in, on a monitor left of the primary one t
 });
 
 test("the menu exists only between show and close, and a second show moves it", () => {
-  const heard: Array<MenuPlacement | null> = [];
-  const asked: Array<{
+  const heard: (MenuPlacement | null)[] = [];
+  const asked: {
     x: number;
     y: number;
-  }> = [];
+  }[] = [];
   const menu = createTrayMenu({
     native: {
       workAreaAt(point) {

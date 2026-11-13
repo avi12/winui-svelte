@@ -8,7 +8,7 @@ import type { MenuItem, MenuProfile } from "#src/tray/menu/types.js";
  */
 export interface TrayMenuEditorProps<ItemId extends string = string> {
   /** The menu the app declares: the same lines the `TrayIcon` draws. */
-  readonly items: ReadonlyArray<MenuItem<ItemId>>;
+  readonly items: readonly MenuItem<ItemId>[];
 
   /** The user's choice; `bind:profile` keeps it in step with the editor. The default profile when left out. */
   profile?: MenuProfile<NoInfer<ItemId>> | undefined;

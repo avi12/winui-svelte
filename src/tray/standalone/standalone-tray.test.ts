@@ -127,20 +127,20 @@ function names(items: readonly ResolvedMenuItem[]): string[] {
 
 function start<const ItemId extends string>({ menu, picks, profile }: {
   readonly menu: StandaloneTrayOptions<ItemId>["menu"];
-  readonly picks: ReadonlyArray<string | undefined>;
+  readonly picks: readonly (string | undefined)[];
   readonly profile?: NonNullable<Extract<StandaloneTrayOptions<ItemId>, { readonly resolve: unknown }>["profile"]>;
 }) {
   const fake = fakeNative();
   let tick = noop;
-  const shown: Array<{
+  const shown: {
     readonly owner: bigint;
     readonly point: {
       readonly x: number;
       readonly y: number;
     };
     readonly items: readonly ResolvedMenuItem[];
-  }> = [];
-  const deferred: Array<() => void> = [];
+  }[] = [];
+  const deferred: (() => void)[] = [];
   const nativeMenu: NativeMenu = {
     choose(options) {
       fake.calls.push("choose");
@@ -424,7 +424,7 @@ test("submenus reach the popup with their children, lazy ones made when the menu
 });
 
 test("the profile, or a function that gives it, decides what shows each time", () => {
-  let hidden: ReadonlyArray<"open" | "quit"> = ["open"];
+  let hidden: readonly ("open" | "quit")[] = ["open"];
   const { shown, rightClick, handle } = start({
     menu: [command({ id: "open" }), command({ id: "quit" })],
     picks: [undefined, undefined],

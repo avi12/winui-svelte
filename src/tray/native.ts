@@ -170,6 +170,7 @@ const NOTIFY_ICON_DATA_SIZE = 976;
 const ICON_IDENTIFIER_SIZE = 40;
 const RECT_SIZE = 16;
 const TOOLTIP_CHARS = 128;
+const ICON_IDENTIFIER_ALIGNMENT = 8;
 const OFFSET_SIZE = 0;
 const OFFSET_OWNER = 8;
 const OFFSET_ID = 16;
@@ -413,7 +414,7 @@ export function createTrayNative({ writeBalloon }: { writeBalloon?: BalloonWrite
   function readIconRect(identity: TrayIdentity) {
     return withMemory({
       size: ICON_IDENTIFIER_SIZE,
-      alignment: 8,
+      alignment: ICON_IDENTIFIER_ALIGNMENT,
       use(identifier) {
         identifier.writeU32(OFFSET_SIZE, ICON_IDENTIFIER_SIZE);
         identifier.writeU64(OFFSET_OWNER, identity.owner);
@@ -519,7 +520,7 @@ export function createTrayNative({ writeBalloon }: { writeBalloon?: BalloonWrite
     notify({ operation, data }) {
       return withMemory({
         size: NOTIFY_ICON_DATA_SIZE,
-        alignment: 8,
+        alignment: ICON_IDENTIFIER_ALIGNMENT,
         use(memory) {
           writeNotifyData({
             memory,

@@ -8,7 +8,7 @@ export const ROOT_ID = "";
 export interface ExpandedItem<ItemId extends string> {
   readonly item: MenuItem<ItemId>;
   readonly parentId: ItemId | typeof ROOT_ID;
-  readonly children: ReadonlyArray<ExpandedItem<ItemId>>;
+  readonly children: readonly ExpandedItem<ItemId>[];
 }
 
 function childrenOf<ItemId extends string>(item: MenuItem<ItemId>) {
@@ -39,12 +39,12 @@ function childrenOf<ItemId extends string>(item: MenuItem<ItemId>) {
  * @param options - `items`: the declared menu.
  * @returns The tree with each dynamic list made.
  */
-export function expandMenu<ItemId extends string>({ items }: { readonly items: ReadonlyArray<MenuItem<ItemId>> }) {
+export function expandMenu<ItemId extends string>({ items }: { readonly items: readonly MenuItem<ItemId>[] }) {
   const seen = new Set<string>();
   function expandList({ list, parentId }: {
-    readonly list: ReadonlyArray<MenuItem<ItemId>>;
+    readonly list: readonly MenuItem<ItemId>[];
     readonly parentId: ItemId | typeof ROOT_ID;
-  }): Array<ExpandedItem<ItemId>> {
+  }): ExpandedItem<ItemId>[] {
     return list.map(item => {
       if (seen.has(item.id)) {
         throw new MenuModelError(`Menu item id "${item.id}" is used more than once; ids must be unique`);

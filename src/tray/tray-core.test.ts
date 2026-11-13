@@ -39,10 +39,10 @@ const DOWN: ButtonSample = {
 
 class FakeNative implements TrayNative {
   readonly calls: string[] = [];
-  readonly notifications: Array<{
+  readonly notifications: {
     operation: NotifyOperation;
     data: NotifyData;
-  }> = [];
+  }[] = [];
   rect: ScreenRect | null = ICON_RECT;
   isLight = false;
   size = 16;
@@ -234,10 +234,10 @@ test("removeAllTrayIcons removes every live icon, so none is left behind at exit
 });
 
 test("a click over the icon reaches onclick with the pointer's coordinates", () => {
-  const clicks: Array<{
+  const clicks: {
     x: number;
     y: number;
-  }> = [];
+  }[] = [];
   const { native, tick, handle } = start({
     onclick: ({ x, y }) => clicks.push({
       x,
@@ -401,10 +401,10 @@ test("Enter or Space on the focused icon reaches ondoubleclick, one tick after t
 });
 
 test("the context-menu key reaches oncontextmenu with the anchor the shell gave", () => {
-  const anchors: Array<{
+  const anchors: {
     x: number;
     y: number;
-  }> = [];
+  }[] = [];
   const { native, tick, handle } = start({
     oncontextmenu: ({ x, y }) => anchors.push({
       x,

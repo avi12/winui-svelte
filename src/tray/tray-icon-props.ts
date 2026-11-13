@@ -18,7 +18,7 @@ export interface TrayIconComponentProps<ItemId extends string = string> extends 
    * opens at the pointer on a right click, in a one-pixel window that exists
    * only while the menu is open.
    */
-  menu?: Snippet<[TrayMenuContext]> | ReadonlyArray<MenuItem<ItemId>> | undefined;
+  menu?: Snippet<[TrayMenuContext]> | readonly MenuItem<ItemId>[] | undefined;
 
   /**
    * The user's choice of what a model menu (`menu={items}`) shows; a `TrayMenu` in the children has a `profile` of

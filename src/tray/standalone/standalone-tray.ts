@@ -40,7 +40,7 @@ interface StandaloneMenuOptions<ItemId extends string, Extras extends readonly T
    * click does nothing. A function makes
    * the lines each time the menu opens, which is how a tray written as markup keeps its variables current.
    */
-  readonly menu?: ReadonlyArray<MenuItem<ItemId>> | (() => ReadonlyArray<MenuItem<ItemId>>) | undefined;
+  readonly menu?: readonly MenuItem<ItemId>[] | (() => readonly MenuItem<ItemId>[]) | undefined;
 
   /**
    * The menu's color scheme, with the meaning of the CSS `color-scheme` property: `"light dark"` (the

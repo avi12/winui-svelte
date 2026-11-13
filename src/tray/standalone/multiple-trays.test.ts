@@ -61,7 +61,7 @@ function pointer() {
 
 function rightClickAt({ x, ticks }: {
   readonly x: number;
-  readonly ticks: ReadonlyArray<() => void>;
+  readonly ticks: readonly (() => void)[];
 }) {
   world.x = x;
   world.right = DOWN;
@@ -83,12 +83,12 @@ function fakeTray({ name, rect, scheme, items }: {
   readonly name: string;
   readonly rect: ScreenRect;
   readonly scheme: MenuColorScheme;
-  readonly items: () => ReadonlyArray<MenuItem<string>>;
+  readonly items: () => readonly MenuItem<string>[];
 }) {
-  const notified: Array<{
+  const notified: {
     readonly operation: NotifyOperation;
     readonly identity: TrayIdentity;
-  }> = [];
+  }[] = [];
   let tick = noop;
   let isTimerRunning = false;
   const owner = nextOwner++;

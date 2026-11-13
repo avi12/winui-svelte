@@ -141,7 +141,7 @@ export function isCustomized<ItemId extends string>(profile: MenuProfile<ItemId>
 }
 
 function siblingsOf<ItemId extends string>({ descriptions, parentId, profile }: {
-  readonly descriptions: ReadonlyArray<MenuItemDescription<ItemId>>;
+  readonly descriptions: readonly MenuItemDescription<ItemId>[];
   readonly parentId: ItemId | "";
   readonly profile: MenuProfile<ItemId>;
 }) {
@@ -152,11 +152,11 @@ function siblingsOf<ItemId extends string>({ descriptions, parentId, profile }: 
 }
 
 function rowsUnder<ItemId extends string>({ descriptions, parentId, profile, depth }: {
-  readonly descriptions: ReadonlyArray<MenuItemDescription<ItemId>>;
+  readonly descriptions: readonly MenuItemDescription<ItemId>[];
   readonly parentId: ItemId | "";
   readonly profile: MenuProfile<ItemId>;
   readonly depth: number;
-}): Array<EditorRow<ItemId>> {
+}): EditorRow<ItemId>[] {
   const siblings = siblingsOf({
     descriptions,
     parentId,
@@ -190,7 +190,7 @@ function rowsUnder<ItemId extends string>({ descriptions, parentId, profile, dep
  * @returns The rows, depth first.
  */
 export function editorRows<ItemId extends string>({ descriptions, profile }: {
-  readonly descriptions: ReadonlyArray<MenuItemDescription<ItemId>>;
+  readonly descriptions: readonly MenuItemDescription<ItemId>[];
   readonly profile: MenuProfile<ItemId>;
 }) {
   return rowsUnder({
@@ -212,7 +212,7 @@ export function editorRows<ItemId extends string>({ descriptions, profile }: {
  */
 export function moveItem<ItemId extends string>({ profile, descriptions, id, direction }: {
   readonly profile: MenuProfile<ItemId>;
-  readonly descriptions: ReadonlyArray<MenuItemDescription<ItemId>>;
+  readonly descriptions: readonly MenuItemDescription<ItemId>[];
   readonly id: ItemId;
   readonly direction: MoveDirection;
 }) {

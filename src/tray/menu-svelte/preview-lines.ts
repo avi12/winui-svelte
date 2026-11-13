@@ -44,7 +44,7 @@ function linesOf({ entries, depth }: {
  * @returns The lines, depth first.
  */
 export function previewLines<ItemId extends string>({ items, profile }: {
-  readonly items: ReadonlyArray<MenuItem<ItemId>>;
+  readonly items: readonly MenuItem<ItemId>[];
   readonly profile: MenuProfile<ItemId>;
 }) {
   return linesOf({

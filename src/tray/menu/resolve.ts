@@ -24,7 +24,7 @@ function isKept<ItemId extends string>({ item, profile }: {
 }
 
 function ordered<ItemId extends string>({ nodes, profile, parentId }: {
-  readonly nodes: ReadonlyArray<ExpandedItem<ItemId>>;
+  readonly nodes: readonly ExpandedItem<ItemId>[];
   readonly profile: MenuProfile<ItemId>;
   readonly parentId: ItemId | typeof ROOT_ID;
 }) {
@@ -50,7 +50,7 @@ function ordered<ItemId extends string>({ nodes, profile, parentId }: {
  * @throws MenuModelError - An id is used twice, or a radio has no group.
  */
 export function resolveMenu<const ItemId extends string>({ items, profile = defaultProfile() }: {
-  readonly items: ReadonlyArray<MenuItem<ItemId>>;
+  readonly items: readonly MenuItem<ItemId>[];
   readonly profile?: MenuProfile<NoInfer<ItemId>>;
 }) {
   const stage: ResolveStage<NoInfer<ItemId>> = {

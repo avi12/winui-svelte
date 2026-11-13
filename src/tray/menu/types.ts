@@ -134,7 +134,7 @@ export interface MenuSubmenuItem<ItemId extends string = string> extends MenuLab
    * The children, or a function that makes them each time the menu is resolved, for a list that
    * changes (recent uploads).
    */
-  readonly items: ReadonlyArray<MenuItem<ItemId>> | (() => ReadonlyArray<MenuItem<ItemId>>);
+  readonly items: readonly MenuItem<ItemId>[] | (() => readonly MenuItem<ItemId>[]);
 
   /** Orders the children of a dynamic list before the cap; ignored for a fixed array. */
   readonly sort?: (left: MenuItem<ItemId>, right: MenuItem<ItemId>) => number;
@@ -245,7 +245,7 @@ export interface ResolvedRadio<ItemId extends string = string> extends ResolvedA
  */
 export interface ResolvedSubmenu<ItemId extends string = string> extends ResolvedLabelled<ItemId> {
   readonly kind: typeof MenuItemKind.SUBMENU;
-  readonly items: ReadonlyArray<ResolvedMenuItem<ItemId>>;
+  readonly items: readonly ResolvedMenuItem<ItemId>[];
   readonly autoExpand: boolean;
   readonly closeThenRun: boolean;
 
@@ -288,4 +288,4 @@ export interface MenuItemDescription<ItemId extends string = string> {
 }
 
 /** The union of every id a declared menu holds, to type a profile for it. */
-export type MenuIds<Items> = Items extends ReadonlyArray<MenuItem<infer ItemId>> ? ItemId : never;
+export type MenuIds<Items> = Items extends readonly MenuItem<infer ItemId>[] ? ItemId : never;

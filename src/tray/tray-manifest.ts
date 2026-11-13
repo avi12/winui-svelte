@@ -49,7 +49,7 @@ export function parseTrayManifestFile(value: unknown) {
  * @param trays - The manifests, in order.
  * @returns The value to write as JSON.
  */
-export function trayManifestFileOf(trays: ReadonlyArray<ReturnType<typeof parseTrayManifest>>) {
+export function trayManifestFileOf(trays: readonly ReturnType<typeof parseTrayManifest>[]) {
   const [only, ...others] = trays;
   const isSingle = only !== undefined && others.length === 0;
   return isSingle ? only : { trays };

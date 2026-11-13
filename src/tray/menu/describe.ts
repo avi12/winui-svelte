@@ -9,8 +9,8 @@ function labelOf<ItemId extends string>(item: MenuItem<ItemId>) {
 }
 
 function describeList<ItemId extends string>(
-  nodes: ReadonlyArray<ExpandedItem<ItemId>>
-): Array<MenuItemDescription<ItemId>> {
+  nodes: readonly ExpandedItem<ItemId>[]
+): MenuItemDescription<ItemId>[] {
   return nodes.flatMap(({ item, parentId, children }) => [
     {
       id: item.id,
@@ -32,7 +32,7 @@ function describeList<ItemId extends string>(
  * @returns One row per item, separators included.
  */
 export function describeMenu<const ItemId extends string>({ items }: {
-  readonly items: ReadonlyArray<MenuItem<ItemId>>;
+  readonly items: readonly MenuItem<ItemId>[];
 }) {
   return describeList(expandMenu({ items }));
 }

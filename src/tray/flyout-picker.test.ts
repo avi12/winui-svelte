@@ -9,7 +9,7 @@ import { test } from "node:test";
 
 function setup(declare: (log: string[]) => readonly MenuItem[]) {
   const log: string[] = [];
-  const deferred: Array<() => void> = [];
+  const deferred: (() => void)[] = [];
   const [first] = resolveMenu({ items: declare(log) });
   const isPickable = first !== undefined
     && first.kind !== MenuItemKind.SEPARATOR

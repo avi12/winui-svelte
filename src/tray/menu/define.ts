@@ -7,6 +7,6 @@ import type { MenuItem } from "./types.ts";
  * @param items - The lines of the menu.
  * @returns The same lines.
  */
-export function defineMenu<const ItemId extends string>(items: ReadonlyArray<MenuItem<ItemId>>) {
+export function defineMenu<const ItemId extends string>(items: readonly MenuItem<ItemId>[]) {
   return items;
 }

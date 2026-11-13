@@ -21,16 +21,16 @@ const EMPTY_SUFFIX = ".empty" as const;
 export interface ResolveStage<ItemId extends string> {
   readonly isKept: (item: MenuItem<ItemId>) => boolean;
   readonly ordered: (options: {
-    readonly nodes: ReadonlyArray<ExpandedItem<ItemId>>;
+    readonly nodes: readonly ExpandedItem<ItemId>[];
     readonly parentId: ItemId | typeof ROOT_ID;
-  }) => ReadonlyArray<ExpandedItem<ItemId>>;
+  }) => readonly ExpandedItem<ItemId>[];
 }
 
 /** A function that makes the lines to draw from a declared menu; `resolveLite` and `resolveMenu` are two. */
 export type MenuResolver<ItemId extends string = string> = (options: {
-  readonly items: ReadonlyArray<MenuItem<ItemId>>;
+  readonly items: readonly MenuItem<ItemId>[];
   readonly profile?: MenuProfile<NoInfer<ItemId>>;
-}) => Array<ResolvedMenuItem<ItemId>>;
+}) => ResolvedMenuItem<ItemId>[];
 
 function isContent<ItemId extends string>(entry: ResolvedMenuItem<ItemId>) {
   return entry.kind !== MenuItemKind.SEPARATOR && entry.kind !== MenuItemKind.HEADER;
@@ -76,8 +76,8 @@ function emptyPlaceholder<ItemId extends string>({ id, label }: {
   } satisfies ResolvedCommand<ItemId>;
 }
 
-function tidy<ItemId extends string>(entries: ReadonlyArray<ResolvedMenuItem<ItemId>>) {
-  const result: Array<ResolvedMenuItem<ItemId>> = [];
+function tidy<ItemId extends string>(entries: readonly ResolvedMenuItem<ItemId>[]) {
+  const result: ResolvedMenuItem<ItemId>[] = [];
   for (const [i, entry] of entries.entries()) {
     const next = entries[i + 1];
     const isEmptyHeader = entry.kind === MenuItemKind.HEADER && !(next && isContent(next));
@@ -188,10 +188,10 @@ function isVisible<ItemId extends string>(item: MenuItem<ItemId>) {
  * @returns The lines to draw.
  */
 export function resolveNodes<ItemId extends string>({ nodes, parentId, stage }: {
-  readonly nodes: ReadonlyArray<ExpandedItem<ItemId>>;
+  readonly nodes: readonly ExpandedItem<ItemId>[];
   readonly parentId: ItemId | typeof ROOT_ID;
   readonly stage?: ResolveStage<ItemId> | undefined;
-}): Array<ResolvedMenuItem<ItemId>> {
+}): ResolvedMenuItem<ItemId>[] {
   const shown = nodes.filter(({ item }) => isVisible(item) && (stage?.isKept(item) ?? true));
   const sequence = stage?.ordered({
     nodes: shown,
@@ -216,7 +216,7 @@ export function resolveNodes<ItemId extends string>({ nodes, parentId, stage }: 
  * @throws MenuModelError - An id is used twice, or a radio has no group.
  */
 export function resolveLite<const ItemId extends string>({ items }: {
-  readonly items: ReadonlyArray<MenuItem<ItemId>>;
+  readonly items: readonly MenuItem<ItemId>[];
 }) {
   return resolveNodes({
     nodes: expandMenu({ items }),
