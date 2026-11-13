@@ -236,7 +236,6 @@
   // from package.json scripts, and the editor check starts the Svelte language
   // server as a process.
   "ignoreDependencies": [
-    "fallow-config-avi12",
     "@winapp/bindings",
     "tsrs",
     "@sveltejs/package",
