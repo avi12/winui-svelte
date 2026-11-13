@@ -8,7 +8,7 @@ const { flushSync } = await import("svelte");
 const { SvelteMap } = await import("svelte/reactivity");
 const { fromStore } = await import("svelte/store");
 const { writable } = await import("svelte/store");
-const { Tallies } = await import("../../examples/counter/tallies.svelte.ts");
+const { Tallies } = await import("#examples/counter/tallies.svelte.ts");
 const { track } = await import("./test-support/track.svelte.ts");
 
 test("a class holding $state, $derived and a SvelteSet updates what reads it", () => {
