@@ -54,7 +54,12 @@ const PREFIX_BYTES = 155;
 const OCTAL = 8;
 const BYTES_PER_KILOBYTE = 1024;
 const FORBIDDEN_LISTED = 20;
-const ATTW_PROCESSES = 3;
+const ATTW_PROCESSES = 2;
+const MILLISECONDS_PER_MINUTE = 60 * 1000;
+const PACK_TIMEOUT_MILLISECONDS = 5 * MILLISECONDS_PER_MINUTE;
+// attw spends about 30 seconds per entry point and prints nothing until a
+// shard ends, so a healthy run takes minutes; this only catches a stuck one.
+const ATTW_TIMEOUT_MILLISECONDS = 15 * MILLISECONDS_PER_MINUTE;
 
 function textAt({ block, offset, length }: {
   block: Buffer;
@@ -116,20 +121,27 @@ function run(args: string[]) {
   const invocation = pnpmInvocationOrThrow(args);
   execFileSync(invocation.command, invocation.args, {
     cwd: PACKAGE_ROOT,
-    stdio: "inherit"
+    stdio: "inherit",
+    timeout: PACK_TIMEOUT_MILLISECONDS
   });
 }
 
 // pnpm exec, in the background: output is held and printed when it ends, so
 // the checks that run side by side do not interleave.
-function runAsync(args: string[]) {
+function runAsync({ args, timeoutMilliseconds }: { args: string[]; timeoutMilliseconds: number }) {
   const invocation = pnpmInvocationOrThrow(args);
   const child = spawn(invocation.command, invocation.args, { cwd: PACKAGE_ROOT });
   return new Promise<void>((resolve, reject) => {
     const chunks: Buffer[] = [];
+    const timer = setTimeout(() => {
+      // /T ends the pnpm process tree this step started, and only that tree.
+      execFileSync("taskkill", ["/T", "/F", "/PID", String(child.pid)], { stdio: "ignore" });
+      reject(new Error(`pnpm ${args.join(" ")} hung for over ${timeoutMilliseconds / MILLISECONDS_PER_MINUTE} minutes and was stopped`));
+    }, timeoutMilliseconds);
     child.stdout.on("data", (chunk: Buffer) => chunks.push(chunk));
     child.stderr.on("data", (chunk: Buffer) => chunks.push(chunk));
     child.on("close", code => {
+      clearTimeout(timer);
       process.stdout.write(Buffer.concat(chunks));
 
       const isSuccess = code === 0;
@@ -182,18 +194,24 @@ try {
   // import (@microsoft/dynwinrt), which the checker's sandbox cannot resolve
   // from inside the tarball: that is its only complaint.
   await Promise.all([
-    runAsync(["exec", "publint", "run", tarball, "--strict"]),
-    ...entryPointShards().map(entryPoints => runAsync([
-      "exec",
-      "attw",
-      tarball,
-      "--profile",
-      "esm-only",
-      "--ignore-rules",
-      "internal-resolution-error",
-      "--entrypoints",
-      ...entryPoints
-    ]))
+    runAsync({
+      args: ["exec", "publint", "run", tarball, "--strict"],
+      timeoutMilliseconds: PACK_TIMEOUT_MILLISECONDS
+    }),
+    ...entryPointShards().map(entryPoints => runAsync({
+      args: [
+        "exec",
+        "attw",
+        tarball,
+        "--profile",
+        "esm-only",
+        "--ignore-rules",
+        "internal-resolution-error",
+        "--entrypoints",
+        ...entryPoints
+      ],
+      timeoutMilliseconds: ATTW_TIMEOUT_MILLISECONDS
+    }))
   ]);
 } finally {
   rmSync(PACK_FOLDER, {
