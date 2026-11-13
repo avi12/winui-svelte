@@ -31,8 +31,9 @@ interface Step {
 // `isHeavy`: a step that holds gigabytes (a TypeScript program, many checker
 // processes); at most one runs at a time, so the peak is the largest of them,
 // not their sum.
-// `isFullOnly`: the IDE inspections hold the most memory (WebStorm about
-// 5 GB), so only `pnpm lint:full`, which CI and a release run, includes them.
+// `isFullOnly`: the IDE inspections (WebStorm about 5 GB) and the packed-
+// tarball check (about 3.7 GB, 8 minutes) hold the most memory, so only
+// `pnpm lint:full`, which CI and a release run, includes them.
 // Longest first, so the slow ones start while the short ones fill the gaps.
 // Those that import `winui-svelte` read dist/, so they wait for the build.
 const ALL_STEPS: Step[] = [
@@ -70,7 +71,8 @@ const ALL_STEPS: Step[] = [
   {
     name: "check:package",
     needs: [BUILD],
-    isHeavy: true
+    isHeavy: true,
+    isFullOnly: true
   },
   {
     name: "lint:oxlint",
