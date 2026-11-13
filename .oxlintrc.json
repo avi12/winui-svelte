@@ -405,6 +405,23 @@
     },
     {
       "files": [
+        "ide/vscode/src/completions.ts",
+        "ide/vscode/src/conversion-table.ts",
+        "ide/vscode/src/css-color.ts",
+        "ide/vscode/src/css-ide-data.ts",
+        "ide/vscode/src/font-table.ts",
+        "ide/vscode/src/glyph-table.ts",
+        "ide/vscode/src/picture-data.ts",
+        "ide/vscode/src/picture-previews.test.ts",
+        "ide/vscode/src/picture-spec.ts",
+        "ide/vscode/src/resource-table.ts"
+      ],
+      "rules": {
+        "house/no-parent-imports": "off"
+      }
+    },
+    {
+      "files": [
         "examples/tray-menu/describe-flyout.ts",
         "scripts/codegen/winmd.ts",
         "src/tray/menu-svelte/collect.ts",
