@@ -1,7 +1,7 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "extends": [
-    "./node_modules/oxlint-config-avi12/oxlint.json",
+    "./node_modules/oxlint-config-avi12/library.json",
     "./node_modules/oxlint-plugin-naming/preset.json"
   ],
   "rules": {
@@ -15,6 +15,16 @@
               "./../*"
             ],
             "message": "Import through #src/* instead of a parent-relative ../ path."
+          }
+        ],
+        "paths": [
+          {
+            "name": "@microsoft/dynwinrt/win32/unsafe",
+            "message": "Flat Win32 calls are bound in the native.ts files (and src/win32-calls.ts) only."
+          },
+          {
+            "name": "@microsoft/dynwinrt/win32",
+            "message": "Flat Win32 calls are bound in the native.ts files (and src/win32-calls.ts) only."
           }
         ]
       }
@@ -131,6 +141,74 @@
               "is64Bit"
             ]
           }
+        ],
+        "fileOverrides": [
+          {
+            "reason": "Public enum members keep their released names; renaming one is a breaking change for every consumer",
+            "files": [
+              "examples/form/SignupForm.svelte",
+              "examples/pill-ground/pill-view.ts",
+              "ide/vscode/src/css-previews.test.ts",
+              "ide/vscode/src/picture-image.ts",
+              "scripts/codegen/fetch-documentation.ts",
+              "scripts/pack/bundle-support.ts",
+              "src/app/activation/kinds.ts",
+              "src/app/hotkeys/keys.ts",
+              "src/app/native-messaging/browsers.ts",
+              "src/app/restart-after-crash.ts",
+              "src/app/shell/kinds.ts",
+              "src/automation/client.ts",
+              "src/automation/ids.ts",
+              "src/automation/text.ts",
+              "src/automation/worker-job.ts",
+              "src/chrome/runtime/installed.ts",
+              "src/chrome/runtime/link.ts",
+              "src/chrome/system/system-types.ts",
+              "src/chrome/windows/window-types.ts",
+              "src/css/media/features.ts",
+              "src/css/parse/reader.ts",
+              "src/css/translate/animation.test.ts",
+              "src/data-transfer/accept.ts",
+              "src/data-transfer/data-transfer.ts",
+              "src/data-transfer/drag-effects.ts",
+              "src/data-transfer/drag-source.ts",
+              "src/data-transfer/drop-target.ts",
+              "src/data-transfer/native-file.ts",
+              "src/devices/bluetooth-devices.ts",
+              "src/devices/device-access.ts",
+              "src/devices/interface-classes.ts",
+              "src/devices/printer-source.ts",
+              "src/input/pointer-fields.ts",
+              "src/input/pointer-routes.ts",
+              "src/input/primary-pointer-tracker.ts",
+              "src/key-code.ts",
+              "src/messaging/messaging.test.ts",
+              "src/renderer/host/element-readers.test.ts",
+              "src/renderer/host/focus-element.ts",
+              "src/selection/edges.ts",
+              "src/selection/selector.ts",
+              "src/state/channel.test.ts",
+              "src/state/protocol.ts",
+              "src/store/states.ts",
+              "src/tray/click-detector.ts",
+              "src/tray/native.ts",
+              "src/tray/tray-core.ts",
+              "src/vite/runtime-kit.ts",
+              "src/web-apis/media-devices.test.ts",
+              "src/win32-key-state.ts",
+              "src/window/anchor.ts",
+              "src/window/backdrop.ts",
+              "src/window/bootstrap-mode.ts",
+              "src/window/chrome.ts",
+              "src/window/css-pixels.ts",
+              "src/window/dock.ts",
+              "src/window/dpi-awareness.ts",
+              "src/window/foreground-filter.ts",
+              "src/window/foreground.ts",
+              "src/window/pickers.ts",
+              "src/window/window-state.ts"
+            ]
+          }
         ]
       }
     ]
@@ -153,13 +231,14 @@
         "src/devices/test-support/**"
       ],
       "rules": {
-        "no-magic-numbers": "off",
+        "house/no-magic-numbers": "off",
         "id-length": "off"
       }
     },
     {
       "files": [
-        "**/*.d.svelte.ts", "src/svelte.d.ts",
+        "**/*.d.svelte.ts",
+        "src/svelte.d.ts",
         "**/*.svelte",
         "examples/**/entrypoints/tray.ts",
         "examples/**/entrypoints/tray/index.ts"
@@ -255,12 +334,156 @@
         "func-style": "off",
         "typescript/no-implied-eval": "off"
       }
+    },
+    {
+      "files": [
+        "src/window/native.ts",
+        "src/notice/native.ts",
+        "src/tray/native.ts",
+        "src/tray/standalone/native.ts",
+        "src/devices/native.ts",
+        "src/web-apis/native.ts",
+        "src/app/native.ts",
+        "src/app/activation/native.ts",
+        "src/app/jump-list/native.ts",
+        "src/app/shell/native.ts",
+        "src/app/hotkeys/native.ts",
+        "src/data-transfer/native.ts",
+        "src/input/native.ts",
+        "src/security/native.ts",
+        "examples/hotkeys/native.ts",
+        "src/win32-calls.ts",
+        "src/win32-icons.ts",
+        "src/tray/standalone/native.test.ts",
+        "ide/vscode/src/**/*.ts"
+      ],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
+    },
+    {
+      "files": [
+        "src/win2d/context-2d/context.ts",
+        "src/win2d/context-2d/path.ts",
+        "src/win2d/context-2d/paint.ts",
+        "src/win2d/context-2d/canvas-element.ts",
+        "src/web-apis/*.ts",
+        "examples/interaction/InteractionApp.svelte",
+        "ide/vscode/src/convert-commands.ts",
+        "scripts/codegen/binding-list.ts",
+        "src/app/activation/protocol-handlers.ts",
+        "src/app/notification-source.ts",
+        "src/app/schedule/alarms.ts",
+        "src/chrome/context-menus/chrome-context-menus.ts",
+        "src/chrome/i18n/chrome-i18n.ts",
+        "src/chrome/notifications/chrome-notifications.ts",
+        "src/chrome/windows/chrome-windows.ts",
+        "src/components/hand-written/visual-states/state-group-list.ts",
+        "src/components/runtime.svelte.ts",
+        "src/css/runtime/visual-states.ts",
+        "src/css/validate/stylelint.ts",
+        "src/data-transfer/data-transfer.ts",
+        "src/input/projected-arguments.ts",
+        "src/progress/progress-operation.ts",
+        "src/renderer/host/connected-animation.test.ts",
+        "src/renderer/host/element-animation.ts",
+        "src/renderer/host/reflect.ts",
+        "src/renderer/testing/Features.fixture.svelte",
+        "src/renderer/testing/fake-controls.ts",
+        "src/renderer/tree/dom.ts",
+        "src/vite/externals.ts",
+        "src/vite/server.ts",
+        "src/vite/svelte-resolve.ts",
+        "src/web-apis/view-transitions.test.ts",
+        "src/window/match-media.ts",
+        "src/window/promise-timers.ts",
+        "src/window/scheduler.test.ts"
+      ],
+      "rules": {
+        "house/positional-parameters": "off"
+      }
+    },
+    {
+      "files": [
+        "examples/tray-menu/describe-flyout.ts",
+        "scripts/codegen/winmd.ts",
+        "src/tray/menu-svelte/collect.ts",
+        "src/tray/menu-svelte/edit-profile.ts",
+        "src/tray/menu-svelte/preview-lines.ts",
+        "src/tray/menu/describe.ts",
+        "src/tray/menu/expand.ts",
+        "src/tray/menu/menu.test.ts",
+        "src/tray/menu/resolve-lite.ts",
+        "src/tray/standalone/standalone-tray.test.ts",
+        "src/vite/entrypoints/lower-menu-markup.ts",
+        "src/vite/entrypoints/lower-tray-svelte.ts",
+        "src/web-apis/credentials-codec.ts",
+        "src/web-apis/credentials.test.ts"
+      ],
+      "rules": {
+        "house/google-syntax": "off"
+      }
+    },
+    {
+      "files": [
+        "src/chrome/i18n/language-defaults.ts",
+        "src/web-apis/install.ts",
+        "src/web-apis/network.ts",
+        "src/web-apis/page.ts",
+        "src/web-apis/screen.ts",
+        "src/web-apis/web-storage.ts"
+      ],
+      "rules": {
+        "no-restricted-globals": "off",
+        "house/house-syntax": "off"
+      }
+    },
+    {
+      "files": [
+        "src/state/test-support/**",
+        "src/devices/test-support/**",
+        "src/barcode/test-support/**",
+        "src/renderer/testing/**",
+        "**/*.fixture.svelte"
+      ],
+      "rules": {
+        "house/tree-shaking": "off",
+        "jsdoc-js/require-jsdoc": "off",
+        "jsdoc-js/require-description": "off",
+        "jsdoc-js/no-types": "off",
+        "jsdoc/check-tag-names": "off"
+      }
+    },
+    {
+      "files": [
+        "**/*.svelte"
+      ],
+      "rules": {
+        "unused-imports/no-unused-imports": "off"
+      }
+    },
+    {
+      "files": [
+        "src/**/*.ts"
+      ],
+      "rules": {
+        "jsdoc/check-tag-names": [
+          "error",
+          {
+            "typed": true,
+            "definedTags": [
+              "taskbarTheme"
+            ]
+          }
+        ]
+      }
     }
   ],
   "ignorePatterns": [
     ".winapp/**",
     "ide/webstorm/**",
     "src/components/generated/**",
-    "src/components/fluent-glyph.ts"
+    "src/components/fluent-glyph.ts",
+    "ide/vscode/dist/"
   ]
 }

@@ -21,10 +21,14 @@ interface Step {
   name: string;
   needs: string[];
   isAlone?: true;
+  isHeavy?: true;
 }
 
 // `isAlone`: WebStorm resolves types under a timeout, so a loaded machine makes
 // it underline code that is fine; it runs last, with nothing beside it.
+// `isHeavy`: a step that holds gigabytes (a TypeScript program, many checker
+// processes); at most one runs at a time, so the peak is the largest of them,
+// not their sum.
 // Longest first, so the slow ones start while the short ones fill the gaps.
 // Those that import `winui-svelte` read dist/, so they wait for the build.
 const STEPS: Step[] = [
@@ -48,15 +52,18 @@ const STEPS: Step[] = [
   },
   {
     name: "check",
-    needs: [BUILD]
+    needs: [BUILD],
+    isHeavy: true
   },
   {
     name: "check:editor",
-    needs: [BUILD]
+    needs: [BUILD],
+    isHeavy: true
   },
   {
     name: "check:package",
-    needs: [BUILD]
+    needs: [BUILD],
+    isHeavy: true
   },
   {
     name: "lint:oxlint",
@@ -114,6 +121,7 @@ async function main() {
   const finished = new Set<string>();
   const started = new Set<string>();
   let running = 0;
+  let heavyRunning = 0;
   await new Promise<void>(done => {
     function schedule() {
       const isAllStarted = started.size === STEPS.length;
@@ -127,16 +135,19 @@ async function main() {
         const isWaiting = step.needs.some(need => !finished.has(need));
         const isWaitingForTheRest = step.isAlone === true
           && (running > 0 || STEPS.some(other => other.isAlone !== true && !finished.has(other.name)));
-        const isStartable = !started.has(step.name) && !isWaiting && !isWaitingForTheRest && running < MAX_PARALLEL;
+        const isWaitingForHeavy = step.isHeavy === true && heavyRunning > 0;
+        const isStartable = !started.has(step.name) && !isWaiting && !isWaitingForTheRest
+          && !isWaitingForHeavy && running < MAX_PARALLEL;
         if (isStartable) {
-          void start(step.name);
+          void start(step);
         }
       }
     }
 
-    async function start(name: string) {
+    async function start({ name, isHeavy }: Step) {
       started.add(name);
       running += 1;
+      heavyRunning += isHeavy === true ? 1 : 0;
       console.log(`==> pnpm ${name}`);
       const { isOk, output } = await runStep(name);
       process.stdout.write(`\n==> pnpm ${name}: ${isOk ? "passed" : "FAILED"}\n${output}`);
@@ -147,6 +158,7 @@ async function main() {
 
       finished.add(name);
       running -= 1;
+      heavyRunning -= isHeavy === true ? 1 : 0;
       schedule();
     }
 

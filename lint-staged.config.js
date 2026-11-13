@@ -4,6 +4,7 @@
 // dist/ and a fresh clone has none.
 export default {
   "*.{ts,svelte,js,mjs}": [
+    "oxlint --fix --no-error-on-unmatched-pattern",
     "eslint --fix --no-warn-ignored",
     "oxlint --fix --no-error-on-unmatched-pattern",
     () => "fallow audit --base HEAD"

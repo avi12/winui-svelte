@@ -48,9 +48,9 @@ interface EslintFile {
 interface OxlintDiagnostic {
   code: string;
   filename: string;
-  labels?: Array<{
+  labels?: {
     span: { line: number };
-  }>;
+  }[];
 }
 
 interface SvelteCheckLine {
