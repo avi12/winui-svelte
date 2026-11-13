@@ -5,17 +5,17 @@ import { splitSlash } from "#src/css/parse/values.js";
 
 const GRID_LINE = /^(auto|\d+|span\s+\d+)$/iu;
 
-const LOGICAL_SIDES: ReadonlyArray<readonly [string, string]> = [
+const LOGICAL_SIDES: readonly (readonly [string, string])[] = [
   ["inline-start", "left"],
   ["inline-end", "right"],
   ["block-start", "top"],
   ["block-end", "bottom"]
 ];
-const LOGICAL_PAIRS: ReadonlyArray<readonly [string, readonly [string, string]]> = [
+const LOGICAL_PAIRS: readonly (readonly [string, readonly [string, string]])[] = [
   ["inline", ["left", "right"]],
   ["block", ["top", "bottom"]]
 ];
-const LOGICAL_SIZES: ReadonlyArray<readonly [string, string]> = [
+const LOGICAL_SIZES: readonly (readonly [string, string])[] = [
   ["inline-size", "width"],
   ["block-size", "height"]
 ];
@@ -30,7 +30,7 @@ function renamed(property: string) {
   })];
 }
 
-const logicalExpansions: ReadonlyArray<readonly [string, Expansion]> = [
+const logicalExpansions: readonly (readonly [string, Expansion])[] = [
   ...BOX_PROPERTIES.flatMap(box => LOGICAL_SIDES.map(([logical, physical]) => [`${box}-${logical}`, renamed(`${box}-${physical}`)] as const)),
   ...BOX_PROPERTIES.flatMap(box => LOGICAL_PAIRS.map(([logical, [first, second]]) => [`${box}-${logical}`, ({ declaration, reader }: ExpansionInput) => expandPair({
     declaration,
@@ -49,7 +49,7 @@ function expandArea({ declaration, reader }: ExpansionInput) {
   }
 
   const [rowStart = "", columnStart = "auto", rowEnd = "auto", columnEnd = "auto"] = lines;
-  const placements: Array<[string, string]> = [
+  const placements: [string, string][] = [
     ["grid-row-start", rowStart],
     ["grid-column-start", columnStart],
     ["grid-row-end", rowEnd],

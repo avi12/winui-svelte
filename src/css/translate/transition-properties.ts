@@ -22,7 +22,7 @@ const MILLISECONDS_PER_SECOND = 1000;
 const DURATION_FRACTION_DIGITS = 3;
 
 /** WinUI animates these properties by an implicit transition set on them. */
-const TRANSITION_TARGETS = new Map<string, Array<[string, string]>>([
+const TRANSITION_TARGETS = new Map<string, [string, string][]>([
   ["opacity", [["OpacityTransition", "ScalarTransition"]]],
   ["translate", [["TranslationTransition", "Vector3Transition"]]],
   ["scale", [["ScaleTransition", "Vector3Transition"]]],
@@ -171,10 +171,10 @@ function runTrack({ context, name, timing, track, brushes }: {
     easing: string;
   };
   track: Track;
-  brushes: Array<{
+  brushes: {
     property: string;
     color: string;
-  }>;
+  }[];
 }) {
   const { control, native } = context;
   const xaml = storyboardXaml({

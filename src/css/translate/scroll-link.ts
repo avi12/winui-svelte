@@ -39,10 +39,10 @@ export const RESTING_VALUES: ReadonlyMap<LinkedProperty, number> = new Map([
 /** The values one property takes along the animation, at offsets from 0 to 1 of its range. */
 export interface LinkedTrack {
   readonly property: LinkedProperty;
-  readonly frames: ReadonlyArray<{
+  readonly frames: readonly {
     readonly offset: number;
     readonly value: number;
-  }>;
+  }[];
 }
 
 /** What the scroll viewer and the subject measure, in pixels along the timeline's axis. */

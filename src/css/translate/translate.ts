@@ -63,7 +63,7 @@ export interface TranslateInput {
 
 // The @media queries that name a scheme: WinUI's theme dictionaries, and the
 // high contrast one (forced colors, in CSS's words).
-const SCHEME_QUERIES: ReadonlyArray<[RegExp, ColorScheme]> = [
+const SCHEME_QUERIES: readonly [RegExp, ColorScheme][] = [
   [/^\(\s*prefers-color-scheme\s*:\s*dark\s*\)$/iu, ColorScheme.DARK],
   [/^\(\s*prefers-color-scheme\s*:\s*light\s*\)$/iu, ColorScheme.LIGHT],
   [/^\(\s*forced-colors\s*:\s*active\s*\)$/iu, ColorScheme.HIGH_CONTRAST],
@@ -234,7 +234,7 @@ function dictionaryWithAliases({ entries, catalogue }: {
 
 // Name to value of the custom properties declared so far, a later one winning:
 // what `var(--name)` in another custom property stands for.
-function declaredValues(variables: ReadonlyArray<Pick<Variable, "name" | "value">>) {
+function declaredValues(variables: readonly Pick<Variable, "name" | "value">[]) {
   return new Map(variables.map(variable => [variable.name, variable.value] as const));
 }
 

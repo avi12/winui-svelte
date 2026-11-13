@@ -103,7 +103,7 @@ function replaceAnimation({ children, part, property, animation }: {
  * same properties, in place of the template's.
  */
 export function fillStates({ native, control, part, states }: Parameters<StateFiller>[0]) {
-  const undos: Array<() => void> = [];
+  const undos: (() => void)[] = [];
   function attach() {
     for (const undo of undos.splice(0)) {
       undo();

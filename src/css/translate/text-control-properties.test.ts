@@ -43,7 +43,7 @@ function lowerRule(declarations: string) {
   };
 }
 
-const rows: Array<[string, Array<[string, string]>]> = [
+const rows: [string, [string, string][]][] = [
   ["font-stretch: ultra-condensed", [["FontStretch", "UltraCondensed"]]],
   ["font-stretch: semi-expanded", [["FontStretch", "SemiExpanded"]]],
   ["font-stretch: normal", [["FontStretch", "Normal"]]],

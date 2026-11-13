@@ -42,7 +42,7 @@ function lowerRule(declarations: string) {
   };
 }
 
-const rows: Array<[string, Array<[string, string]>]> = [
+const rows: [string, [string, string][]][] = [
   ["font-variant-caps: small-caps", [["Typography.Capitals", "SmallCaps"]]],
   ["font-variant-caps: all-petite-caps", [["Typography.Capitals", "AllPetiteCaps"]]],
   ["font-variant-caps: titling-caps", [["Typography.Capitals", "Titling"]]],

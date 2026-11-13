@@ -52,7 +52,7 @@ test("linear: no direction runs top to bottom, ends take 0% and 100%", () => {
 });
 
 test("linear: side keywords are exact", () => {
-  const cases: Array<[string, [number, number], [number, number]]> = [
+  const cases: [string, [number, number], [number, number]][] = [
     ["to top", [0.5, 1], [0.5, 0]],
     ["to right", [0, 0.5], [1, 0.5]],
     ["to bottom", [0.5, 0], [0.5, 1]],
@@ -278,7 +278,7 @@ test("radial: a circle is a circle on a square element only, and says so", () =>
 });
 
 test("malformed gradients say what is wrong", () => {
-  const cases: Array<[string, RegExp]> = [
+  const cases: [string, RegExp][] = [
     ["linear-gradient(red)", /^a gradient needs at least two color stops$/u],
     ["linear-gradient()", /^a gradient needs at least two color stops$/u],
     ["linear-gradient(to nowhere, red, blue)", /^expected a direction such as "to right" or "to bottom left", found "to nowhere"$/u],

@@ -77,12 +77,12 @@ test("a width is unknown without a window", () => {
 });
 
 // One row per feature: a query that holds and one that does not, with the inputs that make the first hold.
-const FEATURE_CASES: ReadonlyArray<{
+const FEATURE_CASES: readonly {
   feature: string;
   inputs?: Partial<MediaInputs>;
   holds: string;
   fails: string;
-}> = [
+}[] = [
   {
     feature: "width",
     holds: "(width: 800px)",

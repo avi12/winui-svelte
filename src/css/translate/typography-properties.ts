@@ -57,7 +57,7 @@ export interface TypographyKeywords {
 }
 
 function keywordsOf({ entries, normalWords = [NORMAL_KEYWORD], hint }: {
-  entries: ReadonlyArray<readonly [string, readonly Setting[]]>;
+  entries: readonly (readonly [string, readonly Setting[]])[];
   normalWords?: readonly string[];
   hint?: string;
 }) {
@@ -159,7 +159,7 @@ function switchOf(property: string) {
   };
 }
 
-const CHOICES: ReadonlyArray<readonly [tag: string, property: string, on: string]> = [
+const CHOICES: readonly (readonly [tag: string, property: string, on: string])[] = [
   ["smcp", "Capitals", "SmallCaps"],
   ["c2sc", "Capitals", "AllSmallCaps"],
   ["pcap", "Capitals", "PetiteCaps"],
@@ -193,7 +193,7 @@ const CHOICES: ReadonlyArray<readonly [tag: string, property: string, on: string
   ["twid", "EastAsianWidths", "Third"]
 ];
 
-const SWITCHES: ReadonlyArray<readonly [tag: string, property: string]> = [
+const SWITCHES: readonly (readonly [tag: string, property: string])[] = [
   ["zero", "SlashedZero"],
   ["liga", "StandardLigatures"],
   ["clig", "ContextualLigatures"],
@@ -208,7 +208,7 @@ const SWITCHES: ReadonlyArray<readonly [tag: string, property: string]> = [
   ["expt", "EastAsianExpertForms"]
 ];
 
-const COUNTS: ReadonlyArray<readonly [tag: string, property: string]> = [
+const COUNTS: readonly (readonly [tag: string, property: string])[] = [
   ["salt", "StylisticAlternates"],
   ["swsh", "StandardSwashes"],
   ["cswh", "ContextualSwashes"],

@@ -569,12 +569,12 @@ class ElementStyle implements StyledElement {
   private classes = new Set<string>();
   private inlineText: string | null = null;
   private readonly states = new Set<PseudoState>();
-  private readonly subscriptions = new Map<PseudoState, Array<() => void>>();
+  private readonly subscriptions = new Map<PseudoState, (() => void)[]>();
   private appliedKey: string | null = null;
   private appliedStyle: object | null = null;
   queries: ElementQueries | null = null;
   private appliedWrites = "";
-  private writeUndos: Array<() => void> = [];
+  private writeUndos: (() => void)[] = [];
   private isDisposed = false;
   private readonly refreshText: () => void;
 
@@ -699,10 +699,10 @@ class ElementStyle implements StyledElement {
 
   private applyWrites({ currentNative, writes }: {
     currentNative: CssNative;
-    writes: Array<{
+    writes: {
       target: string;
       value: string;
-    }>;
+    }[];
   }) {
     const signature = writes.map(({ target, value }) => `${target}=${value}`).join(";");
     const isSignatureApplied = signature === this.appliedWrites;
@@ -779,7 +779,7 @@ class ElementStyle implements StyledElement {
       return;
     }
 
-    const unsubscribers: Array<() => void> = [];
+    const unsubscribers: (() => void)[] = [];
     for (const binding of support.bindings) {
       const unsubscribe = currentNative.subscribe(this.control, binding.event, () => {
         const isActive = binding.isActive(this.readProperty);

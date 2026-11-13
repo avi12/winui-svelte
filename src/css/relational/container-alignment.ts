@@ -59,7 +59,7 @@ export interface Folded {
   wrap?: Entry;
 }
 
-const FOLDS = new Map<string, ReadonlyArray<keyof Folded>>([
+const FOLDS = new Map<string, readonly (keyof Folded)[]>([
   [ALIGN_ITEMS, ["alignItems"]],
   [JUSTIFY_ITEMS, ["justifyItems"]],
   [PLACE_ITEMS, ["alignItems", "justifyItems"]],

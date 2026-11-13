@@ -13,14 +13,14 @@ export type StateFiller = (input: {
   control: object;
   /** The name of the template part the states change. */
   part: string;
-  states: ReadonlyArray<{
+  states: readonly {
     state: string;
     /** The brush of each property (`Background`), as a color, a `{ThemeResource Key}` or the XAML of a brush. */
-    brushes: ReadonlyArray<{
+    brushes: readonly {
       property: string;
       source: string;
-    }>;
-  }>;
+    }[];
+  }[];
 }) => () => void;
 
 interface Applied {

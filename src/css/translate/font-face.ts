@@ -16,11 +16,11 @@ const WEB_SOURCE = /^(?:https?|data|blob):/iu;
 /** What reading an `@font-face` found: the rule when it is usable, and what is wrong with it. */
 interface FontFaceReading {
   face: FontFaceRule | null;
-  problems: Array<{
+  problems: {
     severity: Severity;
     message: string;
     at: Declaration["at"];
-  }>;
+  }[];
 }
 
 function urlOf(entry: string) {

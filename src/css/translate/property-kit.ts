@@ -86,15 +86,15 @@ export interface WriteSeam {
    */
   animate(input: {
     control: object;
-    storyboards: ReadonlyArray<{
+    storyboards: readonly {
       xaml: string;
       isPaused: boolean;
-    }>;
+    }[];
     hasTransform: boolean;
-    brushes: ReadonlyArray<{
+    brushes: readonly {
       property: string;
       color: string;
-    }>;
+    }[];
   }): () => void;
 }
 
@@ -160,7 +160,7 @@ export function setter({ property, value }: {
 }
 
 /** A keyword table, from CSS's spelling to WinUI's. */
-export function enumMap(entries: ReadonlyArray<[string, string]>) {
+export function enumMap(entries: readonly [string, string][]) {
   return new Map(entries);
 }
 

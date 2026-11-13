@@ -183,7 +183,7 @@ function scopeEdits({ context, block }: {
 
 // The rules and the @scope blocks, in the other at-rules too.
 function units(blocks: readonly Block[]) {
-  const found: Array<RuleBlock | AtRuleBlock> = [];
+  const found: (RuleBlock | AtRuleBlock)[] = [];
   const pending = [...blocks];
   while (pending.length > 0) {
     const block = pending.shift();

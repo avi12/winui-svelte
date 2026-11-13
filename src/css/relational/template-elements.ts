@@ -32,7 +32,7 @@ export interface TemplateElement {
 
 /** The nodes written next to each other in one place. */
 export interface Level {
-  items: Array<TemplateElement | null>;
+  items: (TemplateElement | null)[];
   /** Whether the items are all there is: no block or component among them, and a known parent. */
   isStatic: boolean;
   /** Whether the elements and component instances among them are in a fixed order: what a sibling combinator needs. */

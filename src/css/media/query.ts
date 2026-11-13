@@ -575,7 +575,7 @@ function childrenOf(node: MediaNode) {
 // A node whose children are known: true, false, or null (unknown), which a query list treats as false.
 function combine({ node, children, inputs }: {
   node: MediaNode;
-  children: ReadonlyArray<boolean | null>;
+  children: readonly (boolean | null)[];
   inputs: MediaInputs;
 }) {
   switch (node.kind) {

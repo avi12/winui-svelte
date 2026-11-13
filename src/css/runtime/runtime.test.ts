@@ -56,7 +56,7 @@ provideVisualStates(
 const environment: {
   inputs: Partial<MediaInputs>;
   callbacks: Set<() => void>;
-  changes: Array<ReadonlySet<MediaChange>>;
+  changes: ReadonlySet<MediaChange>[];
 } = {
   inputs: {},
   callbacks: new Set(),

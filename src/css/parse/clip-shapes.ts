@@ -77,18 +77,18 @@ export type ResolvedClip =
     readonly width: number;
     readonly height: number;
     /** The corners, from the top left clockwise. */
-    readonly radii: ReadonlyArray<{
+    readonly radii: readonly {
       readonly x: number;
       readonly y: number;
-    }>;
+    }[];
   }
   | {
     readonly kind: "polygon";
     readonly rule: "nonzero" | "evenodd";
-    readonly points: ReadonlyArray<{
+    readonly points: readonly {
       readonly x: number;
       readonly y: number;
-    }>;
+    }[];
   }
   | {
     readonly kind: "path";

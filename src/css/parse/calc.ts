@@ -84,7 +84,7 @@ function reduce({ values, operators }: Stacks) {
 }
 
 interface Stacks {
-  values: Array<Quantity | null>;
+  values: (Quantity | null)[];
   operators: string[];
 }
 

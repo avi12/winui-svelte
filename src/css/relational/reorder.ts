@@ -1,10 +1,10 @@
 /** The children of a container, in the order the markup writes them and the order `order` gives them. */
 export interface Move {
   /** Where each child is in the source, in the order written. */
-  ranges: ReadonlyArray<{
+  ranges: readonly {
     start: number;
     end: number;
-  }>;
+  }[];
   /** The written index of the child that goes at each place. */
   sequence: readonly number[];
 }

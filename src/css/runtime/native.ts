@@ -239,7 +239,7 @@ export function createCssNative(winui: CssWinui) {
     // The window's XamlRoot says when it resizes, but a control has none until
     // it is in the tree: its Loaded event is the first moment to listen.
     watchViewport(control, handler) {
-      const unsubscribers: Array<() => void> = [];
+      const unsubscribers: (() => void)[] = [];
       function listen() {
         const root = readMember({
           target: control,
@@ -355,7 +355,7 @@ export function createCssNative(winui: CssWinui) {
       return isParent ? asFrameworkElement(value) : value;
     },
     animate({ control, storyboards, hasTransform, brushes }) {
-      const restores: Array<() => void> = [];
+      const restores: (() => void)[] = [];
       function replace({ property, value }: {
         property: string;
         value: object;

@@ -473,7 +473,7 @@ export function gap(input: GroupInput) {
 /** `overflow-x` and `overflow-y`: a scroll viewer's scroll bar visibility. */
 export function overflow(input: GroupInput) {
   const outputs: Output[] = [];
-  const axes: Array<[string, string]> = [
+  const axes: [string, string][] = [
     ["overflow-x", "HorizontalScrollBarVisibility"],
     ["overflow-y", "VerticalScrollBarVisibility"]
   ];

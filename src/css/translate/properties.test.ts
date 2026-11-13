@@ -13,8 +13,8 @@ import { test } from "node:test";
 const resources = loadWinuiCatalogue();
 
 interface Lowered {
-  setters: Array<[string, string]>;
-  writes: Array<[string, string]>;
+  setters: [string, string][];
+  writes: [string, string][];
   basedOn: string | null;
   errors: string[];
   warnings: string[];
@@ -83,7 +83,7 @@ function setters({ elementType, declarations }: {
   return result.setters;
 }
 
-const positionRows: Array<[string, string, Array<[string, string]>]> = [
+const positionRows: [string, string, [string, string][]][] = [
   ["absolute left and top place on a canvas", "position: absolute; left: 10px; top: 4px", [
     ["Canvas.Left", "10"],
     ["Canvas.Top", "4"]
@@ -110,7 +110,7 @@ for (const [name, declarations, expected] of positionRows) {
 }
 
 test("position's reasons are build errors", () => {
-  const cases: Array<[string, RegExp]> = [
+  const cases: [string, RegExp][] = [
     ["position: absolute; right: 4px", /canvas places by canvas-left and canvas-top/u],
     ["position: sticky", /sticky has no WinUI meaning/u],
     ["position: relative; left: 1px; translate: 2px", /Translation, which translate also sets/u],
@@ -182,7 +182,7 @@ test("logical properties are the left-to-right, top-to-bottom physical ones", ()
 });
 
 test("sizes WinUI cannot say are build errors", () => {
-  const cases: Array<[string, RegExp]> = [
+  const cases: [string, RegExp][] = [
     ["box-sizing: content-box", /content-box has no WinUI meaning/u],
     ["width: 50%", /width: expected a length in px/u],
     ["width: calc(100% - 8px * 2px)", /expected a length in px/u]
@@ -206,7 +206,7 @@ test("offsets without a position warn", () => {
   );
 });
 
-const rows: Array<[string, string | null, string, Array<[string, string]>]> = [
+const rows: [string, string | null, string, [string, string][]][] = [
   ["margin, CSS side order to a Thickness", null, "margin: 0 12px", [["Margin", "12,0,12,0"]]],
   ["margin, one value", null, "margin: 8px", [["Margin", "8,8,8,8"]]],
   ["padding, two values", null, "padding: 12px 16px", [["Padding", "16,12,16,12"]]],
@@ -429,7 +429,7 @@ const rows: Array<[string, string | null, string, Array<[string, string]>]> = [
   ]]
 ];
 
-function sortedRows(rows: Array<[string, string]>) {
+function sortedRows(rows: [string, string][]) {
   return rows.toSorted((left, right) => left.join().localeCompare(right.join()));
 }
 
@@ -480,7 +480,7 @@ test("grid templates are written to the grid, not set by a Style", () => {
   );
 });
 
-const originRows: Array<[string, string, Array<[string, string]>]> = [
+const originRows: [string, string, [string, string][]][] = [
   ["scale pivots at the centre by default, as CSS does", "scale: 1.1", [["origin", "50%,50%"]]],
   ["rotate pivots at the centre by default", "rotate: 10deg", [["origin", "50%,50%"]]],
   ["translate needs no pivot", "translate: 4px 0", []],
@@ -735,7 +735,7 @@ test("a text-transform WinUI cannot show is a build error", () => {
   assert.match(result.errors.join(), /text-transform: expected none, uppercase, lowercase or capitalize/u);
 });
 
-const failures: Array<[string, string | null, string, RegExp]> = [
+const failures: [string, string | null, string, RegExp][] = [
   ["a property WinUI has no counterpart for", null, "float: left", /^t\.svelte:1:6: float has no WinUI meaning \(WinUI has no float/u],
   ["an inset shadow", null, "box-shadow: inset 0 0 4px red", /box-shadow: inset has no WinUI meaning/u],
   ["a box-shadow without an offset", null, "box-shadow: red", /box-shadow: expected offset-x offset-y/u],

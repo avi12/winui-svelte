@@ -184,7 +184,7 @@ export const LAZY_GROUPS: readonly LazyGroups[] = [
 ];
 
 /** The groups only the build uses: what a sheet's declarations are expanded and checked with, never a window. */
-export const BUILD_GROUPS: ReadonlyArray<() => PropertyGroup[]> = [buildShorthandGroups];
+export const BUILD_GROUPS: readonly (() => PropertyGroup[])[] = [buildShorthandGroups];
 
 /** Every group a build lowers a declaration with: the opt-in ones and the build's own. */
 export function buildTimeGroups() {

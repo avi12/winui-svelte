@@ -48,7 +48,7 @@ function lower({ elementType, declarations }: {
   };
 }
 
-const rows: Array<[string, string, string, string[][]]> = [
+const rows: [string, string, string, string[][]][] = [
   ["fill is a brush", "rectangle", "fill: #0af", [["Fill", "#00AAFF"]]],
   ["fill from a WinUI brush", "rectangle", "fill: var(--accent-fill-color-default)", [["Fill", "{ThemeResource AccentFillColorDefaultBrush}"]]],
   ["fill none is transparent", "ellipse", "fill: none", [["Fill", "#00FFFFFF"]]],
@@ -97,7 +97,7 @@ for (const [name, elementType, declarations, expected] of rows) {
   });
 }
 
-const failures: Array<[string, string, RegExp]> = [
+const failures: [string, string, RegExp][] = [
   ["stroke-linecap: triangle", "line", /one of butt, round, square/u],
   ["stroke-linejoin: arcs", "polyline", /one of miter, bevel, round/u],
   ["stroke-miterlimit: 0.5", "polygon", /at least 1/u],

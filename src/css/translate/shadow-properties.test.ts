@@ -92,7 +92,7 @@ test("composition composes with an elevation: the ThemeShadow stays", () => {
   assert.equal(lowered.writes.some(write => write.target === "drop-shadows"), true);
 });
 
-const refused: Array<[string, string, RegExp]> = [
+const refused: [string, string, RegExp][] = [
   ["inset", "-winui-shadow: composition; box-shadow: inset 0 0 4px red", /box-shadow: inset is not drawn/u],
   ["a var() colour", "-winui-shadow: composition; box-shadow: 0 0 4px var(--shadow)", /takes a colour written out/u],
   ["a negative blur", "-winui-shadow: composition; box-shadow: 0 0 -4px red", /blur radius cannot be negative/u],

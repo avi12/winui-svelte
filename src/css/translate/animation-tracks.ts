@@ -126,7 +126,7 @@ function component({ name, value }: {
   } satisfies TrackValue;
 }
 
-type Contribution = ReadonlyArray<readonly [string, number]>;
+type Contribution = readonly (readonly [string, number])[];
 
 // What each function of a transform list contributes to the components of the
 // CompositeTransform; two functions of one axis add (scales multiply) as CSS would.

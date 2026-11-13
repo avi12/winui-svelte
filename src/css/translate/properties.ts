@@ -26,8 +26,8 @@ const BASED_ON_PROPERTY = "-winui-based-on";
 /** The Style a declaration set lowers to. */
 export interface LoweredStyle {
   basedOn: string | null;
-  setters: Array<Extract<Output, { kind: "setter" | "content" }>>;
-  writes: Array<Extract<Output, { kind: "write" }>>;
+  setters: Extract<Output, { kind: "setter" | "content" }>[];
+  writes: Extract<Output, { kind: "write" }>[];
 }
 
 function basedOn(input: GroupInput) {

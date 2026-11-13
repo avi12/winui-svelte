@@ -104,7 +104,7 @@ function isTimelineWord(lower: string) {
 }
 
 // The members whose keyword or number a word may be, tried in order.
-const WORD_MEMBERS: ReadonlyArray<readonly [string, (lower: string) => boolean]> = [
+const WORD_MEMBERS: readonly (readonly [string, (lower: string) => boolean])[] = [
   [TIMING, lower => parseEasing(lower) !== null],
   [ITERATIONS, isIterationCount],
   [DIRECTION, lower => DIRECTIONS.has(lower)],
