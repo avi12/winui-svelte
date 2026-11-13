@@ -82,7 +82,7 @@ function repeaterIn(owner: FrameworkElement) {
 class RepeaterHost<Item> {
   private readonly rows: ItemRows<Item>;
   private readonly kind: RepeaterElement;
-  private readonly unsubscribe: Array<() => void> = [];
+  private readonly unsubscribe: (() => void)[] = [];
   private repeater: ItemsRepeater | null = null;
 
   constructor({ props, kind }: {
@@ -180,7 +180,7 @@ export function attachRepeaterItems<Item>({ owner, props, kind }: {
   });
   owner.itemTemplate = templateFor(kind);
   owner.itemsSource = host.keys;
-  const releases: Array<() => void> = [];
+  const releases: (() => void)[] = [];
   function listenWhenFound() {
     const repeater = owner instanceof ItemsRepeater ? owner : repeaterIn(owner);
     const isFound = repeater !== null;

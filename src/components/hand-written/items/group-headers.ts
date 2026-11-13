@@ -20,7 +20,7 @@ import {
 export class GroupHeaders<Item> {
   private readonly rows: ItemRows<Item>;
   private readonly groupKeys = new Map<string, string>();
-  private readonly unsubscribe: Array<() => void> = [];
+  private readonly unsubscribe: (() => void)[] = [];
 
   constructor({ view, rows }: {
     view: ListViewBase;

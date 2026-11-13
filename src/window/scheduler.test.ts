@@ -10,7 +10,7 @@ const SCHEDULER_URL = new URL("scheduler.ts", import.meta.url).href;
 interface FakeState {
   time: number;
   alarmAt: number | undefined;
-  queued: Array<() => void>;
+  queued: (() => void)[];
   armCount: number;
   fire: () => void;
 }

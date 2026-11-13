@@ -103,7 +103,7 @@ class TreeHost<Item> {
   private readonly tree: KeyedTree<Item, TreeViewNode>;
   private readonly expanded: ExpandedKeys;
   private readonly selection: KeySelection<TreeViewNode>;
-  private readonly unsubscribe: Array<() => void> = [];
+  private readonly unsubscribe: (() => void)[] = [];
   private isSyncing = false;
 
   constructor({ view, props, bound }: {
@@ -331,7 +331,7 @@ export function attachTree<Item>({ view, props, bound }: {
     props,
     bound
   });
-  const releases: Array<() => void> = [];
+  const releases: (() => void)[] = [];
   function listenWhenFound() {
     const list = listIn(view);
     const isFound = list !== null;

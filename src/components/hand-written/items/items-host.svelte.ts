@@ -106,7 +106,7 @@ class ItemsHost<Item> implements ListHandle {
   private readonly props: ItemsHostProps<Item>;
   private readonly rows: ItemRows<Item>;
   private readonly selection: KeySelection<BoxedValue>;
-  private readonly unsubscribe: Array<() => void> = [];
+  private readonly unsubscribe: (() => void)[] = [];
   private readonly groupHeaders: GroupHeaders<Item> | undefined;
   private isDragging = false;
 

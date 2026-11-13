@@ -13,7 +13,7 @@ export function observe<Bound extends object, Key extends keyof Bound>({ link, b
   bound: Bound;
   key: Key;
   read: () => Bound[Key];
-  subscribers: ReadonlyArray<(handler: () => void) => () => void>;
+  subscribers: readonly ((handler: () => void) => () => void)[];
 }) {
   function publish() {
     const current = read();

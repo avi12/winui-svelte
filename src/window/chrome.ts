@@ -95,7 +95,7 @@ const CAPTION_BUTTON_ENTRIES = [
   ["pressedBackground", "buttonPressedBackgroundColor"],
   ["inactiveForeground", "buttonInactiveForegroundColor"],
   ["inactiveBackground", "buttonInactiveBackgroundColor"]
-] as const satisfies ReadonlyArray<readonly [keyof CaptionButtonColors, string]>;
+] as const satisfies readonly (readonly [keyof CaptionButtonColors, string])[];
 
 /** The AppWindowTitleBar property that holds one caption button color. */
 export type CaptionButtonProperty = (typeof CAPTION_BUTTON_ENTRIES)[number][1];

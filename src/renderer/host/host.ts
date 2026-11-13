@@ -599,7 +599,7 @@ function syncContent({ element, control }: Omit<ElementAttributeTarget, "value">
 
 // The first of these properties a control has says where its children go.
 // Items come before text: a ComboBox has both, and its children are its items.
-const childSlots: Array<[string, ChildSlotHandler]> = [
+const childSlots: [string, ChildSlotHandler][] = [
   ["children", ({ element, control }) => syncCollection({
     element,
     collection: read(control, "children"),
@@ -1231,7 +1231,7 @@ function replaceInCollection({ collection, previous, next }: Replacement & { col
 
 // Where a control placed by code sits in its parent: a panel's children, a
 // border's child or a content control's content.
-const parentSlots: Array<[string, ParentSlotHandler]> = [
+const parentSlots: [string, ParentSlotHandler][] = [
   ["children", ({ parent, previous, next }) => replaceInCollection({
     collection: read(parent, "children"),
     previous,

@@ -34,7 +34,7 @@ export interface RunWindowOptions {
    * `install...` functions of `winui-svelte/web-apis` and its subpaths
    * (`installNotification`, and so on). Nothing is installed that is not listed.
    */
-  webApis?: ReadonlyArray<() => unknown>;
+  webApis?: readonly (() => unknown)[];
 
   /**
    * Called with every exception app code throws on the UI thread and WinUI

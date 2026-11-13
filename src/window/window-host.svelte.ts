@@ -383,7 +383,7 @@ class WindowHost {
   private readonly props: WindowProps;
   private readonly titleBar: () => FrameworkElement | null;
   private readonly content: FrameworkElement;
-  private readonly unsubscribe: Array<() => void> = [];
+  private readonly unsubscribe: (() => void)[] = [];
   private appliedBackdrop: Backdrop | null = null;
   private releaseBackdrop: (() => void) | null = null;
   private isThemeApplied = false;
@@ -1414,7 +1414,7 @@ export function attachWindow(options: AttachOptions) {
  * window's effects live in a root of their own, which ends with the window.
  */
 export function attachStandaloneWindow(options: AttachOptions) {
-  const attached: Array<ReturnType<typeof attachWindow>> = [];
+  const attached: ReturnType<typeof attachWindow>[] = [];
   const stop = $effect.root(() => {
     attached.push(attachWindow(options));
   });

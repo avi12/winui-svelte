@@ -34,10 +34,10 @@ function createFake() {
 
 function create(options: { ownWindows?: () => readonly bigint[] } = {}) {
   const fake = createFake();
-  const changes: Array<{
+  const changes: {
     hwnd: bigint | null;
     isRealApp: boolean;
-  }> = [];
+  }[] = [];
   const tracker = createForegroundTracker({
     source: fake.source,
     ownProcessId: OWN_PROCESS,

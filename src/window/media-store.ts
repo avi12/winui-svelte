@@ -106,7 +106,7 @@ function createMediaStore({ settings, inputs = {}, watch = {} }: MediaStoreOptio
       ...inputs
     },
     subscribe({ changes, callback }) {
-      const stops: Array<() => void> = [];
+      const stops: (() => void)[] = [];
       if (changes.has("settings")) {
         stops.push(settings.subscribe(callback));
       }

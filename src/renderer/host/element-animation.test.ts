@@ -93,7 +93,7 @@ let isReduced = false;
 
 function mountFixture({ intro: isIntro, blurs, ...overrides }: Partial<Props> & {
   intro?: boolean;
-  blurs?: Array<number | null>;
+  blurs?: (number | null)[];
 } = {}) {
   const clock = createClock();
   const warnings: string[] = [];
@@ -324,7 +324,7 @@ test("a property WinUI cannot animate (blur's filter) is named once and the rest
 });
 
 test("a blur transition blurs the control through setBlur, and lets go of the blur at its end", () => {
-  const blurs: Array<number | null> = [];
+  const blurs: (number | null)[] = [];
   const { clock, root, mounted, finish } = mountFixture({ blurs });
   mounted.set({ isBlurring: true });
   const [blurring] = panelsOf(root);

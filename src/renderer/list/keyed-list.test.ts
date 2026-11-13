@@ -38,7 +38,7 @@ function keys(items: Item[]) {
 test("a keyed list is synced touching only what changed", () => {
   const items: Item[] = [];
   let made = 0;
-  const moves: Array<[number, number]> = [];
+  const moves: [number, number][] = [];
   const list: KeyedList<Item> = {
     items: arrayItems(items),
     keyOf: item => item.key,

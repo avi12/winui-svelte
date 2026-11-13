@@ -116,7 +116,7 @@ export class Linker {
   plain<Props extends object, Target extends object>({ props, control, keys }: {
     props: Props;
     control: Target;
-    keys: ReadonlyArray<PlainKey<Props, Target>>;
+    keys: readonly PlainKey<Props, Target>[];
   }) {
     for (const key of keys) {
       this.follow({

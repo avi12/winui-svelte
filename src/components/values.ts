@@ -661,7 +661,7 @@ export function pointList(input: PointListInput) {
     throw new TypeError(`${input} is not x, y pairs`);
   }
 
-  const points: Array<readonly [number, number]> = [];
+  const points: (readonly [number, number])[] = [];
   for (let iNumber = 0; iNumber < numbers.length; iNumber += POINT_LENGTH) {
     points.push([numbers[iNumber] ?? 0, numbers[iNumber + 1] ?? 0]);
   }

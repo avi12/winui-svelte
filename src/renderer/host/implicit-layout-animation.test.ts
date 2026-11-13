@@ -13,12 +13,12 @@ const MILLISECOND_TICKS = 10_000n;
 interface Built {
   targets: string[];
   durations: bigint[];
-  frames: Array<{
+  frames: {
     progress: number;
     expression: string;
     hasEasing: boolean;
-  }>;
-  curves: Array<[number, number, number, number]>;
+  }[];
+  curves: [number, number, number, number][];
 }
 
 function setUp({ isReduced = false } = {}) {

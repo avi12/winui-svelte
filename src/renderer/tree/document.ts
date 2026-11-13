@@ -52,7 +52,7 @@ function decodeEntities(text: string) {
 
 function parseTemplate(html: string) {
   const content = inert.createFragment();
-  const open: Array<ParentNode<null>> = [content];
+  const open: ParentNode<null>[] = [content];
   token.lastIndex = 0;
   for (let match = token.exec(html); match !== null; match = token.exec(html)) {
     const [text, comment, tag, attributes = "", selfClosing] = match;
@@ -124,7 +124,7 @@ function installDom() {
   }
 
   isInstalled = true;
-  const globals: Array<[string, object]> = [
+  const globals: [string, object][] = [
     ["window", globalThis],
     ["document", createDocument()],
     // Svelte asks a custom element's class for its setters; there is none, so

@@ -156,7 +156,7 @@ export type EnumInput<Table extends Record<string, number>> = keyof Table | Tabl
  * A member of a flag enum (one WinUI marks `[Flags]`), or a list of member
  * names the prop combines (`["Control", "Shift"]`).
  */
-export type FlagsInput<Table extends Record<string, number>> = EnumInput<Table> | ReadonlyArray<keyof Table>;
+export type FlagsInput<Table extends Record<string, number>> = EnumInput<Table> | readonly (keyof Table)[];
 
 /** A grid track's size as the bindings take it. */
 export interface GridLengthValue {
@@ -271,7 +271,7 @@ export type DoubleCollectionInput = NumbersInput | DoubleCollection;
 /** An input mode by name or number, several of them, or an `InputScope`. */
 export type InputScopeInput =
   | EnumInput<typeof InputScopeNameValue>
-  | ReadonlyArray<EnumInput<typeof InputScopeNameValue>>
+  | readonly EnumInput<typeof InputScopeNameValue>[]
   | InputScope;
 
 // Built when used, not at import: a table that names a binding at the top
@@ -300,7 +300,7 @@ function repeatBehaviorTypes() {
   ]);
 }
 
-function isList<Table extends Record<string, number>>(input: FlagsInput<Table>): input is ReadonlyArray<keyof Table> {
+function isList<Table extends Record<string, number>>(input: FlagsInput<Table>): input is readonly (keyof Table)[] {
   return Array.isArray(input);
 }
 

@@ -85,7 +85,7 @@ export abstract class DomNode<Native> {
   abstract readonly type: AnyNode<Native>["type"];
   parent: ParentNode<Native> | null = null;
   // Text and comments have none; Svelte reads `firstChild` of any node.
-  readonly children: Array<TreeNode<Native>> = [];
+  readonly children: TreeNode<Native>[] = [];
   readonly renderer: TreeRenderer<Native>;
 
   protected constructor(renderer: TreeRenderer<Native>) {
@@ -119,7 +119,7 @@ export abstract class DomNode<Native> {
     this.renderer.remove(this);
   }
 
-  before(this: TreeNode<Native>, ...nodes: Array<AnyNode<Native>>) {
+  before(this: TreeNode<Native>, ...nodes: AnyNode<Native>[]) {
     const { parent } = this;
     if (!parent) {
       return;
@@ -145,7 +145,7 @@ abstract class DomParent<Native> extends DomNode<Native> {
     return child;
   }
 
-  append(this: ParentNode<Native>, ...nodes: Array<AnyNode<Native>>) {
+  append(this: ParentNode<Native>, ...nodes: AnyNode<Native>[]) {
     for (const node of nodes) {
       this.renderer.insert(this, node, null);
     }

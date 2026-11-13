@@ -15,8 +15,8 @@ function createFakes({ script, idleMilliseconds }: {
 }) {
   const log: string[] = [];
   const waits: number[] = [];
-  const ready: Array<() => void> = [];
-  let immediates: Array<() => void> = [];
+  const ready: (() => void)[] = [];
+  let immediates: (() => void)[] = [];
   let iSlice = 0;
   let quits = 0;
   const pump = createMessagePump({

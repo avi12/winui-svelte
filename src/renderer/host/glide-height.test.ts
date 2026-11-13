@@ -6,7 +6,7 @@ import { test } from "node:test";
 // test sets, and the node's animate() records what it was asked.
 
 interface Asked {
-  keyframes: Array<Record<string, string>>;
+  keyframes: Record<string, string>[];
   duration: number | undefined;
   finish(): void;
   cancel(): void;
@@ -27,7 +27,7 @@ function setUp(startHeight: number) {
     native: {
       control
     },
-    animate(keyframes: Array<Record<string, string>>, options: {
+    animate(keyframes: Record<string, string>[], options: {
       duration?: number;
     }) {
       const glide: {

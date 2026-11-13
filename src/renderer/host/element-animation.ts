@@ -548,7 +548,7 @@ const BOX_STYLES = SIDES.flatMap(side => [
   [`margin${capitalized(side)}`, "margin", side],
   [`padding${capitalized(side)}`, "padding", side],
   [`border${capitalized(side)}Width`, "borderThickness", side]
-] satisfies Array<[string, string, Side]>);
+] satisfies [string, string, Side][]);
 
 // What the page reads of a control's box, in pixels, as the CSS property says it.
 function boxStyleOf(control: MotionControl) {

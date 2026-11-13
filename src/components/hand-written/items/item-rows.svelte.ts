@@ -288,7 +288,7 @@ export class ItemRows<Item> {
 
   private syncControl({ wanted, groups }: {
     wanted: readonly string[];
-    groups: ReadonlyArray<Group<Item>>;
+    groups: readonly Group<Item>[];
   }) {
     if (!this.groups) {
       syncKeyVector({

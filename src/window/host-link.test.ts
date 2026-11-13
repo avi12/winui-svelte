@@ -11,7 +11,7 @@ function wait(milliseconds: number) {
 }
 
 test("the link closing ends the process, once", () => {
-  const listeners: Array<() => void> = [];
+  const listeners: (() => void)[] = [];
   let exits = 0;
   exitWhenHostEnds({
     link: {

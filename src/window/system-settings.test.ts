@@ -47,7 +47,7 @@ class FakeSettings {
   }
   isDarkOn = false;
   isHighContrastOn = false;
-  private readonly listeners: Array<() => void> = [];
+  private readonly listeners: (() => void)[] = [];
 
   get listenerCount() {
     return this.listeners.length;
