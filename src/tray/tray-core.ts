@@ -38,6 +38,63 @@ const GESTURE_OF_NOTIFICATION: ReadonlyMap<number, TrayGesture> = new Map([
   [TrayNotification.keySelect, TrayGesture.doubleClick],
   [TrayNotification.contextMenu, TrayGesture.contextMenu]
 ]);
+const NOTIFICATION_EVENTS: ReadonlyMap<number, {
+   handler: TrayEventHandlerName;
+   button: TrayEventButton | null 
+}> = new Map([
+  [TrayNotification.keySelect, {
+     handler: "onkeyselect",
+     button: null 
+  }],
+  [TrayNotification.leftDown, {
+     handler: "onpointerdown",
+     button: "left" 
+  }],
+  [TrayNotification.rightDown, {
+     handler: "onpointerdown",
+     button: "right" 
+  }],
+  [TrayNotification.middleDown, {
+     handler: "onpointerdown",
+     button: "middle" 
+  }],
+  [TrayNotification.leftUp, {
+     handler: "onpointerup",
+     button: "left" 
+  }],
+  [TrayNotification.rightUp, {
+     handler: "onpointerup",
+     button: "right" 
+  }],
+  [TrayNotification.middleUp, {
+     handler: "onpointerup",
+     button: "middle" 
+  }],
+  [TrayNotification.mouseMove, {
+     handler: "onpointermove",
+     button: null 
+  }],
+  [TrayNotification.popupOpen, {
+     handler: "onpointerenter",
+     button: null 
+  }],
+  [TrayNotification.popupClose, {
+     handler: "onpointerleave",
+     button: null 
+  }],
+  [TrayNotification.balloonShow, {
+     handler: "onballoonshow",
+     button: null 
+  }],
+  [TrayNotification.balloonTimeout, {
+     handler: "onballoontimeout",
+     button: null 
+  }],
+  [TrayNotification.balloonUserClick, {
+     handler: "onballoonclick",
+     button: null 
+  }]
+]);
 const HANDLER_OF_GESTURE = {
   click: "onclick",
   doubleClick: "ondoubleclick",
@@ -105,6 +162,47 @@ export interface TrayIconOptions extends TrayIconChanges {
 
   /** Told of a middle click. */
   readonly onmiddleclick?: ((event: TrayPointerEvent) => void) | undefined;
+
+  /** Told when Enter or Space selects the focused icon (the shell's NIN_KEYSELECT). */
+  readonly onkeyselect?: ((event: TrayNotificationEvent) => void) | undefined;
+
+  /** Told of a button press on the icon; `button` says which. */
+  readonly onpointerdown?: ((event: TrayNotificationEvent) => void) | undefined;
+
+  /** Told of a button release on the icon; `button` says which. */
+  readonly onpointerup?: ((event: TrayNotificationEvent) => void) | undefined;
+
+  /** Told while the pointer moves over the icon. */
+  readonly onpointermove?: ((event: TrayNotificationEvent) => void) | undefined;
+
+  /** Told when the pointer rests on the icon long enough for the shell to open its rich tooltip. */
+  readonly onpointerenter?: ((event: TrayNotificationEvent) => void) | undefined;
+
+  /** Told when the shell closes that rich tooltip because the pointer left. */
+  readonly onpointerleave?: ((event: TrayNotificationEvent) => void) | undefined;
+
+  /** Told when a balloon from `notify` appears. */
+  readonly onballoonshow?: ((event: TrayNotificationEvent) => void) | undefined;
+
+  /** Told when a balloon goes away unclicked. */
+  readonly onballoontimeout?: ((event: TrayNotificationEvent) => void) | undefined;
+
+  /** Told when the user clicks a balloon. */
+  readonly onballoonclick?: ((event: TrayNotificationEvent) => void) | undefined;
+}
+
+/** The mouse button an event concerns. */
+export type TrayEventButton = "left" | "right" | "middle";
+
+type TrayEventHandlerName =
+  | "onkeyselect" | "onpointerdown" | "onpointerup" | "onpointermove" | "onpointerenter"
+  | "onpointerleave" | "onballoonshow" | "onballoontimeout" | "onballoonclick";
+
+/** What the shell's notification messages tell: the pointer in screen pixels and the button, if any. */
+export interface TrayNotificationEvent {
+  readonly x: number;
+  readonly y: number;
+  readonly button: TrayEventButton | null;
 }
 
 /** The live tray icon `createTrayIcon` returns. */
@@ -112,7 +210,7 @@ export interface TrayIconHandle {
   /** Changes the picture, the tooltip or whether the icon shows. */
   update(changes: TrayIconChanges): void;
 
-  /** Shows a balloon over the icon. Its click cannot be heard (see the README). */
+  /** Shows a balloon over the icon. Its events arrive as `onballoonshow`, `onballoontimeout` and `onballoonclick`. */
   notify(balloon: BalloonOptions): void;
 
   /** Takes the icon out of the tray and frees what it held. Safe to call twice. */
@@ -318,6 +416,17 @@ export function createTrayCore<const Extras extends readonly TrayExtra[]>(option
     const isEcho = options.now() - lastPolledAt < MESSAGE_ECHO_MILLISECONDS;
     if (isEcho) {
       return;
+    }
+
+    for (const { notification, x, y } of messages) {
+      const described = NOTIFICATION_EVENTS.get(notification);
+      if (described !== undefined) {
+        options[described.handler]?.({
+          x,
+          y,
+          button: described.button
+        });
+      }
     }
 
     for (const { notification, x, y } of messages) {

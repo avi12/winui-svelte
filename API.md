@@ -3458,12 +3458,29 @@ An app that does not import it does not bundle it
 - `<TrayIcon>` props: `icon` (an `.ico` path, or `{ forLightTaskbar,
   forDarkTaskbar }`, swapped when the taskbar theme changes), `tooltip`,
   `isVisible` (default true), `guid`, `onclick`, `ondoubleclick`,
-  `oncontextmenu`, `onmiddleclick`, and `bind:handle`
+  `oncontextmenu`, `onmiddleclick`, `onkeyselect`, `onpointerdown`,
+  `onpointerup`, `onpointermove`, `onpointerenter`, `onpointerleave`,
+  `onballoonshow`, `onballoontimeout`, `onballoonclick`, and `bind:handle`
   The icon exists while
   the component does and is removed when it unmounts
 - Each handler gets `{ gesture, x, y }`, the pointer in screen pixels: where to
   put a menu
   A double click is the second `onclick` and then `ondoubleclick`
+- The shell's own messages reach the pointer and balloon handlers as
+  `{ x, y, button }` (`TrayNotificationEvent`, `button` is `"left"`,
+  `"right"`, `"middle"` or null): `onkeyselect` is Enter or Space on the
+  focused icon, `onpointerenter` and `onpointerleave` are the rich tooltip
+  opening and closing, and the balloon handlers hear the balloon of `notify`
+
+```svelte
+<TrayIcon
+  icon="app.ico"
+  tooltip="App"
+  onclick={() => showWindow()}
+  onpointerenter={() => refreshStatus()}
+  onballoonclick={() => showWindow()}
+/>
+```
 - Keyboard, touch and pen: the shell sends its version 4 callback messages to
   the icon's hidden owner window, and the tray keeps them (see below) and
   delivers them on its next poll

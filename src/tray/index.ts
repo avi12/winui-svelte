@@ -1,7 +1,7 @@
 export type { PictureSource, TaskbarPictures } from "#src/picture-source.js";
 export type { TrayPointerEvent } from "./click-detector.ts";
 export { TrayGesture } from "./click-detector.ts";
-export type { BalloonOptions, TrayIconChanges, TrayIconHandle, TrayIconImage, TrayIconOptions } from "./tray-core.ts";
+export type { BalloonOptions, TrayEventButton, TrayIconChanges, TrayIconHandle, TrayIconImage, TrayIconOptions, TrayNotificationEvent } from "./tray-core.ts";
 export { removeAllTrayIcons, TrayBalloonIcon } from "./tray-core.ts";
 export type { TrayIconSeams } from "./tray-icon.ts";
 export { createTrayIcon } from "./tray-icon.ts";

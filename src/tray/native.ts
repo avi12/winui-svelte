@@ -69,7 +69,19 @@ export interface NotifyData {
 export const TrayNotification = {
   select: 0x400,
   keySelect: 0x401,
-  contextMenu: 0x7b
+  contextMenu: 0x7b,
+  balloonShow: 0x402,
+  balloonTimeout: 0x404,
+  balloonUserClick: 0x405,
+  popupOpen: 0x406,
+  popupClose: 0x407,
+  mouseMove: 0x200,
+  leftDown: 0x201,
+  leftUp: 0x202,
+  rightDown: 0x204,
+  rightUp: 0x205,
+  middleDown: 0x207,
+  middleUp: 0x208
 } as const;
 
 /** One callback message the shell posted for the icon: its code and the anchor in screen pixels. */

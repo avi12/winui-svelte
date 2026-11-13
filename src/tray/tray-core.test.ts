@@ -504,3 +504,39 @@ test("with the shell's messages heard, a menu opens on its context-menu message 
   assert.equal(opened, 1);
   handle.remove();
 });
+
+const NOTIFICATION_HANDLER_CASES = [
+  [0x401, "onkeyselect", null],
+  [0x201, "onpointerdown", "left"],
+  [0x204, "onpointerdown", "right"],
+  [0x207, "onpointerdown", "middle"],
+  [0x202, "onpointerup", "left"],
+  [0x205, "onpointerup", "right"],
+  [0x208, "onpointerup", "middle"],
+  [0x200, "onpointermove", null],
+  [0x406, "onpointerenter", null],
+  [0x407, "onpointerleave", null],
+  [0x402, "onballoonshow", null],
+  [0x404, "onballoontimeout", null],
+  [0x405, "onballoonclick", null]
+] as const;
+
+for (const [notification, handler, button] of NOTIFICATION_HANDLER_CASES) {
+  test(`message ${notification.toString(16)} reaches ${handler}`, () => {
+    const events: unknown[] = [];
+    const { native, tick, handle } = start({ [handler]: (event: unknown) => events.push(event) });
+    native.messages = [{
+      notification,
+      x: 10,
+      y: 20
+    }];
+    tick();
+    tick();
+    assert.deepEqual(events, [{
+       x: 10,
+       y: 20,
+       button 
+    }]);
+    handle.remove();
+  });
+}

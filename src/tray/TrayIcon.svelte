@@ -27,7 +27,16 @@
     onclick,
     ondoubleclick,
     oncontextmenu,
-    onmiddleclick
+    onmiddleclick,
+    onkeyselect,
+    onpointerdown,
+    onpointerup,
+    onpointermove,
+    onpointerenter,
+    onpointerleave,
+    onballoonshow,
+    onballoontimeout,
+    onballoonclick
   }: TrayIconComponentProps<ItemId> = $props();
   const native = createWindowedTrayNative();
   const markup = createMenuSource();
@@ -63,7 +72,16 @@
           };
         }
       },
-      onmiddleclick: event => onmiddleclick?.(event)
+      onmiddleclick: event => onmiddleclick?.(event),
+      onkeyselect: event => onkeyselect?.(event),
+      onpointerdown: event => onpointerdown?.(event),
+      onpointerup: event => onpointerup?.(event),
+      onpointermove: event => onpointermove?.(event),
+      onpointerenter: event => onpointerenter?.(event),
+      onpointerleave: event => onpointerleave?.(event),
+      onballoonshow: event => onballoonshow?.(event),
+      onballoontimeout: event => onballoontimeout?.(event),
+      onballoonclick: event => onballoonclick?.(event)
     }));
     handle = created;
     return () => {
