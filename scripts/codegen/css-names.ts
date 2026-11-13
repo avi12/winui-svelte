@@ -94,10 +94,10 @@ const PREFERRED_CSS_NAMES = new Map([["visibility", "display"]]);
 function buildCssNames() {
   const groups = [...propertyGroups, ...LAZY_GROUPS.flatMap(lazy => lazy.groups()), ...buildTimeGroups()];
   const candidates = new Set(groups.flatMap(group => [...group.members, ...group.shorthands?.keys() ?? []]));
-  const setBy = new Map<string, Array<{
+  const setBy = new Map<string, {
     cssName: string;
     breadth: number;
-  }>>();
+  }[]>();
   for (const cssName of candidates) {
     const properties = winuiPropertiesOf(cssName);
     for (const property of properties) {

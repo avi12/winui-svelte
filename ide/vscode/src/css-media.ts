@@ -127,11 +127,11 @@ function sizeOf({ name, environment }: {
 
 function sizePart({ text, comparisons, environment }: {
   text: string;
-  comparisons: Array<{
+  comparisons: {
     name: string;
     operator: string;
     value: number | undefined;
-  }>;
+  }[];
   environment: MediaEnvironment;
 }) {
   const known = comparisons.filter(isResolved);

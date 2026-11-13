@@ -105,7 +105,7 @@ function isCardShown(card: Color | undefined) {
 // to READ_ATTEMPTS times, and says whether it did.
 async function settledRead({ rectangle, points, name }: {
   rectangle: Rectangle;
-  points: Array<ReturnType<typeof probesOf>[ProbeName]>;
+  points: ReturnType<typeof probesOf>[ProbeName][];
   name: string;
 }) {
   const iCard = PROBE_NAMES.indexOf("card");

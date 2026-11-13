@@ -601,10 +601,10 @@ function checkBehaviours({ connectors, failures }: {
     action() {
       const toggle = new bindings.ToggleSwitch();
       const state = $state<Record<string, NativeValue>>({});
-      const seen: Array<{
+      const seen: {
         sender: object;
         args: object;
-      }> = [];
+      }[] = [];
       const close = open({
         connect: connectorFor("ToggleSwitch"),
         control: toggle,
@@ -1195,7 +1195,7 @@ function checkAttachedBeforeLayout({ failures, panel }: {
 function launch({ connectors, report, throughRenderer }: {
   connectors: Map<string, Connect>;
   report: (result: Report) => void;
-  throughRenderer: ReadonlyArray<(failures: Failure[]) => void>;
+  throughRenderer: readonly ((failures: Failure[]) => void)[];
 }) {
   const panel = new bindings.StackPanel();
   const window = new Window();
@@ -1560,10 +1560,10 @@ function unmetSlots({ controls, expectations }: {
 // it stands for, and what a snippet stops rendering leaves it again.
 function checkSlotsThroughRenderer(failures: Failure[]) {
   const controls = new Map<string, object>();
-  const phases: Array<{
+  const phases: {
     isShown: boolean;
     expectations: SlotExpectation[];
-  }> = [
+  }[] = [
     {
       isShown: false,
       expectations: slotsAtFirst

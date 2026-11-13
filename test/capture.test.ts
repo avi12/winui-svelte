@@ -446,11 +446,11 @@ test("getDisplayMedia, ImageCapture and cropTo read a known window on a monitor 
           },
           inside
         ];
-        const seen: Array<{
+        const seen: {
           width: number;
           height: number;
           isGreen: boolean;
-        }> = [];
+        }[] = [];
         const started = performance.now();
         for (let iGrab = 0; performance.now() - started < LOOP_MILLISECONDS; iGrab++) {
           const region = regions[Math.floor(iGrab / 10) % regions.length];

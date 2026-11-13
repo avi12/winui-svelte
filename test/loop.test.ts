@@ -17,10 +17,10 @@ const MAXIMUM_MEAN_LATE_MILLISECONDS = 8;
 const FRAME_MILLISECONDS = 16;
 const MINIMUM_CHUNKS = 2;
 
-const expectations: Array<{
+const expectations: {
   name: string;
   expected: string | RegExp;
-}> = [
+}[] = [
   {
     name: "fsPromises",
     expected: "read from a file"

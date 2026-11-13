@@ -11,20 +11,21 @@
   const HALF = 1 / 2;
 
   let isShown = $state(true);
-  let tiles = $state([
-    {
-      id: 1,
-      label: "One"
-    },
-    {
-      id: 2,
-      label: "Two"
-    },
-    {
-      id: 3,
-      label: "Three"
-    }
-  ]);
+  const LABELS = ["One", "Two", "Three"];
+
+  function tileOf({ label, i }: { label: string; i: number }) {
+    return {
+      id: i + 1,
+      label
+    };
+  }
+
+  let tiles = $state(
+                LABELS.map((label, i) => tileOf({
+    label,
+    i 
+  }))
+              );
 
   function shuffle() {
     tiles = tiles.toSorted(() => Math.random() - HALF);

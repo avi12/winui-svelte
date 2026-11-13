@@ -10,11 +10,11 @@ export const handWrittenComponents = new Map<string, string>([
 
 // A family of classes matched by the end of the full name or a namespace prefix.
 // A pattern that matches nothing fails the coverage test.
-export const notComponentPatterns: Array<{
+export const notComponentPatterns: {
   suffix?: string;
   namespacePrefix?: string;
   reason: string;
-}> = [
+}[] = [
   {
     namespacePrefix: "Microsoft.Graphics.Canvas",
     reason: "Win2D drawing API, not an element: an app makes these in a draw handler through winui-svelte/win2d (the controls themselves are components)"
@@ -101,7 +101,7 @@ export const notComponentPatterns: Array<{
   }
 ];
 
-const singles: Array<[string, string, string]> = [
+const singles: [string, string, string][] = [
   [XAML, "Application", "the app singleton: the app and window subpaths own its lifecycle"],
   [XAML, "ApplicationInitializationCallbackParams", "passed by WinUI to the start callback"],
   [`${XAML}.Automation`, "AutomationAnnotation", "a value an app assigns to an element's annotations, not an element"],

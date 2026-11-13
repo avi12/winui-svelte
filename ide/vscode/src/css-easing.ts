@@ -105,10 +105,10 @@ function stepsY({ count, jump, progress }: {
 }
 
 function linearY({ stops, progress }: {
-  stops: Array<{
+  stops: {
     position: number;
     value: number;
-  }>;
+  }[];
   progress: number;
 }) {
   const after = stops.findIndex(stop => stop.position >= progress);
@@ -142,10 +142,10 @@ function linearStops(argumentsText: string) {
     }];
   });
   const last = items.length - 1;
-  const stops: Array<{
+  const stops: {
     position: number;
     value: number;
-  }> = [];
+  }[] = [];
   for (const [i, item] of items.entries()) {
     const fallback = last === 0 ? 1 : i / last;
     const position = item.positions[0] ?? fallback;

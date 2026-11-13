@@ -157,11 +157,11 @@ function sourcesOf(program: typescript.Program) {
 }
 
 function membersOf({ program, checker }: Pick<EntryApi, "program" | "checker">) {
-  const found: Array<{
+  const found: {
     owner: string;
     member: typescript.PropertySignature;
     type: typescript.TypeNode;
-  }> = [];
+  }[] = [];
   function visit(node: typescript.Node) {
     const picture = pictureMemberOf({
       node,

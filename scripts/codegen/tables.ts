@@ -773,7 +773,7 @@ export type BindingScope = typeof BindingScope[keyof typeof BindingScope];
  * `restoredLibrary` is set when winapp does not copy the library to .winapp/bin
  * itself, and says where in the package it is.
  */
-export const extraPackages: Array<{
+export const extraPackages: {
   name: string;
   winmd: string;
   scope: BindingScope;
@@ -782,7 +782,7 @@ export const extraPackages: Array<{
     file: string;
     runtimeFolder: string;
   };
-}> = [
+}[] = [
   {
     name: "WebView2",
     winmd: "Microsoft.Web.WebView2.Core.winmd",
@@ -871,11 +871,11 @@ export const hostOwnedBindables = new Map<string, string[]>([
 // framework element it puts FlyoutBase, a binding module of its own, and a
 // snippet block in every component, which the one-Button bundle budget
 // (scripts/pack/treeshake.test.ts) cannot take.
-export const attachedOwners: Array<{
+export const attachedOwners: {
   owner: TypeName;
   prefix: string;
   slots?: string[];
-}> = [
+}[] = [
   {
     owner: {
       namespace: "Microsoft.UI.Xaml.Controls",
@@ -1300,11 +1300,11 @@ export const overlayHosted = new Map<string, OverlayHost>([
 // Exports of the bindings that are not metadata types: the generic
 // instantiations the conversions name, under the `alias` where the generated
 // name carries a hash.
-export const extraBindings: Array<{
+export const extraBindings: {
   name: string;
   alias?: string;
   module: string;
-}> = [
+}[] = [
   {
     name: "IReference_Boolean",
     module: "#winui/windows/foundation/IReference_Boolean"

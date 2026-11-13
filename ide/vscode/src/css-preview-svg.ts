@@ -236,11 +236,11 @@ function trackFill(kind: TrackKind) {
 }
 
 /** The tracks of a grid as bars across one row: a pixel track solid, an `fr` track faint, an `auto` track outlined. */
-export function tracksSvg(tracks: Array<{
+export function tracksSvg(tracks: {
   kind: TrackKind;
   amount: number;
   share: number;
-}>) {
+}[]) {
   const width = BOX.width;
   const height = BAR.height * 2;
   let x = 0;

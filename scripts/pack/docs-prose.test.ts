@@ -24,10 +24,10 @@ function markdownFiles() {
 function proseLines(file: string) {
   const lines = readFileSync(path.join(PACKAGE_ROOT, file), "utf8").split(/\r?\n/u);
   let isInCode = false;
-  const prose: Array<{
+  const prose: {
     number: number;
     text: string;
-  }> = [];
+  }[] = [];
   for (const [i, line] of lines.entries()) {
     const isFence = FENCE.test(line);
     isInCode = isFence ? !isInCode : isInCode;

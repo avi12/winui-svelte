@@ -26,10 +26,10 @@ const XML = `<doc><members>
 const documentation = parseDocumentation(XML).get("Microsoft.UI.Xaml.Controls.FontIcon");
 
 function levelOf({ properties, documented }: {
-  properties: Array<{
+  properties: {
     key: string;
     winName: string;
-  }>;
+  }[];
   documented: TypeDocumentation | undefined;
 }) {
   const hasDocumentation = documented !== undefined;
@@ -61,10 +61,10 @@ function levelOf({ properties, documented }: {
   };
 }
 
-function fontIcon(properties: Array<{
+function fontIcon(properties: {
   key: string;
   winName: string;
-}>) {
+}[]) {
   return levelOf({
     properties,
     documented: documentation

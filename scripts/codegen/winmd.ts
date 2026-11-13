@@ -215,6 +215,8 @@ function codedIndex(name: string) {
   return `${CODED_PREFIX}${name}`;
 }
 
+const METHOD_NAME_COLUMN = 3;
+
 const TABLE_COLUMNS = new Map<number, ColumnKind[]>([
   [TABLE_ID.MODULE, [WORD, STRING_HEAP, GUID_HEAP, GUID_HEAP, GUID_HEAP]],
   [TABLE_ID.TYPE_REF, [codedIndex("ResolutionScope"), STRING_HEAP, STRING_HEAP]],
@@ -264,7 +266,7 @@ const TABLE_COLUMNS = new Map<number, ColumnKind[]>([
 ]);
 
 // The tables a coded index can point into, in tag order (ECMA-335 II.24.2.6).
-const CODED_INDEX_TABLES = new Map<string, Array<number | null>>([
+const CODED_INDEX_TABLES = new Map<string, (number | null)[]>([
   ["TypeDefOrRef", [TABLE_ID.TYPE_DEF, TABLE_ID.TYPE_REF, TABLE_ID.TYPE_SPEC]],
   ["HasConstant", [TABLE_ID.FIELD, TABLE_ID.PARAM, TABLE_ID.PROPERTY]],
   ["HasCustomAttribute", [
@@ -353,10 +355,10 @@ export interface EventInfo {
 export interface MethodInfo {
   name: string;
   isStatic: boolean;
-  parameters: Array<{
+  parameters: {
     name: string;
     type: TypeSignature;
-  }>;
+  }[];
   returns: TypeSignature;
 }
 
@@ -388,10 +390,10 @@ export interface TypeInfo {
   properties: PropertyInfo[];
   events: EventInfo[];
   methods: MethodInfo[];
-  enumMembers: Array<{
+  enumMembers: {
     name: string;
     value: number;
-  }>;
+  }[];
   attributes: AttributeInfo[];
 }
 
@@ -526,11 +528,11 @@ export class WinMdFile {
       + (isPe32Plus ? DATA_DIRECTORIES_OFFSET_PE32_PLUS : DATA_DIRECTORIES_OFFSET_PE32);
     const cliRva = this.buffer.readUInt32LE(directoriesOffset + CLI_HEADER_DIRECTORY_INDEX * DATA_DIRECTORY_SIZE);
     const sectionsOffset = optionalOffset + optionalSize;
-    const sections: Array<{
+    const sections: {
       rva: number;
       size: number;
       raw: number;
-    }> = [];
+    }[] = [];
     for (let index = 0; index < sectionCount; index++) {
       const headerOffset = sectionsOffset + index * SECTION_HEADER_SIZE;
       sections.push({
@@ -964,7 +966,7 @@ export class WinMdFile {
         this.cell({
           table: TABLE_ID.METHOD_DEF,
           row,
-          column: 3
+          column: METHOD_NAME_COLUMN
         })
       ),
       isStatic: (flags & METHOD_ATTRIBUTE_STATIC) !== 0,

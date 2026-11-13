@@ -795,7 +795,7 @@ function emitAttached({ attached, imports, isSlot }: {
 
 // One link per owner: each prop's setter runs on the owner's module, which
 // the app has loaded under the owner's name.
-function attachedBody(entries: Array<ReturnType<typeof emitAttached>>) {
+function attachedBody(entries: ReturnType<typeof emitAttached>[]) {
   const owners = new Set(entries.map(entry => entry.owner));
   return [...owners].flatMap(owner => [
     "  link.attached({",

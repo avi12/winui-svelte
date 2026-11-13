@@ -40,7 +40,7 @@ const COVERED = "another window covers the bright one on every display, so the s
 interface Reading {
   brightPid: number;
   examplePid: number;
-  hits: Array<{ pid: number }>;
+  hits: { pid: number }[];
   colors: Color[];
 }
 

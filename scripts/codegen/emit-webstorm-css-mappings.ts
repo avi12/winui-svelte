@@ -219,7 +219,7 @@ function literalKindOf({ cssName, winName }: Candidate) {
   const isColor = [...COLOR_EXAMPLES].every(([css, expected]) => lowered(css) === expected);
   const isSides = lowered(UNIFORM_SIDE) === UNIFORM_SIDES;
   const isNumber = [...EXAMPLE_NUMBERS].some(([css, expected]) => lowered(css) === expected);
-  const checks: Array<[ConversionKind, boolean]> = [
+  const checks: [ConversionKind, boolean][] = [
     [ConversionKind.THICKNESS, isSides && lowered(EXAMPLE_SIDES) === THICKNESS_SIDES],
     [ConversionKind.CORNER_RADIUS, isSides && lowered(EXAMPLE_SIDES) === CORNER_SIDES],
     [ConversionKind.COLOR, isColor],

@@ -29,7 +29,7 @@ export async function runExample({ entry, link, options }: ExampleRun) {
 
   const { start } = parsedExample.data;
   const isBare = parsedExample.data.IS_BARE === true;
-  const handlers: Array<(command: ExampleCommand) => void> = [];
+  const handlers: ((command: ExampleCommand) => void)[] = [];
   const host: ExampleHost = {
     report: message => link.postMessage(message),
     onCommand(handler) {

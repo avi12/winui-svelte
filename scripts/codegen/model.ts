@@ -201,10 +201,10 @@ export interface Model {
   // Statics-only classes the attached properties are set through.
   owners: TypeName[];
   // Components the metadata activates but the generator leaves out.
-  excluded: Array<{
+  excluded: {
     name: string;
     reason: string;
-  }>;
+  }[];
 }
 
 const lockFileSchema = z.object({

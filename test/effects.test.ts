@@ -60,7 +60,7 @@ test("filter, backdrop-filter, mix-blend-mode, mask-image and clip-path change w
     });
     async function colorsWith({ className, points }: {
       className: string;
-      points: Array<[number, number]>;
+      points: [number, number][];
     }) {
       await example.ask({
         command: {

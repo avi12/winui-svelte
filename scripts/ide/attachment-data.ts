@@ -20,11 +20,11 @@ const OBJECT_VALUES = "Object.values";
 export interface EntryApi {
   program: typescript.Program;
   checker: typescript.TypeChecker;
-  exports: Array<{
+  exports: {
     specifier: string;
     name: string;
     symbol: typescript.Symbol;
-  }>;
+  }[];
 }
 
 // The props of a component are declared in its `.d.svelte.ts`, which no entry point imports as a file.
@@ -125,11 +125,11 @@ function wiredEventsIn({ source, checker }: {
   source: typescript.SourceFile;
   checker: typescript.TypeChecker;
 }) {
-  const found: Array<{
+  const found: {
     name: string;
     enabledBy: string;
     description: string;
-  }> = [];
+  }[] = [];
   function visit(node: typescript.Node) {
     const set = wiredSetOf(node);
     const enabledBy = set === undefined ? undefined : enclosingFunctionName(node);

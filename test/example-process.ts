@@ -39,7 +39,7 @@ export class ExampleProcess {
   private readonly child: ChildProcessByStdio<Writable, Readable, Readable>;
   private readonly reports: Report[] = [];
   private errorText = "";
-  private readonly waiting: Array<() => void> = [];
+  private readonly waiting: (() => void)[] = [];
 
   private constructor(child: ChildProcessByStdio<Writable, Readable, Readable>) {
     this.child = child;

@@ -40,10 +40,10 @@ interface Attribute {
     type: TypeReference | TypeReference[];
   };
   // The enum members the editor completes, beside the `enum` type of the value.
-  values?: Array<{
+  values?: {
     name: string;
     description?: string;
-  }>;
+  }[];
 }
 
 type EnumSets = ReadonlyMap<string, IdeData["enums"][number]>;

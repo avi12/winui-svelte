@@ -54,7 +54,7 @@ const PREFIX_BYTES = 155;
 const OCTAL = 8;
 const BYTES_PER_KILOBYTE = 1024;
 const FORBIDDEN_LISTED = 20;
-const ATTW_PROCESSES = 8;
+const ATTW_PROCESSES = 3;
 
 function textAt({ block, offset, length }: {
   block: Buffer;
