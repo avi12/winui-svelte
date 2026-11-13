@@ -10,10 +10,10 @@ const { EyeDropper, installEyeDropper } = await import("./eye-dropper.ts");
 type Picker = NonNullable<Parameters<typeof installEyeDropper>[0]>["picker"];
 
 function controllablePicker() {
-  const waiting: Array<{
+  const waiting: {
     resolve: (pixel: Awaited<ReturnType<NonNullable<Picker>["pick"]>>) => void;
     reject: (reason: unknown) => void;
-  }> = [];
+  }[] = [];
   const picker = {
     pick({ signal }) {
       return new Promise((resolve, reject) => {

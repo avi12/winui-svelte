@@ -484,11 +484,11 @@ test("watchAdvertisements delivers advertisementreceived until the signal aborts
     async run(fake) {
       const device = await navigator.bluetooth.requestDevice({ acceptAllDevices: true });
       const controller = new AbortController();
-      const events: Array<{
+      const events: {
         name: string | null;
         rssi: number;
         company: number | undefined;
-      }> = [];
+      }[] = [];
       device.onadvertisementreceived = event => {
         assert.ok(event instanceof BluetoothAdvertisingEvent);
         events.push({

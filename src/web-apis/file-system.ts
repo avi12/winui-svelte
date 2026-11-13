@@ -451,7 +451,11 @@ export class FileSystemDirectoryHandle extends FileSystemHandle {
     return Promise.resolve(relative === "" ? [] : relative.split(path.sep));
   }
 
-  /** Each entry as `[name, handle]`. */
+  /**
+   * Each entry as `[name, handle]`.
+   *
+   * @yields A name and its handle.
+   */
   async *entries() {
     for (const entry of readdirSync(this.path, { withFileTypes: true })) {
       const location = path.join(this.path, entry.name);
@@ -461,14 +465,22 @@ export class FileSystemDirectoryHandle extends FileSystemHandle {
     }
   }
 
-  /** The names of the entries. */
+  /**
+   * The names of the entries.
+   *
+   * @yields One name.
+   */
   async *keys() {
     for await (const [name] of this.entries()) {
       yield name;
     }
   }
 
-  /** The handles of the entries. */
+  /**
+   * The handles of the entries.
+   *
+   * @yields One handle.
+   */
   async *values() {
     for await (const [, handle] of this.entries()) {
       yield handle;

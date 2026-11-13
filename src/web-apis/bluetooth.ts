@@ -48,11 +48,11 @@ export interface BluetoothLeScanFilter {
   readonly services?: readonly BluetoothServiceUuid[];
   readonly name?: string;
   readonly namePrefix?: string;
-  readonly manufacturerData?: ReadonlyArray<{
+  readonly manufacturerData?: readonly {
     readonly companyIdentifier: number;
     readonly dataPrefix?: BufferSource;
     readonly mask?: BufferSource;
-  }>;
+  }[];
 }
 
 /**

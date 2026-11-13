@@ -195,10 +195,10 @@ test("an open device raises inputreport, and the reports it sends and asks for g
       await device.open();
       await device.open();
       assert.equal(device.opened, true);
-      const seen: Array<{
+      const seen: {
         id: number;
         bytes: number[];
-      }> = [];
+      }[] = [];
       device.oninputreport = event => {
         assert.ok(event instanceof HIDInputReportEvent);
         seen.push({

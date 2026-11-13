@@ -55,10 +55,10 @@ function gradient({ width = SIZE, height = SIZE, alpha = 255 } = {}) {
 }
 
 function fakeCodec() {
-  const encoded: Array<{
+  const encoded: {
     type: string;
     quality: number | undefined;
-  }> = [];
+  }[] = [];
   return {
     encoded,
     codec: {

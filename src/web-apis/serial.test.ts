@@ -39,8 +39,8 @@ function fakeBackend() {
   ] satisfies SerialPortInfo[];
   const log: string[] = [];
   const settingsSeen: SerialSettings[] = [];
-  const incoming: Array<Uint8Array | null> = [];
-  const waiting: Array<() => void> = [];
+  const incoming: (Uint8Array | null)[] = [];
+  const waiting: (() => void)[] = [];
   const errorCallbacks = new Set<(error: SerialLineError) => void>();
   let notify: (() => void) | undefined;
   const connection = {

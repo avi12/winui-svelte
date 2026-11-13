@@ -13,7 +13,7 @@ type Request = Parameters<Parameters<NonNullable<Backend>["onRequest"]>[0]>[0];
 
 function fakeBackend() {
   const shown: Snapshot[] = [];
-  const callbacks: Array<(request: Request) => void> = [];
+  const callbacks: ((request: Request) => void)[] = [];
   const state = { isClosed: false };
   const backend = {
     show(snapshot) {

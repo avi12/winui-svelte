@@ -14,15 +14,15 @@ type Backend = NonNullable<Parameters<typeof installNotification>[0]>["backend"]
 
 function fakeBackend({ isEnabled = true, isSupported = true, isRegisterFailing = false, canSchedule = false } = {}) {
   const calls: string[] = [];
-  const shown: Array<{
+  const shown: {
     id: number;
     spec: Parameters<NonNullable<Backend>["show"]>[0];
-  }> = [];
+  }[] = [];
   const updates: unknown[] = [];
-  const scheduled: Array<{
+  const scheduled: {
     showAt: number;
     isCancelled: boolean;
-  }> = [];
+  }[] = [];
   const dismissed = new Set<number>();
   let invoked: ((invocation: Parameters<Parameters<NonNullable<Backend>["onInvoked"]>[0]>[0]) => void) | undefined;
   const backend = {
@@ -316,7 +316,7 @@ test("extra event field: click carries the action and what the user typed", asyn
         }]
       });
       await tick();
-      const heard: Array<InstanceType<typeof NotificationClickEvent>> = [];
+      const heard: InstanceType<typeof NotificationClickEvent>[] = [];
       notification.addEventListener("click", event => {
         const isClick = event instanceof NotificationClickEvent;
         if (isClick) {

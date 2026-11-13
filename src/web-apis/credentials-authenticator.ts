@@ -50,10 +50,10 @@ export interface CredentialVault {
   }): void;
 
   /** The entries of a resource, passwords included; none when the resource is unknown. */
-  list(resource: string): ReadonlyArray<{
+  list(resource: string): readonly {
     readonly userName: string;
     readonly password: string;
-  }>;
+  }[];
 
   remove(entry: {
     readonly resource: string;
@@ -215,7 +215,7 @@ function counterBytes(counter: number) {
 
 function coseKeyOf(spki: Uint8Array) {
   const key = parseRsaPublicKey(spki);
-  const entries: Array<[CborValue, CborValue]> = [
+  const entries: [CborValue, CborValue][] = [
     [COSE_KEY_TYPE, COSE_KEY_TYPE_RSA],
     [COSE_ALGORITHM, COSE_RS256],
     [COSE_RSA_MODULUS, key.modulus],

@@ -29,10 +29,10 @@ const ADA = {
 };
 
 function fakeChooser({ picked = [ADA], isSupported = true }: {
-  picked?: ReadonlyArray<typeof ADA>;
+  picked?: readonly typeof ADA[];
   isSupported?: boolean;
 } = {}) {
-  const choices: Array<Parameters<NonNullable<Chooser>["choose"]>[0]> = [];
+  const choices: Parameters<NonNullable<Chooser>["choose"]>[0][] = [];
   let release: (() => void) | undefined;
   let isHeldOpen = false;
   const chooser = {

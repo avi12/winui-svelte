@@ -34,7 +34,7 @@ function createClock() {
 test("frame callbacks run once, in order, with the frame's time", () => {
   const clock = createClock();
   const uninstall = installTiming({ clock });
-  const seen: Array<[string, number]> = [];
+  const seen: [string, number][] = [];
   requestAnimationFrame(time => seen.push(["a", time]));
   requestAnimationFrame(time => seen.push(["b", time]));
   assert.deepEqual(seen, []);

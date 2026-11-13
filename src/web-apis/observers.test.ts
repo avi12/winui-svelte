@@ -122,7 +122,7 @@ function element(control: FakeControl) {
 }
 
 function install() {
-  const queue: Array<() => void> = [];
+  const queue: (() => void)[] = [];
   const uninstall = installObservers({ schedule: work => queue.push(work) });
   return {
     uninstall,
@@ -138,7 +138,7 @@ test("a ResizeObserver reports a size once it is not 0 by 0, and again when it c
   const { uninstall, run } = install();
   const control = new FakeControl();
   const target = element(control);
-  const seen: Array<[number, number, number]> = [];
+  const seen: [number, number, number][] = [];
   const observer = new ResizeObserver(entries => {
     for (const entry of entries) {
       assert.equal(entry.target, target);
@@ -201,7 +201,7 @@ test("a ResizeObserver refuses a target that is not a WinUI element", () => {
 test("an IntersectionObserver reports the first state, then each threshold crossed", () => {
   const { uninstall, run } = install();
   const control = new FakeControl();
-  const ratios: Array<[boolean, number]> = [];
+  const ratios: [boolean, number][] = [];
   const observer = new IntersectionObserver(entries => {
     for (const entry of entries) {
       ratios.push([entry.isIntersecting, entry.intersectionRatio]);

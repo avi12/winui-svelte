@@ -171,7 +171,7 @@ export class WindowPageBackend implements PageBackend {
   private isFocused = false;
   private isClosed = false;
   private readonly listeners = new Set<PageListener>();
-  private stops: Array<() => void> = [];
+  private stops: (() => void)[] = [];
   private readonly power: SystemPowerSource;
 
   constructor(power: SystemPowerSource = windowsSystemPowerSource()) {

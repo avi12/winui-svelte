@@ -188,7 +188,7 @@ test("an element requests fullscreen, the document exits it, and both fire fulls
   const window = fakeWindow();
   const uninstall = installPage({ backend: window.backend });
   const element = createElement();
-  const changes: Array<object | null> = [];
+  const changes: (object | null)[] = [];
   document.addEventListener("fullscreenchange", () => changes.push(document.fullscreenElement));
   assert.equal(document.fullscreenEnabled, true);
   assert.equal(document.fullscreenElement, null);

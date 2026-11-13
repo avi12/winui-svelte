@@ -139,7 +139,7 @@ export function windowsMediaSessionBackend({ player }: {
   player?: MediaPlayer | undefined;
 }) {
   let owned: MediaPlayer | undefined;
-  let subscriptions: Array<() => void> = [];
+  let subscriptions: (() => void)[] = [];
   const callbacks = new Set<(request: MediaSessionRequest) => void>();
 
   function raise(request: MediaSessionRequest) {

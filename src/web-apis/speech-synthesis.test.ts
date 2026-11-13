@@ -141,7 +141,7 @@ test("utterances are spoken one after the other with start and end events", asyn
 test("word boundaries carry the char index and length, marks their name", async () => {
   await withSynthesis(fake => {
     const utterance = new SpeechSynthesisUtterance("hello big world");
-    const seen: Array<[string, number, number]> = [];
+    const seen: [string, number, number][] = [];
     utterance.onboundary = event => {
       assert.ok(event instanceof SpeechSynthesisEvent);
       seen.push([event.name, event.charIndex, event.charLength]);

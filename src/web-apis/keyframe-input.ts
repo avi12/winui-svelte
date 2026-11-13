@@ -6,7 +6,7 @@ import type { Keyframe } from "#src/renderer/host/keyframes.js";
 
 const KEYFRAME_OFFSET = "offset";
 
-type PropertyValues = ReadonlyArray<string | number | null> | string | number | null;
+type PropertyValues = readonly (string | number | null)[] | string | number | null;
 
 /** The keyframes of `animate()`: a list of them, or properties with the list of their values. */
 export type KeyframeInput = readonly Keyframe[] | Record<string, PropertyValues>;

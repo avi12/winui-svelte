@@ -171,10 +171,10 @@ export class SpeechRecognitionErrorEvent extends Event {
 
 /** The standard `SpeechGrammarList`; Windows takes the extra `phrases` instead of grammars. */
 export class SpeechGrammarList {
-  private readonly grammars: Array<{
+  private readonly grammars: {
     src: string;
     weight: number;
-  }> = [];
+  }[] = [];
 
   get length() {
     return this.grammars.length;

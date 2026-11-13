@@ -161,7 +161,7 @@ export class GamepadHapticActuator {
       rightTrigger: type === "trigger-rumble" ? clampMagnitude(parameters.rightTrigger) : 0
     } satisfies GamepadVibrationLevels;
     return new Promise<GamepadHapticsResult>(resolve => {
-      const timers: Array<ReturnType<typeof setTimeout>> = [];
+      const timers: ReturnType<typeof setTimeout>[] = [];
       const entry = {
         cancel() {
           for (const timer of timers) {
@@ -291,7 +291,7 @@ export class GamepadEvent extends Event {
 declare global {
   interface Navigator {
     /** The gamepad slots: four, each a `Gamepad` or null; defined by `installGamepad`. */
-    getGamepads(): Array<Gamepad | null>;
+    getGamepads(): (Gamepad | null)[];
   }
 }
 

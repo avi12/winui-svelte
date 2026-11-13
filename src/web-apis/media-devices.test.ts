@@ -94,8 +94,8 @@ function fakeBackend({
 }: FakeOptions = {}) {
   const opens: Request[] = [];
   const calls: string[] = [];
-  const watchers: Array<() => void> = [];
-  const failures: Array<() => void> = [];
+  const watchers: (() => void)[] = [];
+  const failures: (() => void)[] = [];
   const axis = {
     isSupported: true,
     min: 100,

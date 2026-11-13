@@ -290,7 +290,7 @@ test("a signal that is already aborted shows nothing", async () => {
 
 test("the signal reaches the host of the dialog that is showing", async () => {
   const host = fakeHost();
-  const signals: Array<AbortSignal | undefined> = [];
+  const signals: (AbortSignal | undefined)[] = [];
   const watching: DialogHost = {
     hasWindow: () => true,
     show(request) {

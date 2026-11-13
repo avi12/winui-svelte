@@ -307,7 +307,7 @@ export class IntersectionObserverEntry {
 interface IntersectionObservation {
   readonly target: object;
   readonly control: ObservedControl;
-  readonly stops: Array<() => void>;
+  readonly stops: (() => void)[];
   viewport: ObservedBox | null;
   previousIndex: number;
   previousIsIntersecting: boolean;

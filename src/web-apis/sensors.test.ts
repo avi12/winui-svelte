@@ -27,7 +27,7 @@ function immediately(work: () => void) {
 function fakeBackend(available: readonly Kind[]) {
   const intervals: number[] = [];
   const values: { -readonly [Kind in keyof SensorValues]?: SensorValues[Kind] } = {};
-  const notifies: Array<() => void> = [];
+  const notifies: (() => void)[] = [];
   let stops = 0;
   const backend = {
     isAvailable: kind => available.includes(kind),

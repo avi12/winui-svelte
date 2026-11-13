@@ -189,7 +189,7 @@ test("passing the quota throws QuotaExceededError and keeps the old value", () =
 
 test("events fire only when asked, with the key and both values", () => {
   const target = new EventTarget();
-  const seen: Array<[string | null, string | null, string | null]> = [];
+  const seen: [string | null, string | null, string | null][] = [];
   target.addEventListener("storage", event => {
     const isStorageEvent = event instanceof StorageEvent;
     if (isStorageEvent) {

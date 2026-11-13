@@ -86,7 +86,7 @@ function normalized(text: string) {
   return text.replace(/\s+/g, "").toLowerCase();
 }
 
-function textOf(texts: ReadonlyArray<{ readonly rawValue: string }>) {
+function textOf(texts: readonly { readonly rawValue: string }[]) {
   return normalized(texts.map(text => text.rawValue).join(""));
 }
 

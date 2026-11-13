@@ -143,7 +143,7 @@ export class HIDDevice extends HandlerEventTarget {
   readonly productName: string;
 
   /** The top-level collection; Windows does not expose the report layout through WinRT. */
-  readonly collections: ReadonlyArray<{
+  readonly collections: readonly {
     readonly usagePage: number;
     readonly usage: number;
     readonly type: number;
@@ -151,7 +151,7 @@ export class HIDDevice extends HandlerEventTarget {
     readonly inputReports: readonly object[];
     readonly outputReports: readonly object[];
     readonly featureReports: readonly object[];
-  }>;
+  }[];
 
   /** The Windows device interface path. WinUI-only. */
   readonly interfacePath: string;
