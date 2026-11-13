@@ -1,5 +1,7 @@
 <script lang="ts">
   import type { SelectionOverlayProps } from "./selection-overlay-props.ts";
+  import { projectAs } from "#winui/lifetime";
+  import { ExceptionRoutedEventArgs } from "#winui/microsoft/ui/xaml/ExceptionRoutedEventArgs";
   import Border from "#src/components/generated/Border.svelte";
   import Canvas from "#src/components/generated/Canvas.svelte";
   import Ellipse from "#src/components/generated/Ellipse.svelte";
@@ -73,7 +75,7 @@
 <Grid class="overlay" isHitTestVisible={false}>
   {#if props.image !== undefined}
     <Image
-      onimagefailed={(_, args) => props.onimagefailed?.(args.errorMessage)}
+      onimagefailed={(_, args) => props.onimagefailed?.(projectAs(args, ExceptionRoutedEventArgs).errorMessage)}
       onimageopened={() => props.onimageopened?.()}
       source={props.image}
       stretch="Fill"
