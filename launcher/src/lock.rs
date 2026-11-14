@@ -11,10 +11,12 @@ pub const LOCK_FILE: &str = ".launcher.lock";
 const UNWRITTEN_GRACE: Duration = Duration::from_millis(100);
 const CLAIM_ATTEMPTS: u32 = 3;
 
+/// Why the install lock could not be taken
 #[derive(Debug)]
 pub enum LockError {
     /// Another live process holds it
     Held(u32),
+    /// Reading or writing the lock file failed
     Io(io::Error),
 }
 
@@ -54,6 +56,7 @@ fn read_pid_after_creation(path: &Path) -> Option<u32> {
 }
 
 impl InstallLock {
+    /// Takes the lock of the install at `root`, or says who holds it
     pub fn acquire(root: &Path) -> Result<Self, LockError> {
         let path = root.join(LOCK_FILE);
         for _ in 0..CLAIM_ATTEMPTS {

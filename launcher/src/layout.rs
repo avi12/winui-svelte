@@ -11,6 +11,7 @@ pub const STAGING_SUFFIX: &str = ".staging";
 /// Written into a version folder that failed to start; it is never picked again
 pub const BAD_MARKER: &str = ".bad-version";
 
+/// The folder of `version` under `root`
 pub fn app_folder(root: &Path, version: Version) -> PathBuf {
     root.join(format!("{APP_PREFIX}{version}"))
 }
@@ -40,16 +41,18 @@ pub fn installed_versions(root: &Path) -> Vec<Version> {
     versions
 }
 
+/// Whether `folder` was marked bad
 pub fn is_bad(folder: &Path) -> bool {
     folder.join(BAD_MARKER).is_file()
 }
 
+/// Marks `folder` bad so it is never picked again
 pub fn mark_bad(folder: &Path) -> io::Result<()> {
     std::fs::write(folder.join(BAD_MARKER), "")
 }
 
 /// The versions that hold `executable_name` and were not marked bad, newest first
-pub fn runnable_versions(root: &Path, executable_name: &str) -> Vec<Version> {
+pub(crate) fn runnable_versions(root: &Path, executable_name: &str) -> Vec<Version> {
     installed_versions(root)
         .into_iter()
         .filter(|version| {
@@ -100,7 +103,10 @@ mod tests {
 
     #[test]
     fn a_missing_root_has_no_versions() {
-        assert!(installed_versions(Path::new(r"C:\no\such\root")).is_empty());
+        assert_eq!(
+            installed_versions(Path::new(r"C:\no\such\root")),
+            Vec::<Version>::new()
+        );
     }
 
     #[test]

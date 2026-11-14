@@ -29,6 +29,7 @@ pub enum LifecycleEvent {
 }
 
 impl LifecycleEvent {
+    /// Every lifecycle event, in the order an install goes through them
     pub const ALL: [Self; 4] = [
         Self::Install,
         Self::Updated,
@@ -36,6 +37,7 @@ impl LifecycleEvent {
         Self::Uninstall,
     ];
 
+    /// The command-line switch a hook is started with
     pub fn switch(self) -> &'static str {
         match self {
             Self::Install => "--install",
@@ -49,11 +51,14 @@ impl LifecycleEvent {
 /// The two start flags, named like Velopack's first-run and restarted
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub struct LaunchFlags {
+    /// Whether this is the first run after an install
     pub is_first_run: bool,
+    /// Whether the app was restarted by an update
     pub is_restarted: bool,
 }
 
 impl LaunchFlags {
+    /// The flags the launcher set in the environment
     pub fn from_environment() -> Self {
         let is_on = |name: &str| std::env::var_os(name).is_some_and(|value| value == FLAG_ON);
         Self {
@@ -139,7 +144,7 @@ mod tests {
     struct Recorder(RefCell<Vec<(LifecycleEvent, Version)>>);
 
     impl Application for Recorder {
-        fn executable_name(&self) -> &str {
+        fn executable_name(&self) -> &'static str {
             "app.exe"
         }
 
@@ -189,7 +194,7 @@ mod tests {
     fn a_normal_start_dispatches_nothing() {
         let recorder = Recorder(RefCell::new(Vec::new()));
         assert!(dispatch(&recorder, &arguments(&["--tray"]), &FALLBACK).is_none());
-        assert!(recorder.0.into_inner().is_empty());
+        assert_eq!(recorder.0.into_inner(), vec![]);
     }
 
     #[test]

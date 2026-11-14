@@ -3,10 +3,10 @@ use std::sync::atomic::{AtomicU32, Ordering};
 
 static COUNTER: AtomicU32 = AtomicU32::new(0);
 
-pub struct TempDir(PathBuf);
+pub(crate) struct TempDir(PathBuf);
 
 impl TempDir {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         let id = COUNTER.fetch_add(1, Ordering::SeqCst);
         let path =
             std::env::temp_dir().join(format!("winui-svelte-launcher-{}-{id}", std::process::id()));
@@ -15,7 +15,7 @@ impl TempDir {
         Self(path)
     }
 
-    pub fn path(&self) -> &Path {
+    pub(crate) fn path(&self) -> &Path {
         &self.0
     }
 }
@@ -28,7 +28,7 @@ impl Drop for TempDir {
 
 /// A version folder holding `executable_name`, a copy of `cmd.exe`: a real
 /// program that takes arguments and exits with a code the test controls
-pub fn version_folder(root: &Path, version: &str, executable_name: &str) -> PathBuf {
+pub(crate) fn version_folder(root: &Path, version: &str, executable_name: &str) -> PathBuf {
     let folder = root.join(format!("app-{version}"));
     std::fs::create_dir_all(&folder).unwrap();
     let system =

@@ -7,11 +7,15 @@ use std::str::FromStr;
 /// `1.2` and `1.2.3-beta` are not versions
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Version {
+    /// The major number
     pub major: u64,
+    /// The minor number
     pub minor: u64,
+    /// The patch number
     pub patch: u64,
 }
 
+/// The text that is not a `major.minor.patch` version
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct VersionError(pub String);
 
@@ -32,6 +36,7 @@ fn parse_part(text: &str) -> Option<u64> {
 }
 
 impl Version {
+    /// The version with these parts
     pub const fn new(major: u64, minor: u64, patch: u64) -> Self {
         Self {
             major,
@@ -40,6 +45,7 @@ impl Version {
         }
     }
 
+    /// Reads `major.minor.patch`; an error holding the text when it is anything else
     pub fn parse(text: &str) -> Result<Self, VersionError> {
         let error = || VersionError(text.to_string());
         let mut parts = text.split('.');

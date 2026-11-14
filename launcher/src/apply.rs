@@ -47,18 +47,26 @@ impl ApplyRequest {
     }
 }
 
+/// How applying an update ended
 #[derive(Debug)]
 pub enum ApplyOutcome {
+    /// The newest version started
     Started {
+        /// The version that runs
         version: Version,
+        /// The process that was started
         child: Child,
+        /// How the process this launcher replaced ended, when there was one
         exit: Option<ExitOutcome>,
     },
     /// The newest version failed to start: it is marked bad and `restored`,
     /// the one before it, runs instead
     RolledBack {
+        /// The version that failed to start
         failed: Version,
+        /// The version that runs instead
         restored: Version,
+        /// The process that was started from `restored`
         child: Child,
     },
 }
@@ -147,7 +155,7 @@ mod tests {
     struct Plain;
 
     impl Application for Plain {
-        fn executable_name(&self) -> &str {
+        fn executable_name(&self) -> &'static str {
             "app.exe"
         }
     }

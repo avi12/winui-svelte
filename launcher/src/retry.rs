@@ -11,8 +11,11 @@ const ERROR_LOCK_VIOLATION: i32 = 33;
 /// `maximum_delay`, for at most `attempts` tries in all
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Backoff {
+    /// How many times the operation is tried
     pub attempts: u32,
+    /// The pause after the first failure
     pub first_delay: Duration,
+    /// The longest pause
     pub maximum_delay: Duration,
 }
 
@@ -62,6 +65,7 @@ pub fn retry<T>(backoff: Backoff, mut operation: impl FnMut() -> io::Result<T>) 
     }
 }
 
+/// Renames `from` to `to`, retrying while Windows holds either
 pub fn rename_with_retry(backoff: Backoff, from: &Path, to: &Path) -> io::Result<()> {
     retry(backoff, || std::fs::rename(from, to))
 }

@@ -43,6 +43,7 @@ pub fn is_alive(pid: u32) -> bool {
     with_process(pid, SYNCHRONIZE, |handle| !has_exited(handle)).unwrap_or(false)
 }
 
+/// Asks Windows to terminate the process; whether it did
 pub fn terminate(pid: u32) -> bool {
     // SAFETY: the handle comes from OpenProcess with the terminate right
     with_process(pid, PROCESS_TERMINATE | SYNCHRONIZE, |handle| unsafe {
@@ -66,22 +67,30 @@ fn wait_until_gone(pid: u32, limit: Duration) -> bool {
 /// the app was asked to end, then it is killed
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct ExitPolicy {
+    /// How long it gets to end by itself
     pub wait: Duration,
+    /// How long it gets after being asked, and again after being killed
     pub grace: Duration,
 }
 
 impl ExitPolicy {
+    /// The policy the launcher uses
     pub const DEFAULT: Self = Self {
         wait: Duration::from_secs(10),
         grace: Duration::from_secs(2),
     };
 }
 
+/// How the old process ended
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ExitOutcome {
+    /// It was not running
     AlreadyGone,
+    /// It ended by itself within `wait`
     ExitedOnItsOwn,
+    /// It ended within `grace` of being asked
     ExitedWhenAsked,
+    /// It had to be killed
     Killed,
     /// Neither asking nor killing ended it
     Survived,

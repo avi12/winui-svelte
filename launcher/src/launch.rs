@@ -20,11 +20,14 @@ pub struct Launcher<A: Application> {
     pub startup_timeout: Duration,
     /// How long a hook (`Updated`, `Obsolete`) may run
     pub hook_timeout: Duration,
+    /// How a running instance is asked to exit, and when it is killed
     pub exit_policy: ExitPolicy,
+    /// The delays between the retries of a file operation Windows may have locked
     pub backoff: Backoff,
 }
 
 impl<A: Application> Launcher<A> {
+    /// A launcher for the install at `root`, with the default timeouts
     pub fn new(application: A, root: PathBuf) -> Self {
         Self {
             application,
@@ -44,10 +47,12 @@ impl<A: Application> Launcher<A> {
         Some(Self::new(application, root))
     }
 
+    /// The install root
     pub fn root(&self) -> &Path {
         &self.root
     }
 
+    /// The application this launcher starts
     pub fn application(&self) -> &A {
         &self.application
     }
@@ -105,7 +110,7 @@ mod tests {
     struct Plain;
 
     impl Application for Plain {
-        fn executable_name(&self) -> &str {
+        fn executable_name(&self) -> &'static str {
             "app.exe"
         }
 
