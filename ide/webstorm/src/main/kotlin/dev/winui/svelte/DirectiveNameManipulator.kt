@@ -6,6 +6,7 @@ import com.intellij.psi.impl.source.tree.LeafElement
 import com.intellij.psi.xml.XmlTokenType
 import dev.blachut.svelte.lang.psi.SvelteHtmlAttribute
 
+/** Lets a rename edit the name of a Svelte directive without its prefix */
 class DirectiveNameManipulator : AbstractElementManipulator<SvelteHtmlAttribute>() {
   override fun handleContentChange(
     element: SvelteHtmlAttribute,

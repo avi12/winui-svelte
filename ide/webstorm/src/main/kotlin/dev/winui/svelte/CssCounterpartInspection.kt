@@ -28,6 +28,7 @@ internal object DocumentEdits {
   }
 }
 
+/** Flags a CSS value that has a WinUI counterpart the library accepts */
 class CssCounterpartInspection : LocalInspectionTool() {
   override fun buildVisitor(
     holder: ProblemsHolder,

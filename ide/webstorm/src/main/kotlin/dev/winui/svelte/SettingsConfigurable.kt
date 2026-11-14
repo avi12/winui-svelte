@@ -9,6 +9,7 @@ import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.listCellRenderer.textListCellRenderer
 
+/** The settings page of the plugin */
 class SettingsConfigurable(
   private val project: Project
 ) : BoundSearchableConfigurable("winui-svelte", "winui.svelte.settings") {

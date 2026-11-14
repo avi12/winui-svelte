@@ -7,6 +7,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.xml.XmlAttributeValue
 
+/** Shows the glyph and its code point in the documentation popup */
 class GlyphDocumentationProvider : AbstractDocumentationProvider() {
   override fun getCustomDocumentationElement(
     editor: Editor,

@@ -8,6 +8,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.impl.FakePsiElement
 
+/** Shows the value of a theme resource in the documentation popup */
 class ResourceDocumentationProvider : AbstractDocumentationProvider() {
   override fun getCustomDocumentationElement(
     editor: Editor,

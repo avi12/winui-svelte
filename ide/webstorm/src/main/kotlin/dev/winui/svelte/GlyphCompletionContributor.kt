@@ -6,6 +6,7 @@ import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.lang.injection.InjectedLanguageManager
 
+/** Completes icon glyph names where the library takes a glyph */
 class GlyphCompletionContributor : CompletionContributor() {
   override fun fillCompletionVariants(
     parameters: CompletionParameters,

@@ -5,6 +5,7 @@ import com.intellij.psi.css.CssSelectorSuffix
 import com.intellij.psi.css.CssSelectorSuffixType
 import com.intellij.psi.css.usages.CssClassOrIdReferenceBasedUsagesProvider
 
+/** Counts a component class name in markup as a use of its style rule */
 class ComponentClassUsagesProvider : CssClassOrIdReferenceBasedUsagesProvider() {
   override fun acceptElement(candidate: PsiElement) =
     ComponentClasses.isClassHost(candidate) || ComponentClasses.directiveClassOf(candidate) != null

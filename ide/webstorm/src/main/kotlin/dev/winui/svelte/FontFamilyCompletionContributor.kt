@@ -5,6 +5,7 @@ import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.completion.CompletionType
 
+/** Completes the font families an app can use */
 class FontFamilyCompletionContributor : CompletionContributor() {
   override fun fillCompletionVariants(
     parameters: CompletionParameters,

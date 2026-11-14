@@ -5,6 +5,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 
+/** Offers to convert every CSS value of the file that has a WinUI counterpart */
 class ConvertAllInFileIntention : IntentionAction {
   override fun getText() = "Convert all winui-svelte attributes in this file to CSS"
 

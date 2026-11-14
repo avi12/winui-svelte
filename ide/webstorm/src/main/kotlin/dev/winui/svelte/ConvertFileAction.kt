@@ -6,6 +6,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.project.DumbAware
 
+/** Converts the CSS of a whole file to WinUI values from the project view */
 class ConvertFileAction :
   AnAction(),
   DumbAware {

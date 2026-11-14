@@ -12,6 +12,7 @@ import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 
+/** Converts the selected CSS to WinUI values */
 class ConvertSelectionAction :
   AnAction(),
   DumbAware {
