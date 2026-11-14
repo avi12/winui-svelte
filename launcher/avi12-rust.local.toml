@@ -1,0 +1,5 @@
+# Exemptions of this crate from the house lint levels (rust-config-avi12), each with its reason
+
+[rust]
+# The process helpers call Win32 (OpenProcess, WaitForSingleObject, TerminateProcess); each block has a SAFETY comment
+unsafe_code = "allow"
