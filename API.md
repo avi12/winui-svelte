@@ -3906,7 +3906,7 @@ tray.notify({ title: "Ready" });
   `createStandaloneTray` in a tray process of its own (this section)
 
 - The menu is Windows' own popup menu (`TrackPopupMenuEx`), made on a right
-  click and destroyed when it closes; nothing of it exists while idle
+  click and destroyed when it closes; nothing of it, thread included, exists while idle
   `menu` is the same model as the windowed tray's (`winui-svelte/tray/menu`):
   commands, checks, radios, submenus to any depth, separators and headers,
   each with an `id` (a separator too), and values that are functions are read
@@ -3949,7 +3949,11 @@ tray.notify({ title: "Ready" });
   draws the icon where the tick would be
   A path that cannot be read leaves the line without an icon; the rest of the
   menu opens as usual
-  The menu is modal: the thread runs its own message loop until it closes
+  The menu runs its message loop on a thread of its own, started for each
+  menu and gone when it closes, so the process keeps running while a menu is
+  open (timers, messages from the host); a click on the icon that dismisses
+  the menu does not open it again, and a right click while one is open is
+  ignored
   `colorScheme` makes it follow the system theme through an undocumented
   uxtheme call; a menu that must be drawn in WinUI belongs in
   `winui-svelte/tray` with `TrayIcon`'s `menu` snippet

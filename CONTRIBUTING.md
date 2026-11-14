@@ -201,6 +201,30 @@ Check what a window shows by asking WinUI or the shell
 (`Shell_NotifyIconGetRect` for a tray icon), and drive the code under test
 through its own commands or a fake of the Win32 layer
 
+## The standalone tray's menu thread
+
+Node's main thread pumps no Win32 messages
+The shell's callback messages for the icon are still read from its owner
+window (through the mailbox of `src/tray/message-mailbox.ts`), but a
+`TrackPopupMenuEx` run on that thread starts with whatever the thread's queue
+holds: the button messages of the click that dismissed the last menu make the
+new menu return 0 at once, and while it is open the whole event loop is blocked
+
+So the menu runs on a worker thread of its own (`menu-thread.ts`), the way
+WinForms' `NotifyIcon` does it: an owner window, `SetForegroundWindow`,
+`TrackPopupMenuEx`, then `WM_NULL` for the owner
+The thread is started for each menu and ends with it, so it starts with an
+empty queue and an idle tray holds no extra thread or isolate; starting one
+takes about 30 ms
+Only the blocking call moves: the menu is built, read and its pick run on the
+caller's thread (a `HMENU` belongs to the process, not to a thread), and the
+focus is taken from the caller's thread, which is where `focusWindow` is tested
+The thread grants `AllowSetForegroundWindow` itself when a line is picked,
+because only a process in front can, and it is in front until the owner is gone
+`menu-thread.test.ts` drives real menus on the thread and dismisses each one
+with `WM_CANCELMODE` posted to the thread's own owner window, once
+`GetGUIThreadInfo` shows it in menu mode
+
 ## Changing what is generated
 
 Everything the generator decides by hand is a table in
