@@ -1,15 +1,15 @@
-.winapp
-node_modules
+.winapp/
+node_modules/
 # pnpm build: the published output.
-dist
+dist/
 # The tarballs pnpm pack makes for the package check.
 *.tgz
-.claude/worktrees
+.claude/worktrees/
 # Scratch space for checks and fresh-clone verification; deleted when done.
-.verify
-.idea
+.verify/
+.idea/
 # The WebStorm plugin's Gradle output.
-ide/webstorm/.gradle
-ide/webstorm/.intellijPlatform
-ide/webstorm/.kotlin
-ide/webstorm/build
+ide/webstorm/.gradle/
+ide/webstorm/.intellijPlatform/
+ide/webstorm/.kotlin/
+ide/webstorm/build/
