@@ -11,10 +11,8 @@ internal object StyleBlock {
     val style = StyleLocation.of(fileText)
     val written = tag.classAttribute
     val existing = written?.let { ClassNaming.firstClassOf(it.value) }
-    val isUnusable =
-      style == StyleLocation.Unsupported ||
-        tag.hasDynamicClass ||
-        (written != null && written.value.isNotBlank() && existing == null)
+    val isUnnamedClass = written != null && written.value.isNotBlank() && existing == null
+    val isUnusable = style == StyleLocation.Unsupported || tag.hasDynamicClass || isUnnamedClass
     if (isUnusable) {
       return null
     }

@@ -153,7 +153,8 @@ internal object PicturePaths {
         continue
       }
 
-      val isSkipped = part == "." || (isUp && parts.isNotEmpty())
+      val isParentStep = isUp && parts.isNotEmpty()
+      val isSkipped = part == "." || isParentStep
       if (!isSkipped) {
         parts.add(part)
       }

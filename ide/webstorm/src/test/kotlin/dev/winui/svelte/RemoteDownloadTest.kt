@@ -80,7 +80,7 @@ class RemoteDownloadTest {
   fun `an address that is not allowed is refused before any request`() {
     val refused = RemoteDownload.fetch("https://user:secret@example.com/a.png")
     assertEquals(RemoteFailure.BLOCKED, (refused as Download.Failed).failure)
-    assertNull((RemoteDownload.fetch("ftp://example.com/a.png") as? Download.Fetched))
+    assertNull(RemoteDownload.fetch("ftp://example.com/a.png") as? Download.Fetched)
     assertEquals(emptyList<String?>(), authorizations)
   }
 }

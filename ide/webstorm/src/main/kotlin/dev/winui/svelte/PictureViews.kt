@@ -23,7 +23,8 @@ internal object PictureViews {
   ): List<Pair<PictureSpot, Picture>> {
     val isPaired = spot.variant != PictureVariant.ANY
     return entries.filter { (other, _) ->
-      other == spot || (isPaired && other.group == spot.group && other.variant != PictureVariant.ANY)
+      val isPartner = isPaired && other.group == spot.group && other.variant != PictureVariant.ANY
+      other == spot || isPartner
     }
   }
 

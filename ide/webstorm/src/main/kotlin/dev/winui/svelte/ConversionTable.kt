@@ -65,7 +65,7 @@ internal class ConversionTable(
             .getAsJsonObject("keywords")
             ?.entrySet()
             ?.associate { (key, value) -> key.lowercase() to value.asString }
-            ?: emptyMap(),
+            .orEmpty(),
         defaultValue = entry.get("defaultValue")?.asString
       )
   }
