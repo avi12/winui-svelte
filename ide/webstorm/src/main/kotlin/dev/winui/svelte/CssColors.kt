@@ -15,6 +15,8 @@ internal object CssColors {
   private const val PERCENT = 100f
   private const val HUE_SECTORS = 6
   private const val HUE_THIRD = 4
+  private const val ALPHA_INDEX = 3
+  private const val CYAN_SECTOR = 3
   private val hexPattern = Regex("""#([0-9a-fA-F]+)""")
   private val functionPattern = Regex("""(rgba?|hsla?)\(([^)]*)\)""", RegexOption.IGNORE_CASE)
   private val numberPattern = Regex("""-?\d*\.?\d+%?""")
@@ -46,7 +48,7 @@ internal object CssColors {
     }
 
     val channels = expanded.chunked(2).map { it.toInt(HEX_RADIX) }
-    return Color(channels[0], channels[1], channels[2], channels.getOrElse(3) { BYTE })
+    return Color(channels[0], channels[1], channels[2], channels.getOrElse(ALPHA_INDEX) { BYTE })
   }
 
   private fun fromFunction(
@@ -54,13 +56,13 @@ internal object CssColors {
     arguments: String
   ): Color? {
     val numbers = numberPattern.findAll(arguments).map { it.value }.toList()
-    if (numbers.size < 3) {
+    if (numbers.size < ALPHA_INDEX) {
       return null
     }
 
-    val alpha = numbers.getOrNull(3)?.let { channel(it, 1f) } ?: 1f
+    val alpha = numbers.getOrNull(ALPHA_INDEX)?.let { channel(it, 1f) } ?: 1f
     if (name.startsWith("rgb")) {
-      val (red, green, blue) = numbers.take(3).map { channel(it, BYTE.toFloat()).toInt().coerceIn(0, BYTE) }
+      val (red, green, blue) = numbers.take(ALPHA_INDEX).map { channel(it, BYTE.toFloat()).toInt().coerceIn(0, BYTE) }
       return Color(red, green, blue, (alpha * BYTE).roundToInt().coerceIn(0, BYTE))
     }
 
@@ -93,7 +95,7 @@ internal object CssColors {
         0 -> Triple(chroma, second, 0f)
         1 -> Triple(second, chroma, 0f)
         2 -> Triple(0f, chroma, second)
-        3 -> Triple(0f, second, chroma)
+        CYAN_SECTOR -> Triple(0f, second, chroma)
         HUE_THIRD -> Triple(second, 0f, chroma)
         else -> Triple(chroma, 0f, second)
       }

@@ -4,6 +4,7 @@ internal object SidesValue {
   const val UNIT = "px"
   private const val XAML_SEPARATOR = ","
   private const val MAX_SIDES = 4
+  private const val FOURTH_SIDE = 3
   private val pixelPattern = Regex("""(-?(?:\d+(?:\.\d+)?|\.\d+))(?:px)?""")
 
   fun convert(
@@ -48,7 +49,7 @@ internal object SidesValue {
     val left = values[0]
     val top = values.getOrElse(1) { left }
     val right = values.getOrElse(2) { left }
-    val bottom = values.getOrElse(3) { top }
+    val bottom = values.getOrElse(FOURTH_SIDE) { top }
     return listOf(top, right, bottom, left)
   }
 
@@ -56,7 +57,7 @@ internal object SidesValue {
     val top = values[0]
     val right = values.getOrElse(1) { top }
     val bottom = values.getOrElse(2) { top }
-    val left = values.getOrElse(3) { right }
+    val left = values.getOrElse(FOURTH_SIDE) { right }
     return when {
       top == right && right == bottom && bottom == left -> listOf(top)
       top == bottom && right == left -> listOf(top, right)

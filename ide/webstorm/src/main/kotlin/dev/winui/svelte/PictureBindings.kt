@@ -6,6 +6,7 @@ package dev.winui.svelte
  * a picture. The value is the text as written, which resolves like any other picture value.
  */
 internal object PictureBindings {
+  private const val VALUE_GROUP = 3
   private val importDefault = Regex("""\bimport\s+([A-Za-z_$][\w$]*)\s+from\s*(["'])([^"'\n]+)\2""")
   private val constant =
     Regex("""\bconst\s+([A-Za-z_$][\w$]*)\s*(?::[^=\n]+)?=\s*(?:new\s+URL\(\s*)?(["'`])([^"'`$\n]*)\2""")
@@ -13,7 +14,7 @@ internal object PictureBindings {
   fun of(text: String): Map<String, String> {
     val bindings = mutableMapOf<String, String>()
     for (match in importDefault.findAll(text) + constant.findAll(text)) {
-      val value = match.groupValues[3]
+      val value = match.groupValues[VALUE_GROUP]
       if (PicturePaths.isPicture(value)) {
         bindings[match.groupValues[1]] = value
       }

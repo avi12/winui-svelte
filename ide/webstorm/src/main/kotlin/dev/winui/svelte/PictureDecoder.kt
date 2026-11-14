@@ -19,6 +19,8 @@ internal object PictureDecoder {
   private const val RED_SHIFT = 16
   private const val GREEN_SHIFT = 8
   private const val BYTE_MASK = 0xFF
+  private const val ROW_ALIGNMENT = 4
+  private const val ALPHA_OFFSET = 3
   private const val OPAQUE = 0xFF000000.toInt()
   private const val PNG_SIGNATURE = 0x89504E47.toInt()
 
@@ -70,7 +72,7 @@ internal object PictureDecoder {
       return null
     }
 
-    val rowBytes = (frame.width * bits / Byte.SIZE_BITS + 3) / 4 * 4
+    val rowBytes = (frame.width * bits / Byte.SIZE_BITS + ROW_ALIGNMENT - 1) / ROW_ALIGNMENT * ROW_ALIGNMENT
     val image = BufferedImage(frame.width, frame.height, BufferedImage.TYPE_INT_ARGB)
     for (row in 0 until frame.height) {
       val sourceRow = frame.height - 1 - row
@@ -97,11 +99,11 @@ internal object PictureDecoder {
     val red = data[at + 2].toInt() and BYTE_MASK
     val alpha =
       when (bits) {
-        BITS_32 -> data[at + 3].toInt() and BYTE_MASK
+        BITS_32 -> data[at + ALPHA_OFFSET].toInt() and BYTE_MASK
         else -> BYTE_MASK
       }
     val isOpaque24 = bits == BITS_24
-    val base = (red shl RED_SHIFT) or (green shl GREEN_SHIFT) or blue
+    val base = red shl RED_SHIFT or (green shl GREEN_SHIFT) or blue
     return when {
       isOpaque24 -> base or OPAQUE
       else -> base or (alpha shl ALPHA_SHIFT)

@@ -15,6 +15,10 @@ internal data class IconFrame(
 internal object IconFrames {
   private const val ENTRIES = 6
   private const val ENTRY_SIZE = 16
+  private const val COUNT_AT = 4
+  private const val BIT_COUNT_AT = 6
+  private const val SIZE_AT = 8
+  private const val OFFSET_AT = 12
   private const val LARGE = 256
   private const val BYTE_MASK = 0xFF
   private const val WORD_MASK = 0xFFFF
@@ -26,7 +30,7 @@ internal object IconFrames {
       return emptyList()
     }
 
-    val count = data.getShort(4).toInt() and WORD_MASK
+    val count = data.getShort(COUNT_AT).toInt() and WORD_MASK
     return (0 until count)
       .takeWhile { ENTRIES + (it + 1) * ENTRY_SIZE <= bytes.size }
       .map {
@@ -34,9 +38,9 @@ internal object IconFrames {
         IconFrame(
           width = sideOf(data.get(at)),
           height = sideOf(data.get(at + 1)),
-          bitCount = data.getShort(at + 6).toInt() and WORD_MASK,
-          size = data.getInt(at + 8),
-          offset = data.getInt(at + 12)
+          bitCount = data.getShort(at + BIT_COUNT_AT).toInt() and WORD_MASK,
+          size = data.getInt(at + SIZE_AT),
+          offset = data.getInt(at + OFFSET_AT)
         )
       }
   }

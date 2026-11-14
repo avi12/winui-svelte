@@ -20,6 +20,12 @@ internal object PictureImages {
   private const val JPEG_TAIL = 9
   private const val KIBIBYTE = 1024
   private const val BYTE_MASK = 0xFF
+  private const val INT_BYTES = 4
+  private const val INT_PAIR_BYTES = 8
+  private const val JPEG_HEIGHT_AT = 5
+  private const val JPEG_WIDTH_AT = 7
+  private const val WEBP_EXTENDED_BYTES = 6
+  private const val WEBP_HEIGHT_AT = 3
   private const val WORD_MASK = 0xFFFF
   private const val PNG_SIGNATURE = "89504e47"
   private const val GIF_SIGNATURE = "474946"
@@ -96,8 +102,8 @@ internal object PictureImages {
     val needed =
       widthAt +
         when {
-          isGif -> 4
-          else -> 8
+          isGif -> INT_BYTES
+          else -> INT_PAIR_BYTES
         }
     val isSigned = bytes.size >= needed && hexAt(bytes, 0, signature.length / 2) == signature
     if (!isSigned) {
@@ -110,7 +116,7 @@ internal object PictureImages {
       return ImageSize(width, data.getShort(widthAt + 2).toInt() and WORD_MASK, emptyList())
     }
 
-    return ImageSize(Math.abs(data.getInt(widthAt)), Math.abs(data.getInt(widthAt + 4)), emptyList())
+    return ImageSize(Math.abs(data.getInt(widthAt)), Math.abs(data.getInt(widthAt + INT_BYTES)), emptyList())
   }
 
   private fun jpegSize(bytes: ByteArray): ImageSize {
@@ -124,8 +130,8 @@ internal object PictureImages {
       val marker = hexAt(bytes, at, 2)
       val isFrame = marker.startsWith("ff") && marker.substring(2) in jpegFrames
       if (isFrame) {
-        val width = data.getShort(at + 7).toInt() and WORD_MASK
-        return ImageSize(width, data.getShort(at + 5).toInt() and WORD_MASK, emptyList())
+        val width = data.getShort(at + JPEG_WIDTH_AT).toInt() and WORD_MASK
+        return ImageSize(width, data.getShort(at + JPEG_HEIGHT_AT).toInt() and WORD_MASK, emptyList())
       }
 
       at += 2 + (data.getShort(at + 2).toInt() and WORD_MASK)
@@ -136,20 +142,24 @@ internal object PictureImages {
 
   private fun webpSize(bytes: ByteArray): ImageSize {
     val head = String(bytes, 0, minOf(bytes.size, WEBP_SIZE), Charsets.ISO_8859_1)
-    val isExtended = webpExtended.containsMatchIn(head) && bytes.size >= WEBP_SIZE + 6
+    val isExtended = webpExtended.containsMatchIn(head) && bytes.size >= WEBP_SIZE + WEBP_EXTENDED_BYTES
     if (!isExtended) {
       return none
     }
 
-    return ImageSize(littleEndian24(bytes, WEBP_SIZE) + 1, littleEndian24(bytes, WEBP_SIZE + 3) + 1, emptyList())
+    return ImageSize(
+      littleEndian24(bytes, WEBP_SIZE) + 1,
+      littleEndian24(bytes, WEBP_SIZE + WEBP_HEIGHT_AT) + 1,
+      emptyList()
+    )
   }
 
   private fun littleEndian24(
     bytes: ByteArray,
     at: Int
-  ) = (bytes[at].toInt() and BYTE_MASK) or
-    ((bytes[at + 1].toInt() and BYTE_MASK) shl 8) or
-    ((bytes[at + 2].toInt() and BYTE_MASK) shl 16)
+  ) = bytes[at].toInt() and BYTE_MASK or
+    (bytes[at + 1].toInt() and BYTE_MASK shl Byte.SIZE_BITS) or
+    (bytes[at + 2].toInt() and BYTE_MASK shl Short.SIZE_BITS)
 
   private fun svgSize(bytes: ByteArray): ImageSize {
     val text = String(bytes, 0, minOf(bytes.size, SVG_HEAD_BYTES), Charsets.UTF_8)

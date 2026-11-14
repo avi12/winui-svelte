@@ -9,11 +9,12 @@ internal object LayoutPreviewHtml {
   private const val ACCENT = "#0078d4"
   private const val ELEMENT = "#808080"
   private const val LEVELS = 255
+  private const val LEFT_INDEX = 3
 
   fun box(box: Box): String {
     val sides = box.values.map { PreviewText.number(it) }
     val (top, right, bottom) = sides
-    val left = sides[3]
+    val left = sides[LEFT_INDEX]
     return "<table border=\"1\" cellspacing=\"0\" cellpadding=\"8\">" +
       "<tr><td colspan=\"3\" align=\"center\">$top</td></tr>" +
       "<tr><td>$left</td><td bgcolor=\"$ELEMENT\" align=\"center\">${box.property}</td><td>$right</td></tr>" +

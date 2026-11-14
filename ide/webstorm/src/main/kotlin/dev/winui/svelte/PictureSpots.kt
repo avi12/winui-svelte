@@ -27,6 +27,7 @@ internal object PictureSpots {
     Regex("""\b([A-Za-z_$][\w$]*)\s*:\s*([A-Za-z_$][\w$]*)(?=\s*(?:[,})]|\.(?:href|pathname)\b|\r?\n|$))""")
   private val identifier = Regex("""[A-Za-z_$][\w$]*""")
   private val keyBefore = Regex("""([A-Za-z_$][\w$]*)\s*:\s*$""")
+  private const val VALUE_GROUP = 3
   private const val OPENING = '{'
   private const val CLOSING = '}'
 
@@ -112,7 +113,7 @@ internal object PictureSpots {
 
     val literals =
       (keyLiteral.findAll(text) + keyUrl.findAll(text)).mapNotNull { match ->
-        val value = match.groupValues[3]
+        val value = match.groupValues[VALUE_GROUP]
         val from = match.range.last - value.length
         val isWanted = match.groupValues[1] in names.names && PicturePaths.isPicture(value)
         spotAt(match, value, from until from + value.length).takeIf { isWanted }

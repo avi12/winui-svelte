@@ -13,6 +13,7 @@ private class LinearStop(
 internal object EasingMath {
   const val SAMPLE_COUNT = 21
   private const val BEZIER_WEIGHT = 3
+  private const val END_Y_INDEX = 3
   private const val SOLVER_STEPS = 40
   private const val SAMPLE_SCALE = 1000.0
   private const val PERCENT_DIVISOR = 100.0
@@ -62,7 +63,7 @@ internal object EasingMath {
       }
     }
 
-    return bezierAt((low + high) / 2, points[1], points[3])
+    return bezierAt((low + high) / 2, points[1], points[END_Y_INDEX])
   }
 
   private fun stepsY(
