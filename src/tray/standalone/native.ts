@@ -1,4 +1,5 @@
 import { DynComRawMemory } from "@microsoft/dynwinrt/com/unsafe/raw";
+import { createMenuThread } from "./menu-thread.ts";
 import { MenuItemKind } from "#src/tray/menu/types.js";
 import type { ResolvedCheck, ResolvedCommand, ResolvedMenuItem, ResolvedRadio } from "#src/tray/menu/types.js";
 import type { MenuIconCalls } from "#src/tray/tray-extras.js";
@@ -29,7 +30,6 @@ const TPM_RIGHTBUTTON = 0x2;
 const TPM_BOTTOMALIGN = 0x20;
 const TPM_NONOTIFY = 0x80;
 const TPM_RETURNCMD = 0x100;
-const WM_NULL = 0;
 const NO_SUBMENU = 0n;
 const NO_BITMAP = 0n;
 const TAB_CODE = 9;
@@ -49,17 +49,16 @@ type TextLine = Exclude<ResolvedMenuItem, { readonly kind: typeof MenuItemKind.S
 /**
  * The popup menu of Windows (`TrackPopupMenuEx`), behind one interface so the
  * tray's logic is pure and a test drives it with a fake. It needs no WinUI
- * and no window of the app, only a hidden window to own it.
+ * and no window of the app: it runs on a thread of its own, with a hidden window to own it.
  */
 export interface NativeMenu {
   /**
-   * Shows the menu at `point` and waits until it closes (it runs its own
-   * message loop; the calling thread is busy meanwhile).
+   * Shows the menu at `point` and resolves when it closes. The menu's message loop runs on a thread
+   * of its own, so the calling thread keeps running meanwhile.
    *
-   * @returns The line the user picked, or undefined when none.
+   * @returns The line the user picked, or undefined when none or when `focus` refused.
    */
   choose(options: {
-    readonly owner: bigint;
     readonly point: {
       readonly x: number;
       readonly y: number;
@@ -68,7 +67,14 @@ export interface NativeMenu {
 
     /** Whether the menu is dark now, which picks the member of an icon pair and the color of a tinted glyph. */
     readonly isDark: boolean;
-  }): NativeChoice | undefined;
+
+    /**
+     * Brings the menu's owner window to the front, on the calling thread, before the menu opens; the
+     * menu opens only when it returns true, because a menu whose owner is not in front is not dismissed
+     * by a click elsewhere.
+     */
+    readonly focus: (owner: bigint) => boolean;
+  }): Promise<NativeChoice | undefined>;
 }
 
 function escaped(text: string) {
@@ -247,30 +253,20 @@ export function createMenuBuilder({ icons }: { readonly icons?: MenuIconCalls | 
  */
 export function createNativeMenu({ icons }: { readonly icons?: MenuIconCalls | undefined } = {}) {
   const builder = createMenuBuilder({ icons });
-  const { trackPopup, postMessage } = bindDll({
-    dll: "user32.dll",
-    functions: {
-      trackPopup: ["TrackPopupMenuEx", ["pointer", "u32", "i32", "i32", "pointer", "pointer"], "i32"],
-      postMessage: ["PostMessageW", ["pointer", "u32", "pointer", "pointer"], "i32"]
-    }
-  });
-
+  const thread = createMenuThread();
   const native: NativeMenu = {
-    choose({ owner, point, items, isDark }) {
+    async choose({ point, items, isDark, focus }) {
       const built = builder.build({
         items,
         isDark
       });
       try {
-        const chosen = trackPopup(
-          built.menu,
-          TPM_RETURNCMD | TPM_NONOTIFY | TPM_RIGHTBUTTON | TPM_BOTTOMALIGN,
-          point.x,
-          point.y,
-          owner,
-          null
-        );
-        postMessage(owner, WM_NULL, null, null);
+        const chosen = await thread.track({
+          menu: built.menu,
+          flags: TPM_RETURNCMD | TPM_NONOTIFY | TPM_RIGHTBUTTON | TPM_BOTTOMALIGN,
+          point,
+          focus
+        });
         return built.choices.get(chosen);
       } finally {
         built.destroy();

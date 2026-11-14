@@ -59,10 +59,11 @@ function pointer() {
   };
 }
 
-function rightClickAt({ x, ticks }: {
+async function rightClickAt({ x, ticks }: {
   readonly x: number;
   readonly ticks: readonly (() => void)[];
 }) {
+  clock += CLICK_SPACING_MILLISECONDS;
   world.x = x;
   world.right = DOWN;
   for (const tick of ticks) {
@@ -73,9 +74,13 @@ function rightClickAt({ x, ticks }: {
   for (const tick of ticks) {
     tick();
   }
+
+  await new Promise(resolve => setImmediate(resolve));
 }
 
 let nextOwner = 1000n;
+let clock = 0;
+const CLICK_SPACING_MILLISECONDS = 1000;
 
 function noop() {}
 
@@ -114,7 +119,7 @@ function fakeTray({ name, rect, scheme, items }: {
   const nativeMenu: NativeMenu = {
     choose({ items: shown }) {
       log.push(`${name} choose ${shown.map(item => item.id).join(",")}`);
-      return undefined;
+      return Promise.resolve(undefined);
     }
   };
   const menuTheme: MenuTheme = {
@@ -127,6 +132,7 @@ function fakeTray({ name, rect, scheme, items }: {
     native,
     nativeMenu,
     menuTheme,
+    now: () => clock,
     defer: noop,
     schedule({ onTick }) {
       tick = onTick;
@@ -186,15 +192,15 @@ test("each tray has an icon identity of its own", () => {
   second.handle.remove();
 });
 
-test("a right click over one icon opens that tray's menu only", () => {
+test("a right click over one icon opens that tray's menu only", async () => {
   const { first, second, ticks } = startPair();
-  rightClickAt({
+  await rightClickAt({
     x: 110,
     ticks
   });
   assert.deepEqual(log.filter(line => line.includes("choose")), ["first choose a1,a2"]);
   log.length = 0;
-  rightClickAt({
+  await rightClickAt({
     x: 150,
     ticks
   });
@@ -203,17 +209,17 @@ test("a right click over one icon opens that tray's menu only", () => {
   second.handle.remove();
 });
 
-test("each menu opens under its own tray's color scheme, set right before it", () => {
+test("each menu opens under its own tray's color scheme, set right before it", async () => {
   const { first, second, ticks } = startPair();
-  rightClickAt({
+  await rightClickAt({
     x: 110,
     ticks
   });
-  rightClickAt({
+  await rightClickAt({
     x: 150,
     ticks
   });
-  rightClickAt({
+  await rightClickAt({
     x: 110,
     ticks
   });
@@ -230,7 +236,7 @@ test("each menu opens under its own tray's color scheme, set right before it", (
   second.handle.remove();
 });
 
-test("a menu given as a function is read by its own tray, when its own menu opens", () => {
+test("a menu given as a function is read by its own tray, when its own menu opens", async () => {
   let firstReads = 0;
   let secondReads = 0;
   log.length = 0;
@@ -252,7 +258,7 @@ test("a menu given as a function is read by its own tray, when its own menu open
       return lines("b1")();
     }
   });
-  rightClickAt({
+  await rightClickAt({
     x: 150,
     ticks: [first.tick, second.tick]
   });

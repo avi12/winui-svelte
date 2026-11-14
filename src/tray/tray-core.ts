@@ -34,7 +34,8 @@ const MAINTENANCE_MILLISECONDS = 1000;
 const DOUBLE_CLICK_MILLISECONDS = 500;
 const MESSAGE_ECHO_MILLISECONDS = 500;
 const BLOCKING_MILLISECONDS = 100;
-const DISMISSAL_ECHO_MILLISECONDS = 300;
+/** How long after a menu closes the shell's context-menu message of the click that dismissed it is dropped. */
+export const DISMISSAL_ECHO_MILLISECONDS = 300;
 const GESTURE_OF_NOTIFICATION: ReadonlyMap<number, TrayGesture> = new Map([
   [TrayNotification.select, TrayGesture.click],
   [TrayNotification.keySelect, TrayGesture.doubleClick],

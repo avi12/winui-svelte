@@ -1,5 +1,6 @@
 import type { NativeChoice, NativeMenu } from "./native.ts";
 import { createStandaloneTray } from "./standalone-tray.ts";
+import { DISMISSAL_ECHO_MILLISECONDS } from "#src/tray/tray-core.js";
 import type { StandaloneTrayOptions } from "./standalone-tray.ts";
 import { balloons } from "#src/tray/balloons.js";
 import { bounds } from "#src/tray/bounds.js";
@@ -36,6 +37,8 @@ const DOWN: ButtonSample = {
   isDown: true,
   wasPressed: true
 };
+
+const CLICK_SPACING_MILLISECONDS = 1000;
 
 function noop() {}
 
@@ -125,7 +128,8 @@ function names(items: readonly ResolvedMenuItem[]): string[] {
   return items.map(item => (item.kind === MenuItemKind.SUBMENU ? `${item.id}[${names(item.items).join(",")}]` : item.id));
 }
 
-function start<const ItemId extends string>({ menu, picks, profile }: {
+function start<const ItemId extends string>({ menu, picks, profile, hold }: {
+  readonly hold?: Promise<void>;
   readonly menu: StandaloneTrayOptions<ItemId>["menu"];
   readonly picks: readonly (string | undefined)[];
   readonly profile?: NonNullable<Extract<StandaloneTrayOptions<ItemId>, { readonly resolve: unknown }>["profile"]>;
@@ -133,7 +137,6 @@ function start<const ItemId extends string>({ menu, picks, profile }: {
   const fake = fakeNative();
   let tick = noop;
   const shown: {
-    readonly owner: bigint;
     readonly point: {
       readonly x: number;
       readonly y: number;
@@ -142,18 +145,30 @@ function start<const ItemId extends string>({ menu, picks, profile }: {
   }[] = [];
   const deferred: (() => void)[] = [];
   const nativeMenu: NativeMenu = {
-    choose(options) {
-      fake.calls.push("choose");
-      shown.push(options);
-      const pick = picks[shown.length - 1];
-      return pick === undefined ? undefined : find({
-        items: options.items,
-        id: pick
-      });
+    async choose(options) {
+      fake.calls.push("menuOwnerCreated");
+      try {
+        if (!options.focus(OWNER)) {
+          return undefined;
+        }
+
+        fake.calls.push("choose");
+        shown.push(options);
+        await hold;
+        const pick = picks[shown.length - 1];
+        return pick === undefined ? undefined : find({
+          items: options.items,
+          id: pick
+        });
+      } finally {
+        fake.calls.push("menuOwnerDestroyed");
+      }
     }
   };
+  let clock = 0;
   const seams = {
     native: fake.native,
+    now: () => clock,
     nativeMenu,
     menuTheme: {
       apply: noop
@@ -175,11 +190,13 @@ function start<const ItemId extends string>({ menu, picks, profile }: {
     menu,
     ...seams
   });
-  function rightClick() {
+  async function rightClick({ gapMilliseconds = CLICK_SPACING_MILLISECONDS }: { readonly gapMilliseconds?: number } = {}) {
+    clock += gapMilliseconds;
     fake.press("right");
     tick();
     fake.release();
     tick();
+    await new Promise(resolve => setImmediate(resolve));
   }
   return {
     ...fake,
@@ -202,7 +219,7 @@ function command<const ItemId extends string>({ id, onselect = noop }: {
   } satisfies MenuItem;
 }
 
-test("a right click shows the resolved menu at the pointer", () => {
+test("a right click shows the resolved menu at the pointer", async () => {
   const { shown, rightClick, handle } = start({
     menu: [
       command({ id: "open" }),
@@ -219,7 +236,7 @@ test("a right click shows the resolved menu at the pointer", () => {
     ],
     picks: [undefined]
   });
-  rightClick();
+  await rightClick();
   assert.equal(shown.length, 1);
   assert.deepEqual(shown[0]?.point, {
     x: 110,
@@ -231,20 +248,20 @@ test("a right click shows the resolved menu at the pointer", () => {
   handle.remove();
 });
 
-test("a menu given as a function is read each time the menu opens", () => {
+test("a menu given as a function is read each time the menu opens", async () => {
   let currentIds = ["one"];
   const { shown, rightClick, handle } = start({
     menu: () => currentIds.map(id => command({ id })),
     picks: [undefined, undefined]
   });
-  rightClick();
+  await rightClick();
   currentIds = ["one", "two"];
-  rightClick();
+  await rightClick();
   assert.deepEqual(shown.map(entry => names(entry.items)), [["one"], ["one", "two"]]);
   handle.remove();
 });
 
-test("the chosen command runs on a later turn, and only that one", () => {
+test("the chosen command runs on a later turn, and only that one", async () => {
   const ran: string[] = [];
   const { rightClick, deferred, handle } = start({
     menu: [command({
@@ -256,7 +273,7 @@ test("the chosen command runs on a later turn, and only that one", () => {
     })],
     picks: ["quit"]
   });
-  rightClick();
+  await rightClick();
   assert.deepEqual(ran, [], "not while the menu is closing");
   for (const run of deferred) {
     run();
@@ -266,9 +283,8 @@ test("the chosen command runs on a later turn, and only that one", () => {
   handle.remove();
 });
 
-test("a command with closeThenRun false runs at once, after the menu is gone", () => {
-  const calls: string[] = [];
-  const { rightClick, handle, calls: fakeCalls } = start({
+test("a command with closeThenRun false runs at once, after the menu is gone", async () => {
+  const { rightClick, handle, calls } = start({
     menu: [{
       kind: MenuItemKind.COMMAND,
       id: "now",
@@ -278,13 +294,12 @@ test("a command with closeThenRun false runs at once, after the menu is gone", (
     }],
     picks: ["now"]
   });
-  rightClick();
-  assert.deepEqual(calls, ["ran"]);
-  assert.equal(fakeCalls.at(-1), `destroyWindow ${OWNER}`);
+  await rightClick();
+  assert.deepEqual(calls.slice(-2), ["menuOwnerDestroyed", "ran"]);
   handle.remove();
 });
 
-test("closing the menu with no choice runs nothing", () => {
+test("closing the menu with no choice runs nothing", async () => {
   const ran: string[] = [];
   const { rightClick, deferred, handle } = start({
     menu: [command({
@@ -293,88 +308,82 @@ test("closing the menu with no choice runs nothing", () => {
     })],
     picks: [undefined]
   });
-  rightClick();
+  await rightClick();
   assert.deepEqual([ran, deferred.length], [[], 0]);
   handle.remove();
 });
 
-test("the owner window exists only while the menu is open, and takes the foreground first", () => {
+test("the menu's owner window exists only while the menu is open, and takes the foreground first", async () => {
   const { calls, rightClick, handle } = start({
     menu: [command({ id: "open" })],
     picks: [undefined]
   });
   assert.equal(calls.includes("createOwnerWindow"), true, "the icon's own owner window");
   const before = calls.length;
-  rightClick();
-  assert.deepEqual(calls.slice(before), ["createOwnerWindow", `focusWindow ${OWNER}`, "choose", `destroyWindow ${OWNER}`]);
+  await rightClick();
+  assert.deepEqual(calls.slice(before), ["menuOwnerCreated", `focusWindow ${OWNER}`, "choose", "menuOwnerDestroyed"]);
   handle.remove();
 });
 
-test("a pick lets the process it starts take the foreground, while the menu's owner still has it", () => {
-  const { calls, rightClick, handle } = start({
+test("the click that dismissed the menu does not open it again, and the next one does", async () => {
+  const { shown, rightClick, handle } = start({
     menu: [command({ id: "open" })],
-    picks: ["open"]
+    picks: [undefined, undefined, undefined]
   });
-  const before = calls.length;
-  rightClick();
-  assert.deepEqual(calls.slice(before), [
-    "createOwnerWindow",
-    `focusWindow ${OWNER}`,
-    "choose",
-    "allowForeground",
-    `destroyWindow ${OWNER}`
-  ]);
+  await rightClick();
+  await rightClick({ gapMilliseconds: DISMISSAL_ECHO_MILLISECONDS - 1 });
+  assert.equal(shown.length, 1, "the context-menu message of the dismissing click is an echo");
+  await rightClick({ gapMilliseconds: DISMISSAL_ECHO_MILLISECONDS });
+  assert.equal(shown.length, 2);
   handle.remove();
 });
 
-test("a menu whose owner cannot take the foreground is not opened, so the thread is never held by it", () => {
+test("a right click while a menu is open does not open a second one", async () => {
+  let release = noop;
+  const { shown, rightClick, handle } = start({
+    menu: [command({ id: "open" })],
+    picks: [undefined],
+    hold: new Promise<void>(resolve => {
+      release = resolve;
+    })
+  });
+  await rightClick();
+  await rightClick();
+  assert.equal(shown.length, 1);
+  release();
+  handle.remove();
+});
+
+test("a menu whose owner cannot take the foreground is not opened, so the thread is never held by it", async () => {
   const { calls, shown, refuseFocus, rightClick, handle } = start({
     menu: [command({ id: "open" })],
     picks: ["open"]
   });
   refuseFocus();
   const before = calls.length;
-  rightClick();
+  await rightClick();
   assert.equal(shown.length, 0, "a menu that a click elsewhere cannot dismiss would block the process until a pick");
   assert.deepEqual(calls.slice(before), [
-    "createOwnerWindow",
+    "menuOwnerCreated",
     `focusWindow ${OWNER}`,
     `focusWindow ${OWNER}`,
     `focusWindow ${OWNER}`,
-    `destroyWindow ${OWNER}`
+    "menuOwnerDestroyed"
   ]);
   handle.remove();
 });
 
-test("no menu items, no popup: a right click does nothing", () => {
+test("no menu items, no popup: a right click does nothing", async () => {
   const { shown, rightClick, handle } = start({
     menu: undefined,
     picks: []
   });
-  rightClick();
+  await rightClick();
   assert.equal(shown.length, 0);
   handle.remove();
 });
 
-test("the owner window is destroyed even when a stay-open command throws", () => {
-  const { calls, rightClick, handle } = start({
-    menu: [{
-      kind: MenuItemKind.COMMAND,
-      id: "boom",
-      label: "Boom",
-      staysOpen: true,
-      onselect() {
-        throw new Error("boom");
-      }
-    }],
-    picks: ["boom"]
-  });
-  assert.throws(rightClick, /boom/u);
-  assert.equal(calls.at(-1), `destroyWindow ${OWNER}`);
-  handle.remove();
-});
-
-test("a stay-open check runs, then the menu reopens at the same point with the new tick", () => {
+test("a stay-open check runs, then the menu reopens at the same point with the new tick", async () => {
   let isOn = false;
   const { shown, rightClick, deferred, handle } = start({
     menu: [{
@@ -389,7 +398,7 @@ test("a stay-open check runs, then the menu reopens at the same point with the n
     }, command({ id: "quit" })],
     picks: ["mute", "mute", undefined]
   });
-  rightClick();
+  await rightClick();
   assert.equal(shown.length, 3);
   assert.deepEqual(shown.map(({ point }) => point), [shown[0]?.point, shown[0]?.point, shown[0]?.point]);
   const ticks = shown.map(({ items }) => {
@@ -401,7 +410,7 @@ test("a stay-open check runs, then the menu reopens at the same point with the n
   handle.remove();
 });
 
-test("submenus reach the popup with their children, lazy ones made when the menu opens", () => {
+test("submenus reach the popup with their children, lazy ones made when the menu opens", async () => {
   let count = 0;
   const { shown, rightClick, handle } = start({
     menu: [{
@@ -416,14 +425,14 @@ test("submenus reach the popup with their children, lazy ones made when the menu
     picks: [undefined, undefined]
   });
   assert.equal(count, 0, "nothing exists while idle");
-  rightClick();
-  rightClick();
+  await rightClick();
+  await rightClick();
   assert.equal(count, 2);
   assert.deepEqual(names(shown[1]?.items ?? []), ["recent[first]"]);
   handle.remove();
 });
 
-test("the profile, or a function that gives it, decides what shows each time", () => {
+test("the profile, or a function that gives it, decides what shows each time", async () => {
   let hidden: readonly ("open" | "quit")[] = ["open"];
   const { shown, rightClick, handle } = start({
     menu: [command({ id: "open" }), command({ id: "quit" })],
@@ -433,9 +442,9 @@ test("the profile, or a function that gives it, decides what shows each time", (
       hidden
     })
   });
-  rightClick();
+  await rightClick();
   hidden = [];
-  rightClick();
+  await rightClick();
   assert.deepEqual(shown.map(({ items }) => names(items)), [["quit"], ["open", "quit"]]);
   handle.remove();
 });

@@ -8,7 +8,7 @@ import type { MenuResolver } from "#src/tray/menu/resolve-lite.js";
 import type { MenuItem, MenuProfile } from "#src/tray/menu/types.js";
 import { createTrayNative } from "#src/tray/native.js";
 import type { TrayNative } from "#src/tray/native.js";
-import { createTrayCore } from "#src/tray/tray-core.js";
+import { createTrayCore, DISMISSAL_ECHO_MILLISECONDS } from "#src/tray/tray-core.js";
 import type { TrayIconOptions, TrayScheduler } from "#src/tray/tray-core.js";
 import type {
   BalloonsExtra,
@@ -89,8 +89,8 @@ function isMenuIcons(extra: TrayExtra): extra is MenuIconsExtra {
   return extra.kind === "menuIcons";
 }
 
-// The menu runs a message loop of its own on the only thread there is, and ends only when the user
-// picks a line or a click lands elsewhere; a click elsewhere is seen only when the owner is in front.
+// The menu runs its message loop on a thread of its own and ends only when the user picks a line or a
+// click lands elsewhere; a click elsewhere is seen only when the owner is in front.
 const FOCUS_ATTEMPTS = 3;
 
 /** What `createStandaloneTray` takes beyond the options: a test's stand-ins. */
@@ -106,6 +106,9 @@ export interface StandaloneTraySeams {
 
   /** The timer that polls the pointer; Node's `setInterval` by default. */
   readonly schedule?: TrayScheduler;
+
+  /** The clock, in milliseconds; `Date.now` by default. */
+  readonly now?: () => number;
 
   /** Runs a function on a later turn, once the menu is gone; Node's `setImmediate` by default. */
   readonly defer?: (run: () => void) => void;
@@ -146,10 +149,13 @@ export function createStandaloneTray<
   const extras = (options.extras ?? []) as unknown as Extras;
   const native = options.native ?? createTrayNative({ writeBalloon: extras.find(isBalloons)?.writeBalloon });
   const defer = options.defer ?? setImmediate;
+  const now = options.now ?? Date.now;
   const { menu: source } = options;
   let menu = options.nativeMenu;
   let theme = options.menuTheme;
   let icons: MenuIconCalls | undefined;
+  let isMenuOpen = false;
+  let menuClosedAt = -DISMISSAL_ECHO_MILLISECONDS;
 
   function resolved() {
     const { profile } = options;
@@ -160,52 +166,55 @@ export function createStandaloneTray<
     });
   }
 
-  function showMenu(point: {
+  // The right click that opens the menu is not the one that dismissed it: while it is open, and just after
+  // a click on the icon closed it, the shell's context-menu message for that click is dropped.
+  async function showMenu(point: {
     readonly x: number;
     readonly y: number;
   }) {
+    const isEcho = isMenuOpen || now() - menuClosedAt < DISMISSAL_ECHO_MILLISECONDS;
+    if (isEcho) {
+      return;
+    }
+
     icons ??= extras.find(isMenuIcons)?.createCalls();
     menu ??= createNativeMenu({ icons });
     theme ??= createMenuTheme();
-    const owner = native.createOwnerWindow();
+    isMenuOpen = true;
     let choice: NativeChoice | undefined;
     try {
-      const isFocused = isFocusedWithin({
-        native,
-        owner
-      });
-      if (!isFocused) {
-        return;
-      }
-
       do {
         const colorScheme = options.colorScheme ?? MenuColorScheme.SYSTEM;
         theme.apply(colorScheme);
-        choice = menu.choose({
-          owner,
+        choice = await menu.choose({
           point,
           isDark: icons?.isDark(colorScheme) ?? false,
-          items: resolved()
+          items: resolved(),
+          focus: owner => isFocusedWithin({
+            native,
+            owner
+          })
         });
 
         if (choice?.staysOpen) {
           choice.select();
         }
       } while (choice?.staysOpen);
-
-      if (choice) {
-        native.allowForeground();
-      }
     } finally {
-      native.destroyWindow(owner);
+      isMenuOpen = false;
+      menuClosedAt = now();
     }
 
-    if (choice?.closeThenRun) {
+    if (!choice) {
+      return;
+    }
+
+    if (choice.closeThenRun) {
       defer(choice.select);
       return;
     }
 
-    choice?.select();
+    choice.select();
   }
 
   removeTrayIconsAtExit();
@@ -214,7 +223,7 @@ export function createStandaloneTray<
     extras,
     native,
     schedule: options.schedule ?? scheduleWithNode,
-    now: Date.now,
+    now,
     oncontextmenu: source ? ({ x, y }) => showMenu({
       x,
       y
