@@ -764,7 +764,7 @@
     "@microsoft/dynwinrt": "0.1.0-preview.23",
     "@microsoft/dynwinrt-codegen": "0.1.0-preview.23",
     "@microsoft/winappcli": "0.7.1",
-    "@types/node": "^24.10.0",
+    "@types/node": "^26.6.6",
     "@types/vscode": "1.105.0",
     "esbuild": "~0.25.12",
     "avi12-lint": "github:avi12/lint-config#v0.7.0&path:/packages/avi12-lint",
