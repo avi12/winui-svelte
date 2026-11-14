@@ -17,7 +17,7 @@ import javax.swing.JPanel
 
 private const val SWATCH_GAP = 3
 
-@Suppress("UnstableApiUsage")
+/** Shows a swatch beside every color the library takes, in the editor line */
 class ColorInlayProvider : InlayHintsProvider<NoSettings> {
   override val key = SettingsKey<NoSettings>("winui.svelte.color.swatches")
   override val name = "winui-svelte color swatches"

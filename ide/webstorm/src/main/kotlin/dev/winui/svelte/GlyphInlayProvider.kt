@@ -17,7 +17,7 @@ import javax.swing.JPanel
 
 private const val ICON_GAP = 3
 
-@Suppress("UnstableApiUsage")
+/** Shows the glyph beside the name that picks it, in the editor line */
 class GlyphInlayProvider : InlayHintsProvider<NoSettings> {
   override val key = SettingsKey<NoSettings>("winui.svelte.glyph.icons")
   override val name = "winui-svelte glyph icons"

@@ -22,8 +22,7 @@ private const val PICTURE_GAP = 3
  * The picture beside the path of every prop, option or object key the library types as a picture: small in the line,
  * a marker where there is nothing to draw. Which members those are comes from the shared IDE data, not from here.
  */
-@Suppress("UnstableApiUsage")
-abstract class PictureInlayProviderBase(
+open class PictureInlayProviderBase(
   final override val key: SettingsKey<NoSettings>,
   final override val name: String
 ) : InlayHintsProvider<NoSettings> {
@@ -98,15 +97,18 @@ abstract class PictureInlayProviderBase(
   }
 }
 
+/** Shows the picture of a path in the editor line, for every language */
 class PictureInlayProvider :
   PictureInlayProviderBase(SettingsKey("winui.svelte.picture.previews"), "winui-svelte pictures")
 
+/** Shows the picture of a path in the editor line, for TypeScript only */
 class TypeScriptPictureInlayProvider :
   PictureInlayProviderBase(
     SettingsKey("winui.svelte.picture.previews.typescript"),
     "winui-svelte pictures in TypeScript"
   )
 
+/** Shows the picture of a path in the editor line, for JavaScript only */
 class JavaScriptPictureInlayProvider :
   PictureInlayProviderBase(
     SettingsKey("winui.svelte.picture.previews.javascript"),

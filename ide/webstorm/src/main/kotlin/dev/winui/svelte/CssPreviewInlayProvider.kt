@@ -20,7 +20,6 @@ private const val INLAY_GAP = 3
  * The previews that sit in the line: a bar beside a gradient, a curve beside an easing, the contrast ratio after a
  * text color and the answer after an `@media` condition. Each is a setting of the plugin, not of this provider.
  */
-@Suppress("UnstableApiUsage")
 class CssPreviewInlayProvider : InlayHintsProvider<NoSettings> {
   override val key = SettingsKey<NoSettings>("winui.svelte.css.previews")
   override val name = "winui-svelte CSS previews"
