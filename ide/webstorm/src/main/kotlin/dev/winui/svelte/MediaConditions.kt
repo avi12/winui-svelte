@@ -72,13 +72,13 @@ internal object MediaConditions {
     val results = CssSplit.commas(condition).map { queryResult(it, environment) }
     val isAny = results.any { it.first == true }
     val isUnknown = results.any { it.first == null }
-    val answer =
+    val isMatching =
       when {
         isAny -> true
         isUnknown -> null
         else -> false
       }
-    return MediaAnswer(answer, results.flatMap { it.second })
+    return MediaAnswer(isMatching, results.flatMap { it.second })
   }
 
   private fun lengthOf(word: String) =
@@ -220,7 +220,8 @@ internal object MediaConditions {
         } else {
           "off"
         }
-      return MediaPart(text, (value == "reduce") == environment.isReducedMotion, "reduced motion is $state")
+      val isReduceQuery = value == "reduce"
+      return MediaPart(text, isReduceQuery == environment.isReducedMotion, "reduced motion is $state")
     }
 
     val comparisons = rangeComparisons(text) + featureComparisons(text)
