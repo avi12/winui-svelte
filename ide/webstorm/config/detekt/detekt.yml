@@ -1,0 +1,5 @@
+potential-bugs:
+  active: true
+  # The IDE serializer round-trips SettingsState by reassigning its fields, so a collection must be a mutable var
+  DoubleMutabilityForCollection:
+    active: false

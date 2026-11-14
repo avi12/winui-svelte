@@ -4,10 +4,9 @@
 // on winui-svelte, where each line marked `<!-- convert -->` must report and
 // no other line may, and one that does not, which must report nothing.
 //
-//   node scripts/editor/check-webstorm-plugin.ts [--require] [--skip-build] [--fix-kotlin] [--verify]
+//   node scripts/editor/check-webstorm-plugin.ts [--require] [--skip-build] [--verify]
 //
-// The build runs the plugin's tests and its Kotlin lint (ktlint and detekt);
-// --fix-kotlin only runs the ktlint formatter, as `pnpm lint:fix` does; --verify
+// The build runs the plugin's tests (the Kotlin lint is `pnpm lint:kotlin`); --verify
 // only runs JetBrains' Plugin Verifier over the built plugin against the installed
 // WebStorm (API removed or changed, and the experimental and deprecated API it
 // still uses), which is how a plugin learns it will break before an IDE update does.
@@ -101,13 +100,8 @@ function sameLines({ expected, actual }: {
 
 function singleRunTasks(values: {
   verify: boolean;
-  "fix-kotlin": boolean;
 }) {
-  if (values.verify) {
-    return ["buildPlugin", "verifyPlugin"];
-  }
-
-  return values["fix-kotlin"] ? ["ktLintFix"] : undefined;
+  return values.verify ? ["buildPlugin", "verifyPlugin"] : undefined;
 }
 
 async function inspectFixtures({ ideHome, sveltePlugin, zipPath }: {
@@ -155,10 +149,6 @@ async function main() {
         type: "boolean",
         default: false
       },
-      "fix-kotlin": {
-        type: "boolean",
-        default: false
-      },
       verify: {
         type: "boolean",
         default: false
@@ -192,7 +182,7 @@ async function main() {
     paths: {
       ideHome
     },
-    tasks: ["test", "buildPlugin", "ktLint"]
+    tasks: ["test", "buildPlugin"]
   });
   const zipPath = builtZip();
   const isReady = isBuilt && zipPath !== undefined;

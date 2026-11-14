@@ -83,6 +83,11 @@ const ALL_STEPS: Step[] = [
     needs: [BUILD]
   },
   {
+    name: "lint:kotlin",
+    needs: [],
+    isHeavy: true
+  },
+  {
     name: "fallow",
     needs: []
   },

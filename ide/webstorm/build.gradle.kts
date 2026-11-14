@@ -72,7 +72,12 @@ ktlint {
 
 detekt {
   buildUponDefaultConfig = true
-  config.setFrom(files("$projectDir/config/detekt/detekt.yml"))
+  config.setFrom(
+    files(
+      "$rootDir/../../node_modules/kotlin-config-avi12/detekt.yml",
+      "$projectDir/config/detekt/detekt.yml"
+    ).filter { it.exists() }
+  )
   autoCorrect = false
 }
 
@@ -82,7 +87,7 @@ tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
 
 tasks.register("ktLint") {
   group = "verification"
-  description = "Run ktlint + detekt (Kotlin lint)."
+  description = "Run ktlint + detekt through Gradle (pnpm lint:kotlin runs the same checks without it)."
   dependsOn("ktlintCheck", "detekt")
 }
 
