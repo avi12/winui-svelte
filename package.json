@@ -771,7 +771,7 @@
     "eslint": "^10.14.0",
     "eslint-config-avi12": "github:avi12/lint-config#v0.4.14&path:/packages/eslint-config",
     "eslint-plugin-svelte": "^3.23.1",
-    "fallow": "2.103.0",
+    "fallow": "2.104.0",
     "fallow-config-avi12": "github:avi12/lint-config#v0.4.14&path:/packages/fallow-config",
     "kotlin-config-avi12": "github:avi12/lint-config#v0.7.0&path:/packages/kotlin-config",
     "lint-staged": "^17.6.0",
