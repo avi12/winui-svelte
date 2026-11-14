@@ -33,6 +33,8 @@ const SLOW_POLL_MILLISECONDS = 250;
 const MAINTENANCE_MILLISECONDS = 1000;
 const DOUBLE_CLICK_MILLISECONDS = 500;
 const MESSAGE_ECHO_MILLISECONDS = 500;
+const BLOCKING_MILLISECONDS = 100;
+const DISMISSAL_ECHO_MILLISECONDS = 300;
 const GESTURE_OF_NOTIFICATION: ReadonlyMap<number, TrayGesture> = new Map([
   [TrayNotification.select, TrayGesture.click],
   [TrayNotification.keySelect, TrayGesture.doubleClick],
@@ -283,7 +285,8 @@ export function createTrayCore<const Extras extends readonly TrayExtra[]>(option
   let isRemoved = false;
   let tick = 0;
   let pollMilliseconds = SLOW_POLL_MILLISECONDS;
-  let lastPolledAt = -MESSAGE_ECHO_MILLISECONDS;
+  const polledAt = new Map<TrayGesture, number>();
+  let menuClosedAt = -DISMISSAL_ECHO_MILLISECONDS;
   let pendingMessages: TrayMessage[] = [];
   const detector = createClickDetector({
     now: options.now,
@@ -295,25 +298,33 @@ export function createTrayCore<const Extras extends readonly TrayExtra[]>(option
         return;
       }
 
-      lastPolledAt = options.now();
+      polledAt.set(event.gesture, options.now());
 
       if (!isMenu) {
         native.allowForeground();
       }
 
-      options[HANDLER_OF_GESTURE[event.gesture]]?.(event);
-      settle();
+      handle(event);
     }
   });
 
   // A handler can block (a popup menu is modal), and what the shell sent and the buttons pressed meanwhile
   // belong to the interaction it was handling: the click that opened the menu and the one that dismissed it.
-  // Delivered afterwards they open the menu again, so they are read and dropped.
-  function settle() {
+  // Delivered afterwards they open the menu again, so they are read and dropped. A handler that returns at
+  // once left nothing behind, and what arrives next is a new click.
+  function handle(event: TrayPointerEvent) {
+    const startedAt = options.now();
+    options[HANDLER_OF_GESTURE[event.gesture]]?.(event);
+    const isBlocked = options.now() - startedAt >= BLOCKING_MILLISECONDS;
+    if (!isBlocked) {
+      return false;
+    }
+
     native.readMessages(identity.owner);
     native.readPointer();
     pendingMessages = [];
-    lastPolledAt = options.now();
+    menuClosedAt = options.now();
+    return true;
   }
 
   function loadCurrent() {
@@ -410,22 +421,37 @@ export function createTrayCore<const Extras extends readonly TrayExtra[]>(option
     stopTimer = startTimer();
   }
 
-  function deliverMessages() {
-    const messages = pendingMessages;
-    pendingMessages = native.readMessages(identity.owner);
-    const isEcho = options.now() - lastPolledAt < MESSAGE_ECHO_MILLISECONDS;
-    if (isEcho) {
+  function isEchoOf(gesture: TrayGesture) {
+    const now = options.now();
+    const polled = polledAt.get(gesture);
+    const isPolledEcho = polled !== undefined && now - polled < MESSAGE_ECHO_MILLISECONDS;
+    const isDismissalEcho = gesture === TrayGesture.contextMenu && now - menuClosedAt < DISMISSAL_ECHO_MILLISECONDS;
+    return isPolledEcho || isDismissalEcho;
+  }
+
+  function announce({ notification, x, y }: TrayMessage) {
+    const described = NOTIFICATION_EVENTS.get(notification);
+    if (described === undefined) {
       return;
     }
 
-    for (const { notification, x, y } of messages) {
-      const described = NOTIFICATION_EVENTS.get(notification);
-      if (described !== undefined) {
-        options[described.handler]?.({
-          x,
-          y,
-          button: described.button
-        });
+    options[described.handler]?.({
+      x,
+      y,
+      button: described.button
+    });
+  }
+
+  // One handler of the app that throws must not cost the others their events, the menu above all.
+  function deliverMessages() {
+    const messages = pendingMessages;
+    pendingMessages = native.readMessages(identity.owner);
+    const failures: unknown[] = [];
+    for (const message of messages) {
+      try {
+        announce(message);
+      } catch (error) {
+        failures.push(error);
       }
     }
 
@@ -436,14 +462,25 @@ export function createTrayCore<const Extras extends readonly TrayExtra[]>(option
         continue;
       }
 
+      const isEcho = isEchoOf(gesture);
+      if (isEcho) {
+        continue;
+      }
+
       native.allowForeground();
-      options[HANDLER_OF_GESTURE[gesture]]?.({
+      const isBlocked = handle({
         gesture,
         x,
         y
       });
-      settle();
-      return;
+      if (isBlocked) {
+        break;
+      }
+    }
+
+    const [failure] = failures;
+    if (failure !== undefined) {
+      throw failure;
     }
   }
 

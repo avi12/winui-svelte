@@ -28,6 +28,8 @@ const ICON_RECT: ScreenRect = {
   bottom: 132
 };
 const MAINTENANCE_TICKS = 33;
+const MENU_OPEN_MILLISECONDS = 2000;
+const CONTEXT_MENU = 0x7b;
 const RELEASED: ButtonSample = {
   isDown: false,
   wasPressed: false
@@ -133,6 +135,7 @@ function noop() {}
 
 function start(options: Partial<TrayIconOptions> = {}) {
   const native = new FakeNative();
+  const clock = { time: 0 };
   const themedIcon: ThemedIconExtra = {
     kind: "themedIcon",
     createReader: () => () => native.isLight
@@ -146,7 +149,7 @@ function start(options: Partial<TrayIconOptions> = {}) {
     ...options,
     extras: [balloons, bounds, themedIcon],
     native,
-    now: () => 0,
+    now: () => clock.time,
     schedule({ onTick, milliseconds }) {
       tick = onTick;
       intervals.push(milliseconds);
@@ -158,6 +161,7 @@ function start(options: Partial<TrayIconOptions> = {}) {
   });
   return {
     native,
+    clock,
     handle,
     tick: () => tick(),
     isStopped: () => isStopped,
@@ -453,9 +457,10 @@ test("a mouse click is not reported twice when the shell also posts its message"
 
 test("what the shell sent while a handler blocked is dropped, so a menu does not open again", () => {
   let opened = 0;
-  const { native, tick, handle } = start({
+  const { native, clock, tick, handle } = start({
     oncontextmenu() {
       opened++;
+      clock.time += MENU_OPEN_MILLISECONDS;
       native.messages = [{
         notification: 0x7b,
         x: 1,
@@ -540,3 +545,132 @@ for (const [notification, handler, button] of NOTIFICATION_HANDLER_CASES) {
     handle.remove();
   });
 }
+
+function contextMenuAt(x: number) {
+  const message: TrayMessage = {
+    notification: CONTEXT_MENU,
+    x,
+    y: 5
+  };
+  return message;
+}
+
+test("a second right click soon after the first opens the menu again", () => {
+  const anchors: number[] = [];
+  const { native, clock, tick, handle } = start({ oncontextmenu: ({ x }) => anchors.push(x) });
+  native.messages = [contextMenuAt(1)];
+  tick();
+  tick();
+  clock.time += 200;
+  native.messages = [contextMenuAt(2)];
+  tick();
+  tick();
+  assert.deepEqual(anchors, [1, 2]);
+  handle.remove();
+});
+
+test("a right click soon after a polled left click still opens the menu", () => {
+  const events: string[] = [];
+  const { native, clock, tick, handle } = start({
+    onclick: ({ gesture }) => events.push(gesture),
+    oncontextmenu: ({ gesture }) => events.push(gesture)
+  });
+  native.isReceivingMessages = true;
+  native.pointer = {
+    ...native.pointer,
+    x: 110,
+    y: 112,
+    left: DOWN,
+    isOnTray: true
+  };
+  tick();
+  native.pointer = {
+    ...native.pointer,
+    left: RELEASED
+  };
+  tick();
+  clock.time += 100;
+  native.messages = [contextMenuAt(110)];
+  tick();
+  tick();
+  assert.deepEqual(events, ["click", "contextMenu"]);
+  handle.remove();
+});
+
+test("a left click and a right click posted together are both delivered", () => {
+  const events: string[] = [];
+  const { native, tick, handle } = start({
+    onclick: ({ gesture }) => events.push(gesture),
+    oncontextmenu: ({ gesture }) => events.push(gesture)
+  });
+  native.messages = [{
+    notification: 0x400,
+    x: 1,
+    y: 2
+  }, contextMenuAt(1)];
+  tick();
+  tick();
+  assert.deepEqual(events, ["click", "contextMenu"]);
+  handle.remove();
+});
+
+test("a right click straight after a menu that blocked is the click that dismissed it, and is dropped", () => {
+  let opened = 0;
+  const { native, clock, tick, handle } = start({
+    oncontextmenu() {
+      opened++;
+      clock.time += MENU_OPEN_MILLISECONDS;
+    }
+  });
+  native.messages = [contextMenuAt(1)];
+  tick();
+  tick();
+  clock.time += 50;
+  native.messages = [contextMenuAt(1)];
+  tick();
+  tick();
+  assert.equal(opened, 1);
+  clock.time += 1000;
+  native.messages = [contextMenuAt(1)];
+  tick();
+  tick();
+  assert.equal(opened, 2);
+  handle.remove();
+});
+
+test("a right click after the shell restarted reaches the menu once the icon is added again", () => {
+  let opened = 0;
+  const { native, clock, tick, handle } = start({ oncontextmenu: () => opened++ });
+  native.rect = null;
+  native.isShellAlive = false;
+  for (let iTick = 0; iTick < MAINTENANCE_TICKS; iTick++) {
+    tick();
+  }
+
+  assert.equal(native.operations().filter(operation => operation === Operation.add).length, 2);
+  clock.time += 100;
+  native.messages = [contextMenuAt(1)];
+  tick();
+  tick();
+  assert.equal(opened, 1);
+  handle.remove();
+});
+
+test("a handler that throws on a pointer event does not stop the menu from opening", () => {
+  let opened = 0;
+  const { native, tick, handle } = start({
+    onpointermove() {
+      throw new Error("a handler of the app failed");
+    },
+    oncontextmenu: () => opened++
+  });
+  native.messages = [{
+    notification: 0x200,
+    x: 1,
+    y: 2
+  }, contextMenuAt(1)];
+  tick();
+  assert.throws(tick, /a handler of the app failed/u);
+  assert.equal(opened, 1);
+  handle.remove();
+});
