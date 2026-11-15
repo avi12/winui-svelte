@@ -176,6 +176,7 @@ test("a thread that fails rejects the menu instead of leaving it waiting", async
   let fail = noop;
   const failing: MenuThreadHandle = {
     postMessage: noop,
+    cancel: noop,
     listen({ failure }) {
       fail = () => failure(new Error("no user32"));
     },
@@ -196,6 +197,7 @@ test("a thread's owner window is asked to be brought to the front before the men
   let say = (_message: MenuThreadMessage) => {};
   const fake: MenuThreadHandle = {
     postMessage: command => log.push(`command ${command.type}`),
+    cancel: noop,
     listen({ message }) {
       say = message;
     },

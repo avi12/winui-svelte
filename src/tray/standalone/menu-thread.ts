@@ -4,6 +4,8 @@ import { createRequire } from "node:module";
 const WS_POPUP = 0x80000000;
 const WM_NULL = 0;
 const ASFW_ANY = 0xFFFFFFFF;
+const WM_CANCELMODE = 0x1F;
+const MENU_TIMEOUT_MILLISECONDS = 60_000;
 
 /** What the thread is told at start. */
 interface MenuThreadData {
@@ -38,6 +40,9 @@ export type MenuThreadCommand =
 /** The part of a thread the menu uses; a test passes a fake. */
 export interface MenuThreadHandle {
   postMessage(command: MenuThreadCommand): void;
+
+  /** Ends the menu the thread is showing on `owner`, from outside the thread. */
+  cancel(owner: bigint): void;
 
   /** Starts listening: `message` for what the thread says, `failure` when it errors or ends. */
   listen(listeners: {
@@ -160,6 +165,21 @@ function spawnNative() {
   });
   const handle: MenuThreadHandle = {
     postMessage: command => worker.postMessage(command),
+    cancel(owner) {
+      const { DynWin32: win32, DynWin32Unsafe: unsafe } = createRequire(import.meta.url)(data.moduleUnsafe);
+      const post = unsafe.bind({
+        dll: "user32.dll",
+        entryPoint: "PostMessageW",
+        parameters: ["pointer", "u32", "pointer", "pointer"].map(type => ({
+          type,
+          direction: "in",
+          nullable: type === "pointer"
+        })),
+        returnType: "i32"
+      });
+      const none = unsafe.pointer(null);
+      post.invoke([unsafe.pointer(owner), win32.u32(WM_CANCELMODE), none, none]);
+    },
     listen({ message, failure }) {
       worker.on("message", message);
       worker.on("error", failure);
@@ -206,12 +226,19 @@ export function createMenuThread({ spawn = spawnNative }: { readonly spawn?: () 
       const thread = spawn();
       return new Promise<number>((resolve, reject) => {
         let isDone = false;
+        let owner: bigint | undefined;
+        const watchdog = setTimeout(() => {
+          if (owner !== undefined) {
+            thread.cancel(owner);
+          }
+        }, MENU_TIMEOUT_MILLISECONDS);
         function finish(settle: () => void) {
           if (isDone) {
             return;
           }
 
           isDone = true;
+          clearTimeout(watchdog);
           thread.terminate();
           settle();
         }
@@ -223,6 +250,7 @@ export function createMenuThread({ spawn = spawnNative }: { readonly spawn?: () 
               return;
             }
 
+            ({ owner } = message);
             const isFocused = focus(message.owner);
             const command: MenuThreadCommand = isFocused ? {
               type: "track",
