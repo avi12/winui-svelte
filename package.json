@@ -746,7 +746,7 @@
     "prepare": "simple-git-hooks"
   },
   "dependencies": {
-    "@microsoft/dynwinrt": "0.1.0-preview.23",
+    "@microsoft/dynwinrt": "0.1.0-preview.24",
     "zod": "^4.6.7"
   },
   "peerDependencies": {
@@ -761,7 +761,7 @@
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
-    "@microsoft/dynwinrt": "0.1.0-preview.23",
+    "@microsoft/dynwinrt": "0.1.0-preview.24",
     "@microsoft/dynwinrt-codegen": "0.1.0-preview.23",
     "@microsoft/winappcli": "0.7.1",
     "@types/node": "^24.10.0",
