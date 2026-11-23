@@ -1,6 +1,9 @@
 package dev.winui.svelte
 
 import com.intellij.lang.injection.InjectedLanguageManager
+import com.intellij.lang.javascript.psi.JSLiteralExpression
+import com.intellij.lang.javascript.psi.JSProperty
+import com.intellij.lang.javascript.psi.JSReferenceExpression
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
@@ -50,14 +53,27 @@ internal object GlyphValues {
       return listOf(GlyphSpot(TextRange.from(nameStart, value.value.length), codePoint))
     }
 
-    return STRING_LITERAL
+    val strings = STRING_LITERAL
       .findAll(value.text)
       .mapNotNull { literal ->
         val name = literal.groups[2] ?: return@mapNotNull null
         val codePoint = codePointOf(name.value) ?: return@mapNotNull null
         GlyphSpot(TextRange.from(start + name.range.first, name.value.length), codePoint)
       }.toList()
+    return strings + constantSpots(value)
   }
+
+  /** A member of an object the app declares, such as `Glyph.MIC_OFF`, whose value is an icon's character. */
+  private fun constantSpots(value: XmlAttributeValue): List<GlyphSpot> =
+    PsiTreeUtil
+      .findChildrenOfType(value, JSReferenceExpression::class.java)
+      .filter { it.qualifier != null }
+      .mapNotNull { reference ->
+        val property = reference.resolve() as? JSProperty ?: return@mapNotNull null
+        val literal = property.value as? JSLiteralExpression ?: return@mapNotNull null
+        val codePoint = literal.stringValue?.let { codePointOf(it) } ?: return@mapNotNull null
+        GlyphSpot(reference.textRange, codePoint)
+      }
 
   private fun codePointOf(text: String): Int? {
     FluentGlyphs.codePoints[text]?.let { return it }
