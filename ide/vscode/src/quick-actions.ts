@@ -1,7 +1,7 @@
 import { conversionsOfDocument, convertedDocument, editTo } from "./convert-document.ts";
-import { titleOf } from "./css-rewrite.ts";
+import { titleOf } from "winui-svelte-ide/css-rewrite.ts";
 import { Command, SVELTE_LANGUAGE } from "./ids.ts";
-import { applyEdits } from "./text-edit.ts";
+import { applyEdits } from "winui-svelte-ide/text-edit.ts";
 import {
   CodeAction,
   CodeActionKind,

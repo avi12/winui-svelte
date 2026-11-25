@@ -40,6 +40,7 @@
     "test/**/*.svelte",
     "scripts/**/*.ts",
     "ide/vscode/**/*.ts",
+    "ide/shared/**/*.ts",
     "scripts/pack/treeshake-app/**/*.svelte"
   ]
 }

@@ -3,11 +3,31 @@ import path from "node:path";
 import { z } from "zod";
 
 const PACKAGE_NAME = "winui-svelte";
-const manifestSchema = z.object({
-  dependencies: z.record(z.string(), z.unknown()).optional(),
-  devDependencies: z.record(z.string(), z.unknown()).optional()
-});
+const DEPENDENCY_KEYS = ["dependencies", "devDependencies", "peerDependencies", "optionalDependencies"] as const;
+const manifestSchema = z.object(Object.fromEntries(DEPENDENCY_KEYS.map(key => [key, z.record(z.string(), z.unknown()).optional()])));
 const gates = new Map<string, boolean>();
+
+function parseManifest(text: string) {
+  try {
+    return manifestSchema.safeParse(JSON.parse(text));
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * Whether the text of a package.json lists winui-svelte as a dependency, a dev, peer or optional one; text that is not
+ * a package.json lists nothing.
+ */
+export function dependsOnLibrary(text: string) {
+  const parsed = parseManifest(text);
+  const hasNoManifest = parsed === undefined || !parsed.success;
+  if (hasNoManifest) {
+    return false;
+  }
+
+  return DEPENDENCY_KEYS.some(key => PACKAGE_NAME in (parsed.data[key] ?? {}));
+}
 
 async function exists(file: string) {
   return stat(file).then(() => true, () => false);
@@ -44,9 +64,7 @@ export async function isWinuiFile(file: string) {
     return gates.get(key) === true;
   }
 
-  const parsed = manifestSchema.safeParse(JSON.parse(await readFile(manifestPath, "utf8")));
-  const isDependent = parsed.success
-    && (PACKAGE_NAME in (parsed.data.dependencies ?? {}) || PACKAGE_NAME in (parsed.data.devDependencies ?? {}));
+  const isDependent = dependsOnLibrary(await readFile(manifestPath, "utf8"));
   gates.set(key, isDependent);
   return isDependent;
 }

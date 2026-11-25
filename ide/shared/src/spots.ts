@@ -1,4 +1,5 @@
 import { isColorAttribute, isColorProperty } from "./color-table.ts";
+import { cssDeclarationsOf, DeclarationSource } from "./css-scan.ts";
 import { isFontFamilyAttribute } from "./font-table.ts";
 import { isGlyphAttribute } from "./glyph-table.ts";
 import { scanAttributes, scanExpressionAttributes } from "./markup-scan.ts";
@@ -281,4 +282,19 @@ export function spotAt({ spots, offset }: {
   offset: number;
 }) {
   return spots.find(spot => spot.start <= offset && offset <= spot.end);
+}
+
+/**
+ * The glyphs, colors and font families written as values in the rules of the file's `<style>` blocks. Apart from
+ * `spotsOf`, because an editor that has its own CSS support may not want the colors twice.
+ */
+export function styleBlockSpots(text: string) {
+  return cssDeclarationsOf({
+    text,
+    attributeProperties: new Map()
+  }).filter(declaration => declaration.source === DeclarationSource.RULE).flatMap(declaration => propertySpots({
+    property: declaration.property.toLowerCase(),
+    value: text.slice(declaration.valueStart, declaration.valueEnd),
+    start: declaration.valueStart
+  }));
 }

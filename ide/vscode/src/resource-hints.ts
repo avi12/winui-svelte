@@ -1,7 +1,7 @@
 import { Setting, SVELTE_LANGUAGE } from "./ids.ts";
-import { resourceMarkdown } from "./preview.ts";
-import { referenceAt } from "./resource-reference.ts";
-import { resourceOfProperty, winuiResources } from "./resource-table.ts";
+import { resourceMarkdown } from "winui-svelte-ide/preview.ts";
+import { referenceAt } from "winui-svelte-ide/resource-reference.ts";
+import { resourceOfProperty, winuiResources } from "winui-svelte-ide/resource-table.ts";
 import {
   CompletionItem,
   CompletionItemKind,

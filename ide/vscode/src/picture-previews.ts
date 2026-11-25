@@ -1,20 +1,10 @@
+import { pictureCaption, PLACEHOLDER_SVG } from "winui-svelte-ide/picture-image.ts";
+import { PictureState } from "winui-svelte-ide/picture-load.ts";
+import { createRemotePictures } from "winui-svelte-ide/picture-remote.ts";
+import { backgroundOf, hoverGroup, resolvedPictures } from "winui-svelte-ide/picture-resolve.ts";
+import type { ResolvedPicture } from "winui-svelte-ide/picture-resolve.ts";
+import { pictureTables } from "winui-svelte-ide/picture-spec.ts";
 import { Setting, SVELTE_LANGUAGE } from "./ids.ts";
-import { scanAttributes, scanExpressionAttributes } from "./markup-scan.ts";
-import { pictureBindings } from "./picture-bindings.ts";
-import { isPictureAttribute, pictureNames, WRAPPER_TYPE } from "./picture-data.ts";
-import { pictureCaption } from "./picture-image.ts";
-import { loadPicture, PictureState } from "./picture-load.ts";
-import { createRemotePictures } from "./picture-remote.ts";
-import { pictureTables } from "./picture-spec.ts";
-import {
-  expressionSpots,
-  keySpots,
-  plainSpots,
-  uniqueSpots,
-  Variant
-} from "./picture-spots.ts";
-import { isTypedProp } from "./typed-prop.ts";
-import { isWinuiFile, projectRootOf } from "./winui-project.ts";
 import path from "node:path";
 import {
   Diagnostic,
@@ -34,12 +24,9 @@ const PICTURES = "picture";
 const REMOTE_PICTURES = "remotePictures";
 const INLINE_GAP = "0 3px 0 0";
 const WARNING_SOURCE = "winui-svelte";
-// A grey frame with a cross, drawn for a picture that is not there to show; the hover says why.
-const PLACEHOLDER = `data:image/svg+xml;base64,${Buffer.from(
-  "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 16 16\"><rect x=\"1.5\" y=\"1.5\" width=\"13\" height=\"13\" fill=\"none\" stroke=\"#888\" stroke-width=\"1.2\"/><path d=\"M4 4l8 8M12 4l-8 8\" stroke=\"#888\" stroke-width=\"1.2\"/></svg>"
-).toString("base64")}`;
+const PLACEHOLDER = `data:image/svg+xml;base64,${Buffer.from(PLACEHOLDER_SVG).toString("base64")}`;
 
-type Resolved = Awaited<ReturnType<typeof resolvedSpots>>;
+type Resolved = ResolvedPicture[];
 
 const cache = new Map<string, {
   version: number;
@@ -58,100 +45,8 @@ function isRemoteEnabled() {
   return configuration().get<boolean>(`${Setting.PREVIEWS}.${REMOTE_PICTURES}`, true) && workspace.isTrusted;
 }
 
-async function attributeSpots({ text, file, bindings }: {
-  text: string;
-  file: string;
-  bindings: Map<string, string>;
-}) {
-  const names = pictureNames();
-  function isPicture({ tag, attribute }: {
-    tag: string;
-    attribute: string;
-  }) {
-    return isTypedProp({
-      isOwn: isPictureAttribute({
-        tag,
-        attribute
-      }),
-      inputType: WRAPPER_TYPE,
-      tag,
-      attribute,
-      documentText: text,
-      documentFile: file
-    });
-  }
-
-  const plain = await Promise.all(
-    scanAttributes(text).map(async found => {
-      const isPictureProp = await isPicture(found);
-      return isPictureProp ? plainSpots({
-        attribute: found.attribute,
-        value: found.value,
-        start: found.valueStart,
-        names
-      }) : [];
-    })
-  );
-  const expressions = await Promise.all(
-    scanExpressionAttributes(text).map(async found => {
-      const isPictureProp = await isPicture(found);
-      return isPictureProp ? expressionSpots({
-        attribute: found.attribute,
-        expression: found.value,
-        start: found.valueStart,
-        names,
-        bindings
-      }) : [];
-    })
-  );
-  return [...plain.flat(), ...expressions.flat()];
-}
-
-async function resolvedSpots({ document, remote }: {
-  document: TextDocument;
-  remote: Parameters<typeof loadPicture>[0]["remote"];
-}) {
-  const file = document.uri.fsPath;
-  const isWinui = await isWinuiFile(file);
-  if (!isWinui) {
-    return [];
-  }
-
-  const text = document.getText();
-  const root = await projectRootOf(file);
-  const bindings = pictureBindings(text);
-  const spots = uniqueSpots([
-    ...await attributeSpots({
-      text,
-      file,
-      bindings
-    }),
-    ...keySpots({
-      text,
-      names: pictureNames(),
-      bindings
-    })
-  ]);
-  return Promise.all(
-    spots.map(async spot => ({
-      spot,
-      picture: await loadPicture({
-        value: spot.value,
-        file,
-        root,
-        isRemoteEnabled: isRemoteEnabled(),
-        remote
-      })
-    }))
-  );
-}
-
-function backgroundOf(variant: Variant) {
-  return variant === Variant.ANY ? undefined : pictureTables.backgrounds[variant];
-}
-
 function lineOf({ resolved, theme }: {
-  resolved: Resolved[number];
+  resolved: ResolvedPicture;
   theme: string;
 }) {
   const { picture, spot } = resolved;
@@ -171,31 +66,21 @@ function lineOf({ resolved, theme }: {
   return `<span style="${style}"><img src="${picture.dataUri}" height="${pictureTables.limits.hoverSize}"></span>\n\n${caption}${theme}`;
 }
 
-function isPartner({ other, target }: {
-  other: Resolved[number];
-  target: Resolved[number];
-}) {
-  const isSameObject = other.spot.group === target.spot.group;
-  return isSameObject && other.spot.variant !== Variant.ANY;
-}
-
 // The hover of one picture; a light or dark taskbar picture shows with its partner of the same object.
 function hoverMarkdown({ resolved, target }: {
   resolved: Resolved;
-  target: Resolved[number];
+  target: ResolvedPicture;
 }) {
-  const isPaired = target.spot.variant !== Variant.ANY;
-  const shown = resolved.filter(other => other === target || isPaired && isPartner({
-    other,
+  return hoverGroup({
+    resolved,
     target
-  }));
-  return shown.map(other => lineOf({
-    resolved: other,
-    theme: other.spot.variant === Variant.ANY ? "" : ` (for the ${other.spot.variant} taskbar)`
+  }).map(({ entry, theme }) => lineOf({
+    resolved: entry,
+    theme
   })).join("\n\n");
 }
 
-function beforeOf(resolved: Resolved[number]) {
+function beforeOf(resolved: ResolvedPicture) {
   const { picture, spot } = resolved;
   const isShown = picture.state === PictureState.SHOWN && picture.dataUri !== undefined;
   const background = backgroundOf(spot.variant);
@@ -241,9 +126,12 @@ export function registerPictureViews(context: ExtensionContext) {
       return cached.resolved;
     }
 
-    const resolved = isEnabled() ? await resolvedSpots({
-      document,
-      remote
+    const resolved = isEnabled() ? await resolvedPictures({
+      text: document.getText(),
+      file: document.uri.fsPath,
+      isRemoteEnabled: isRemoteEnabled(),
+      remote,
+      isMarkup: true
     }) : [];
     cache.set(key, {
       version: document.version,

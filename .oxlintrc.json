@@ -148,8 +148,8 @@
             "files": [
               "examples/form/SignupForm.svelte",
               "examples/pill-ground/pill-view.ts",
-              "ide/vscode/src/css-previews.test.ts",
-              "ide/vscode/src/picture-image.ts",
+              "ide/shared/src/css-previews.test.ts",
+              "ide/shared/src/picture-image.ts",
               "scripts/codegen/fetch-documentation.ts",
               "scripts/pack/bundle-support.ts",
               "src/app/activation/kinds.ts",
@@ -355,7 +355,8 @@
         "src/win32-calls.ts",
         "src/win32-icons.ts",
         "src/tray/standalone/native.test.ts",
-        "ide/vscode/src/**/*.ts"
+        "ide/vscode/src/**/*.ts",
+        "ide/shared/src/**/*.ts"
       ],
       "rules": {
         "no-restricted-imports": "off"
@@ -405,16 +406,16 @@
     },
     {
       "files": [
-        "ide/vscode/src/completions.ts",
-        "ide/vscode/src/conversion-table.ts",
-        "ide/vscode/src/css-color.ts",
-        "ide/vscode/src/css-ide-data.ts",
-        "ide/vscode/src/font-table.ts",
-        "ide/vscode/src/glyph-table.ts",
-        "ide/vscode/src/picture-data.ts",
-        "ide/vscode/src/picture-previews.test.ts",
-        "ide/vscode/src/picture-spec.ts",
-        "ide/vscode/src/resource-table.ts"
+        "ide/shared/src/completions.ts",
+        "ide/shared/src/conversion-table.ts",
+        "ide/shared/src/css-color.ts",
+        "ide/shared/src/css-ide-data.ts",
+        "ide/shared/src/font-table.ts",
+        "ide/shared/src/glyph-table.ts",
+        "ide/shared/src/picture-data.ts",
+        "ide/shared/src/picture-previews.test.ts",
+        "ide/shared/src/picture-spec.ts",
+        "ide/shared/src/resource-table.ts"
       ],
       "rules": {
         "house/no-parent-imports": "off"

@@ -1,4 +1,5 @@
 import { parseColor } from "../../../src/css/parse/colors.ts";
+import { namedColors } from "../../../src/css/parse/named-colors.ts";
 
 const ALPHA_DIGITS = 2;
 const OPAQUE_DIGITS = 6;
@@ -52,4 +53,11 @@ export function hexOfChannels({ red, green, blue, alpha }: {
   alpha: number;
 }) {
   return `#${[red, green, blue, Math.round(alpha * BYTE)].map(channel => channel.toString(HEX_RADIX).padStart(2, "0")).join("")}`;
+}
+
+/**
+ * The CSS color names, each with its six hex digits.
+ */
+export function cssColorNames() {
+  return namedColors;
 }

@@ -1,7 +1,7 @@
-import { conversionsIn, convertText, Destination } from "./attribute-rewriter.ts";
+import { conversionsIn, convertText, Destination } from "winui-svelte-ide/attribute-rewriter.ts";
 import { Setting } from "./ids.ts";
-import { minimalEdit } from "./minimal-edit.ts";
-import { isWinuiFile } from "./winui-project.ts";
+import { minimalEdit } from "winui-svelte-ide/minimal-edit.ts";
+import { isWinuiFile } from "winui-svelte-ide/winui-project.ts";
 import { Range, workspace, WorkspaceEdit } from "vscode";
 import type { TextDocument } from "vscode";
 

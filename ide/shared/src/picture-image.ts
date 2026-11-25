@@ -319,3 +319,8 @@ export function pictureCaption({ name, size, byteSize }: {
   const frames = size.frames.length > 1 ? `, frames ${size.frames.map(frame => frame.width).join(", ")}` : "";
   return `${name}: ${dimensions}, ${byteSizeText(byteSize)}${frames}`;
 }
+
+/**
+ * A grey frame with a cross, drawn for a picture that is not there to show; the hover says why.
+ */
+export const PLACEHOLDER_SVG = "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 16 16\"><rect x=\"1.5\" y=\"1.5\" width=\"13\" height=\"13\" fill=\"none\" stroke=\"#888\" stroke-width=\"1.2\"/><path d=\"M4 4l8 8M12 4l-8 8\" stroke=\"#888\" stroke-width=\"1.2\"/></svg>";

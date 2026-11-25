@@ -6,7 +6,7 @@ import {
   isWinuiDocument
 } from "./convert-document.ts";
 import { Command, SVELTE_LANGUAGE } from "./ids.ts";
-import { reportSummary, SkipReason } from "./report.ts";
+import { reportSummary, SkipReason } from "winui-svelte-ide/report.ts";
 import {
   commands,
   FileType,

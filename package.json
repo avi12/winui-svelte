@@ -740,7 +740,7 @@
     "lint:eslint": "eslint --concurrency 2 --cache --cache-location .verify/eslint-cache .",
     "lint:stylelint": "stylelint \"{src,examples,test,scripts,ide}/**/*.svelte\" --ignore-pattern src/components/generated",
     "lint:summary": "node --disable-warning=ExperimentalWarning scripts/lint/summary.ts",
-    "test": "pnpm build && node --disable-warning=ExperimentalWarning --test --test-timeout=120000 \"src/**/*.test.ts\" \"scripts/**/*.test.ts\" \"ide/vscode/**/*.test.ts\" test/mount-all.test.ts",
+    "test": "pnpm build && node --disable-warning=ExperimentalWarning --test --test-timeout=120000 \"src/**/*.test.ts\" \"scripts/**/*.test.ts\" \"ide/shared/**/*.test.ts\" \"ide/vscode/**/*.test.ts\" test/mount-all.test.ts",
     "verify:electron": "node --disable-warning=ExperimentalWarning scripts/verify/electron-smoke.ts",
     "test:windows": "pnpm build && node --disable-warning=ExperimentalWarning scripts/test-windows.ts",
     "prepare": "simple-git-hooks"
@@ -766,8 +766,8 @@
     "@microsoft/winappcli": "0.7.1",
     "@types/node": "^24.10.0",
     "@types/vscode": "1.105.0",
-    "esbuild": "~0.25.12",
     "avi12-lint": "github:avi12/lint-config#v0.7.0&path:/packages/avi12-lint",
+    "esbuild": "~0.25.12",
     "eslint": "^10.14.0",
     "eslint-config-avi12": "github:avi12/lint-config#v0.4.14&path:/packages/eslint-config",
     "eslint-plugin-svelte": "^3.23.1",

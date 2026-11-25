@@ -1,6 +1,6 @@
 import { labelOf } from "./glyph-table.ts";
 
-const ICON_FONT_FAMILY = "'Segoe Fluent Icons', 'Segoe MDL2 Assets'";
+export const ICON_FONT_FAMILY = "'Segoe Fluent Icons', 'Segoe MDL2 Assets'";
 const GLYPH_SIZE = 48;
 const GLYPH_PADDING = 8;
 const SWATCH_WIDTH = 96;

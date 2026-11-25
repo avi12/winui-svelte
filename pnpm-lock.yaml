@@ -109,6 +109,14 @@ importers:
         specifier: 8.3.4
         version: 8.3.4(@types/node@24.19.2)(esbuild@0.25.12)(yaml@2.9.1)
 
+  ide/shared: {}
+
+  ide/vscode:
+    devDependencies:
+      winui-svelte-ide:
+        specifier: workspace:*
+        version: link:../shared
+
 packages:
 
   '@ampproject/remapping@2.3.0':

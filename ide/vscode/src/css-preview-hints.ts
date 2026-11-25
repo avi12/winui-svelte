@@ -1,18 +1,10 @@
-import { mappingEntries } from "./conversion-table.ts";
-import {
-  isHandledProperty,
-  materials,
-  namedEasings,
-  shadowDepths,
-  unsupportedReasons,
-  winuiTargets
-} from "./css-ide-data.ts";
-import { Theme } from "./css-media.ts";
-import type { MediaEnvironment } from "./css-media.ts";
-import { cssPreviewsOf, PreviewFeature } from "./css-previews.ts";
-import type { CssPreview } from "./css-previews.ts";
+import { Theme } from "winui-svelte-ide/css-media.ts";
+import type { MediaEnvironment } from "winui-svelte-ide/css-media.ts";
+import { previewTables } from "winui-svelte-ide/css-preview-tables.ts";
+import { cssPreviewsOf, PreviewFeature } from "winui-svelte-ide/css-previews.ts";
+import type { CssPreview } from "winui-svelte-ide/css-previews.ts";
 import { Setting, SVELTE_LANGUAGE } from "./ids.ts";
-import { isWinuiFile } from "./winui-project.ts";
+import { isWinuiFile } from "winui-svelte-ide/winui-project.ts";
 import {
   EventEmitter,
   Hover,
@@ -30,15 +22,7 @@ const SVELTE = { language: SVELTE_LANGUAGE };
 const INLINE_GAP = "0 3px 0 0";
 const DEFAULT_WIDTH = 1024;
 const DEFAULT_HEIGHT = 768;
-const tables = {
-  attributeProperties: new Map(mappingEntries().map(([name, mapping]) => [name, mapping.cssProperty])),
-  easings: namedEasings(),
-  shadowDepths: shadowDepths(),
-  materials: materials(),
-  unsupported: unsupportedReasons(),
-  targets: winuiTargets(),
-  isHandled: isHandledProperty
-};
+const tables = previewTables();
 
 function configuration() {
   return workspace.getConfiguration(Setting.SECTION);

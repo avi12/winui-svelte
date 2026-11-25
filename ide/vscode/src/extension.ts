@@ -1,16 +1,16 @@
-import { entriesOf } from "./completions.ts";
+import { entriesOf } from "winui-svelte-ide/completions.ts";
 import { registerConvertCommands } from "./convert-commands.ts";
-import { cssColorOf } from "./css-color.ts";
+import { cssColorOf } from "winui-svelte-ide/css-color.ts";
 import { registerCssPreviews } from "./css-preview-hints.ts";
-import { codePointOf } from "./glyph-table.ts";
+import { codePointOf } from "winui-svelte-ide/glyph-table.ts";
 import { SVELTE_LANGUAGE } from "./ids.ts";
 import { registerPictureViews } from "./picture-previews.ts";
-import { GLYPH_FONT_STYLE } from "./preview.ts";
+import { GLYPH_FONT_STYLE } from "winui-svelte-ide/preview.ts";
 import { registerQuickActions } from "./quick-actions.ts";
 import { registerResourceHints } from "./resource-hints.ts";
-import { previewOfSpot } from "./spot-preview.ts";
-import { spotAt, SpotKind, spotsOf } from "./spots.ts";
-import type { Spot } from "./spots.ts";
+import { previewOfSpot } from "winui-svelte-ide/spot-preview.ts";
+import { spotAt, SpotKind, spotsOf } from "winui-svelte-ide/spots.ts";
+import type { Spot } from "winui-svelte-ide/spots.ts";
 import {
   ColorThemeKind,
   CompletionItem,

@@ -177,5 +177,8 @@
         }
       }
     }
+  },
+  "devDependencies": {
+    "winui-svelte-ide": "workspace:*"
   }
 }

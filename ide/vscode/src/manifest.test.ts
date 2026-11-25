@@ -1,5 +1,5 @@
-import { Destination } from "./attribute-rewriter.ts";
-import { PreviewFeature } from "./css-previews.ts";
+import { Destination } from "winui-svelte-ide/attribute-rewriter.ts";
+import { PreviewFeature } from "winui-svelte-ide/css-previews.ts";
 import { Command, Setting } from "./ids.ts";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";

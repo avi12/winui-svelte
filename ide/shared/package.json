@@ -1,0 +1,11 @@
+{
+  "name": "winui-svelte-ide",
+  "version": "0.0.1",
+  "private": true,
+  "description": "The editor-independent logic the VS Code extension and the WebStorm plugin share: markup scanning, the convert-to-CSS rewriter, the CSS and picture previews and the IDE data tables",
+  "license": "Apache-2.0",
+  "type": "module",
+  "exports": {
+    "./*.ts": "./src/*.ts"
+  }
+}
