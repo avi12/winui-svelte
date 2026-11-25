@@ -823,7 +823,7 @@ type WindowOptions<Props> = {
   size?: { width: number; height: number };   // device pixels
   backdrop?: Backdrop;                        // "acrylic" | "acrylicBase" | "acrylicThin" | "mica" | "micaAlt" | "none" | "transparent"
   extendsIntoTitleBar?: boolean;
-  onclosing?: () => boolean | void;           // AppWindow.Closing: return true to keep the window open
+  onclosing?: (event) => boolean | void;      // AppWindow.Closing: args.cancel = true keeps the window open
   isBackground?: boolean;                     // shown without activating (tests, captures)
 } & ({ component: Component<Props>; props: Props } | { control: FrameworkElement });
 
@@ -2396,6 +2396,40 @@ The `owner` link is a Win32 call
 `appUserModelId` names the
 process for the taskbar (it is process-wide: read once, before the window
 opens)
+
+The handle is an `EventTarget` that reports what the Windows App SDK reports,
+under the SDK's names in lower case; `event.args` are the SDK's arguments
+
+| Event | The SDK's |
+|---|---|
+| `activated`, `sizechanged`, `visibilitychanged`, `closed` | `Window` events |
+| `changed`, `closing`, `destroying` | `AppWindow` events |
+
+`<Window>` takes each as a prop too (`onactivated`, `onclosing`, `onclosed`,
+`onchanged`, `onsizechanged`, `onvisibilitychanged`, `ondestroying`), called with
+the same event; `onactivechanged` and `onboundschanged` stay as shorter forms
+
+As in WinUI, `event.args.cancel = true` on `closing` keeps the window open; so do
+`preventDefault()` and returning `true` from `onclosing`
+All are asked for a close the user starts and for `close()`, whose `args` hold
+only `cancel`
+
+`removeEventListener`, `once` and `signal` work as in a browser, and the native
+event is subscribed when its first listener is added
+The events of the controls inside the window are not the handle's
+
+| Type (from `winui-svelte/components`) | What it is |
+|---|---|
+| `WindowEventType` | the seven event names |
+| `WindowEventArguments` | the SDK's arguments of each event name |
+| `WindowEvent<Type>` | the `Event` a listener gets, with `args` |
+| `WindowEventListener<Type>` | a function that takes a `WindowEvent<Type>` |
+
+```ts
+const stop = new AbortController();
+handle.addEventListener("closing", event => event.preventDefault(), { signal: stop.signal });
+handle.addEventListener("changed", event => console.log(event.args.didSizeChange));
+```
 
 ## Page navigation (`winui-svelte/components`)
 

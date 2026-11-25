@@ -398,6 +398,7 @@
         "src/web-apis/view-transitions.test.ts",
         "src/window/match-media.ts",
         "src/window/promise-timers.ts",
+        "src/window/events/window-events.ts",
         "src/window/scheduler.test.ts"
       ],
       "rules": {

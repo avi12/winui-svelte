@@ -45,6 +45,7 @@ import {
 import { createScaleTracker } from "./scale.ts";
 import { onTeardown } from "./teardown.ts";
 import { applyTransparentFrame } from "./transparent-backdrop.ts";
+import type { WindowEvent, WindowEventListener } from "./events/window-events.ts";
 import { WindowHandle } from "./window-handle.ts";
 import { windowStateFile, WindowStateKeeper } from "./window-state-keeper.ts";
 import type { PictureSource } from "#src/picture-source.js";
@@ -295,16 +296,34 @@ export interface WindowProps {
    */
   activate?: boolean;
 
+  /** The SDK's `Window.Activated`: the window was activated or deactivated. */
+  onactivated?: WindowEventListener<"activated"> | undefined;
+
   /** The window became the active one (true) or lost that to another (false). */
   onactivechanged?: (isActive: boolean) => void;
 
   /**
    * The window is about to close (the user's close button, Alt+F4, or
-   * `handle.close()`). Returning true keeps it open: ask the user, then close
-   * it again from code. Anything else lets it close.
+   * `handle.close()`). `event.args.cancel = true`, as in WinUI,
+   * `event.preventDefault()` or returning true keeps it open: ask the user,
+   * then close it again from code. Anything else lets it close.
    */
-  onclosing?: (() => boolean | void) | undefined;
-  onclosed?: () => void;
+  onclosing?: ((event: WindowEvent<"closing">) => boolean | void) | undefined;
+
+  /** The SDK's `Window.Closed`. */
+  onclosed?: WindowEventListener<"closed"> | undefined;
+
+  /** The SDK's `AppWindow.Changed`: the position, size, presenter or visibility changed. */
+  onchanged?: WindowEventListener<"changed"> | undefined;
+
+  /** The SDK's `Window.SizeChanged`. */
+  onsizechanged?: WindowEventListener<"sizechanged"> | undefined;
+
+  /** The SDK's `Window.VisibilityChanged`. */
+  onvisibilitychanged?: WindowEventListener<"visibilitychanged"> | undefined;
+
+  /** The SDK's `AppWindow.Destroying`. */
+  ondestroying?: WindowEventListener<"destroying"> | undefined;
 
   /**
    * The window's scale changed (it moved to a display with another DPI, or the
@@ -384,6 +403,7 @@ class WindowHost {
   private readonly titleBar: () => FrameworkElement | null;
   private readonly content: FrameworkElement;
   private readonly unsubscribe: (() => void)[] = [];
+  private readonly listening = new AbortController();
   private appliedBackdrop: Backdrop | null = null;
   private releaseBackdrop: (() => void) | null = null;
   private isThemeApplied = false;
@@ -448,7 +468,11 @@ class WindowHost {
       keepInBackground(this.handle.appWindow.id.value);
     }
 
-    this.handle.guardClose(() => this.isCloseRefused());
+    this.handle.addEventListener("closing", event => {
+      if (this.isCloseRefused(event)) {
+        event.preventDefault();
+      }
+    }, { signal: this.listening.signal });
     window.content = content;
     this.keepInLine(() => this.syncContainer());
     this.keepInLine(() => this.syncText());
@@ -492,7 +516,7 @@ class WindowHost {
     }
 
     this.keeper?.cancel();
-    this.handle.guardClose(() => false);
+    this.listening.abort();
 
     if (isClosedLater) {
       const { window } = this.handle;
@@ -1275,8 +1299,8 @@ class WindowHost {
 
   // Asked on both ways a window closes (handle.close() does not raise
   // AppWindow.Closing); a window that is going is saved where it stands.
-  private isCloseRefused() {
-    const isRefused = this.props.onclosing?.() === true;
+  private isCloseRefused(event: WindowEvent<"closing">) {
+    const isRefused = this.props.onclosing?.(event) === true || event.defaultPrevented || event.args.cancel;
     if (!isRefused) {
       this.keeper?.saveNow();
     }
@@ -1285,38 +1309,41 @@ class WindowHost {
   }
 
   private listen() {
-    const { window } = this.handle;
-    this.unsubscribe.push(
-      window.onActivated((_sender, event) => {
-        this.props.onactivechanged?.(event.windowActivationState !== WindowActivationState.Deactivated);
-      }),
-      window.appWindow.onClosing((_sender, event) => {
-        event.cancel = this.isCloseRefused();
-      }),
-      window.onClosed(() => {
-        // A DesktopAcrylicController left attached crashes the process when the
-        // window goes (access violation at exit).
-        this.releaseBackdrop?.();
-        this.releaseBackdrop = null;
-        this.props.onclosed?.();
-      }),
-      this.content.onLayoutUpdated(() => this.fitToContent()),
-      window.appWindow.onChanged((_sender, event) => {
-        const isMoved = event.didPositionChange || event.didSizeChange;
-        if (isMoved) {
-          this.reportBounds();
-        }
+    const { handle } = this;
+    const options = { signal: this.listening.signal };
+    handle.addEventListener("activated", event => {
+      this.props.onactivated?.(event);
+      this.props.onactivechanged?.(event.args.windowActivationState !== WindowActivationState.Deactivated);
+    }, options);
+    handle.addEventListener("closed", event => {
+      // A DesktopAcrylicController left attached crashes the process when the
+      // window goes (access violation at exit).
+      this.releaseBackdrop?.();
+      this.releaseBackdrop = null;
+      this.props.onclosed?.(event);
+    }, options);
+    handle.addEventListener("changed", event => {
+      const { args } = event;
+      const isMoved = args.didPositionChange || args.didSizeChange;
+      if (isMoved) {
+        this.reportBounds();
+      }
 
-        const isStateChange = isMoved || event.didPresenterChange;
-        if (isStateChange) {
-          this.keeper?.changed();
-        }
+      const isStateChange = isMoved || args.didPresenterChange;
+      if (isStateChange) {
+        this.keeper?.changed();
+      }
 
-        if (event.didSizeChange) {
-          this.syncShape();
-        }
-      })
-    );
+      if (args.didSizeChange) {
+        this.syncShape();
+      }
+
+      this.props.onchanged?.(event);
+    }, options);
+    handle.addEventListener("sizechanged", event => this.props.onsizechanged?.(event), options);
+    handle.addEventListener("visibilitychanged", event => this.props.onvisibilitychanged?.(event), options);
+    handle.addEventListener("destroying", event => this.props.ondestroying?.(event), options);
+    this.unsubscribe.push(this.content.onLayoutUpdated(() => this.fitToContent()));
   }
 
   // XamlRoot, which reports the scale, exists once the content is loaded.

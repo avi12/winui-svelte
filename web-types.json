@@ -26826,15 +26826,36 @@
               }
             },
             {
+              "name": "onactivated",
+              "description": "The SDK's `Window.Activated`: the window was activated or deactivated."
+            },
+            {
               "name": "onactivechanged",
               "description": "The window became the active one (true) or lost that to another (false)."
             },
             {
               "name": "onclosing",
-              "description": "The window is about to close (the user's close button, Alt+F4, or `handle.close()`). Returning true keeps it open: ask the user, then close it again from code. Anything else lets it close."
+              "description": "The window is about to close (the user's close button, Alt+F4, or `handle.close()`). `event.args.cancel = true`, as in WinUI, `event.preventDefault()` or returning true keeps it open: ask the user, then close it again from code. Anything else lets it close."
             },
             {
-              "name": "onclosed"
+              "name": "onclosed",
+              "description": "The SDK's `Window.Closed`."
+            },
+            {
+              "name": "onchanged",
+              "description": "The SDK's `AppWindow.Changed`: the position, size, presenter or visibility changed."
+            },
+            {
+              "name": "onsizechanged",
+              "description": "The SDK's `Window.SizeChanged`."
+            },
+            {
+              "name": "onvisibilitychanged",
+              "description": "The SDK's `Window.VisibilityChanged`."
+            },
+            {
+              "name": "ondestroying",
+              "description": "The SDK's `AppWindow.Destroying`."
             },
             {
               "name": "onscalechanged",

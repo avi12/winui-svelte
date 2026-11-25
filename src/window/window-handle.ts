@@ -8,6 +8,7 @@ import type { OpenFilePickerOptions, PickerOptions, SaveFilePickerOptions } from
 import { pickFile, pickFilePaths, pickFolder, saveFile } from "./pickers.ts";
 import { createTaskbarButton } from "./taskbar.ts";
 import type { TaskbarButton } from "./taskbar.ts";
+import { WindowEvent, WindowEventTarget } from "./events/window-events.ts";
 import { WindowControlsOverlay, windowTitleBarSource } from "#src/web-apis/window-controls-overlay.js";
 import { WindowGeometry } from "#src/web-apis/window-geometry.js";
 import { bringWindowToFront } from "#src/win32-foreground.js";
@@ -24,10 +25,7 @@ import {
  * What app code does with an open window: `bind:handle` on `<Window>` gives it
  * one. The native Window and AppWindow are there for what this does not cover.
  */
-export class WindowHandle {
-  /** The native WinUI window. */
-  readonly window: Window;
-
+export class WindowHandle extends WindowEventTarget {
   /**
    * The window's size and place as the web has them: `outerWidth`,
    * `screenX`, `resizeTo`, `moveBy` and the rest, in CSS pixels.
@@ -39,7 +37,7 @@ export class WindowHandle {
   private overlay: WindowControlsOverlay | undefined;
 
   constructor(window: Window) {
-    this.window = window;
+    super(window);
     this.geometry = new WindowGeometry(window.appWindow, () => this.scale);
     window.onClosed(() => {
       this.isClosed = true;
@@ -239,11 +237,26 @@ export class WindowHandle {
     this.closeGuard = guard;
   }
 
-  /** Closes the window, unless the window component's `onClosing` keeps it open. Closing a closed window is a no-op. */
+  /**
+   * Closes the window, unless a `closing` listener, the window component's
+   * `onclosing` or the guard keeps it open. Closing a closed window is a no-op.
+   */
   close() {
-    const isCloseAllowed = !this.isClosed && !this.closeGuard();
-    if (isCloseAllowed) {
+    const isKeptOpen = this.isClosed || !this.isCloseAccepted() || this.closeGuard();
+    if (!isKeptOpen) {
       this.window.close();
     }
+  }
+
+  // The SDK raises no Closing for Window.Close(), so the listeners are asked here.
+  private isCloseAccepted() {
+    const args = { cancel: false };
+    const isAllowed = this.dispatchEvent(
+                        new WindowEvent({
+      type: "closing",
+      args
+    })
+                      );
+    return isAllowed && !args.cancel;
   }
 }
