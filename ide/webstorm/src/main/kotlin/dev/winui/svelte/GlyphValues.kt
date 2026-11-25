@@ -53,13 +53,14 @@ internal object GlyphValues {
       return listOf(GlyphSpot(TextRange.from(nameStart, value.value.length), codePoint))
     }
 
-    val strings = STRING_LITERAL
-      .findAll(value.text)
-      .mapNotNull { literal ->
-        val name = literal.groups[2] ?: return@mapNotNull null
-        val codePoint = codePointOf(name.value) ?: return@mapNotNull null
-        GlyphSpot(TextRange.from(start + name.range.first, name.value.length), codePoint)
-      }.toList()
+    val strings =
+      STRING_LITERAL
+        .findAll(value.text)
+        .mapNotNull { literal ->
+          val name = literal.groups[2] ?: return@mapNotNull null
+          val codePoint = codePointOf(name.value) ?: return@mapNotNull null
+          GlyphSpot(TextRange.from(start + name.range.first, name.value.length), codePoint)
+        }.toList()
     return strings + constantSpots(value)
   }
 
