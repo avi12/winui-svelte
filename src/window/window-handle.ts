@@ -233,6 +233,8 @@ export class WindowHandle extends WindowEventTarget {
    * open. WinUI's own Closing event is raised only for a close the user
    * asks for (the close button, Alt+F4), not for Window.Close().
    */
+  // Public API for apps; `<Window>` itself listens to `closing`.
+  // fallow-ignore-next-line unused-class-member
   guardClose(guard: () => boolean) {
     this.closeGuard = guard;
   }

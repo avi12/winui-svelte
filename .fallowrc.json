@@ -236,6 +236,8 @@
   // from package.json scripts, and the editor check starts the Svelte language
   // server as a process.
   "ignoreDependencies": [
+    // tsrs and tsc load it as the DOM library (`libReplacement`).
+    "@typescript/lib-dom",
     "@winapp/bindings",
     "tsrs",
     "@sveltejs/package",
