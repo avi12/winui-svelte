@@ -793,7 +793,7 @@
     "svelte-language-server": "0.18.5",
     "tsrs": "7.1.0-beta.tsrs5",
     "typescript": "^6.0.3",
-    "vite": "8.3.4"
+    "vite": "8.3.8"
   },
   "winapp": {
     "jsBindings": {
