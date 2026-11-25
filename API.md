@@ -8235,11 +8235,13 @@ queued run before the next message, as they do for a browser's events
 
 When no message is waiting the pump sleeps in `MsgWaitForMultipleObjectsEx`,
 which ends the moment a message arrives
-libuv cannot be heard by that wait, so a helper thread
-(`src/window/libuv-wake.ts`) waits on the loop's I/O completion port while the
-UI thread sleeps; when a file read, a socket, a port or worker message or a
-child process has something for libuv, it puts the packet back and signals an
-event the wait includes, and the pump wakes to give libuv its turn
+The wait includes libuv's own I/O completion port (`src/window/libuv-wake.ts`),
+which is signalled when a file read, a socket, a port or worker message or a
+child process has something for libuv, so the pump wakes to give libuv its turn
+Microsoft does not document waiting on a completion port, though Windows' own
+`CoreMessaging.dll` does it; it is tried on a port of its own at start, and
+where it does not work a helper thread waits on libuv's port instead, puts each
+packet back and signals an event the wait includes
 An idle window then sleeps up to 250 ms at a time (a safety net for what no
 event announces, such as an unreferenced timer) and uses next to no CPU
 The one thing nobody can ask libuv from outside is when its next timer fires:

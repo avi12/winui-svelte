@@ -1,4 +1,4 @@
-import { changeEvent, createNamedEvent, openNamedEvent, waitForEvent } from "./native.ts";
+import { changeEvent, createNamedEvent, openNamedEvent, waitForHandle } from "./native.ts";
 import { isMainThread } from "node:worker_threads";
 
 // A host that calls `process.exit` while the window's thread is still in
@@ -83,8 +83,8 @@ export function guardProcessExit() {
     const names = namesOf(process.pid);
     const running = openNamedEvent(names.running);
     const isPublished = running !== NO_EVENT;
-    const isRunning = isPublished && waitForEvent({
-      event: running,
+    const isRunning = isPublished && waitForHandle({
+      handle: running,
       milliseconds: NOT_WAITING
     });
     if (!isRunning) {
@@ -95,8 +95,8 @@ export function guardProcessExit() {
       event: openNamedEvent(names.request),
       isSet: true
     });
-    waitForEvent({
-      event: openNamedEvent(names.done),
+    waitForHandle({
+      handle: openNamedEvent(names.done),
       milliseconds: REQUEST_WAIT_MILLISECONDS
     });
   });

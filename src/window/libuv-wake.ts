@@ -1,14 +1,15 @@
-import { createNamedEvent, findLoopCompletionPort } from "./native.ts";
+import { createNamedEvent, findLoopCompletionPort, isCompletionPortWaitable } from "./native.ts";
 import { createRequire } from "node:module";
 import { Worker } from "node:worker_threads";
 
 // What lets the UI thread sleep while libuv has nothing to do. The thread's
 // loop is the message pump (message-pump.ts): it blocks in the message wait,
-// and the Win32 message wait cannot hear libuv, whose completions (files,
-// sockets, worker and port messages, child processes) arrive on its I/O
-// completion port. A helper thread therefore waits on that port while the UI
-// thread sleeps, and when something arrives it puts the packet back (libuv
-// reads it on its next turn) and signals an event the message wait includes.
+// and libuv's completions (files, sockets, worker and port messages, child
+// processes) arrive on its I/O completion port. The message wait includes that
+// port itself, which is signalled while a packet is queued. Where a port
+// cannot be waited on, a helper thread waits on it while the UI thread sleeps,
+// and when something arrives it puts the packet back (libuv reads it on its
+// next turn) and signals an event the message wait includes instead.
 // Timers are the one thing nobody can ask libuv about from outside: a timer
 // Node itself made (a socket timeout) shows in the active resources and keeps
 // a short poll; the timers an app makes go through the scheduler, which the
@@ -173,8 +174,8 @@ const WATCHER_SOURCE = `(${watchCompletionPort.toString()})(require("node:worker
 
 /** What `createMessageSource` sleeps with. */
 export interface LibuvWake {
-  /** The event handle the message wait includes; signalled when libuv has work. */
-  readonly event: bigint;
+  /** The handle the message wait includes; signalled when libuv has work. */
+  readonly handle: bigint;
 
   /** How long the thread may sleep now. */
   idleMilliseconds(): number;
@@ -189,17 +190,22 @@ export interface LibuvWake {
   stop(): void;
 }
 
-/**
- * Starts listening to this thread's libuv loop from a helper thread; undefined
- * when the loop's completion port cannot be found (then the thread polls).
- */
-export function startLibuvWake() {
-  const iocp = findLoopCompletionPort();
-  const isMissing = iocp === undefined;
-  if (isMissing) {
-    return undefined;
-  }
+function idleMillisecondsNow() {
+  return idleMillisecondsFor(process.getActiveResourcesInfo());
+}
 
+// The wait reads the port without taking from it, so there is nothing to start or stop.
+function waitOnPort(port: bigint) {
+  return {
+    handle: port,
+    idleMilliseconds: idleMillisecondsNow,
+    arm() {},
+    disarm() {},
+    stop() {}
+  } satisfies LibuvWake;
+}
+
+function watchFromThread(iocp: bigint) {
   const event = createNamedEvent({
     name: null,
     isSet: false,
@@ -236,8 +242,8 @@ export function startLibuvWake() {
   });
   worker.unref();
   return {
-    event,
-    idleMilliseconds: () => idleMillisecondsFor(process.getActiveResourcesInfo()),
+    handle: event,
+    idleMilliseconds: idleMillisecondsNow,
     arm() {
       Atomics.store(mode, 0, SLEEPING);
       Atomics.notify(mode, 0);
@@ -251,4 +257,23 @@ export function startLibuvWake() {
       Atomics.notify(mode, 0);
     }
   } satisfies LibuvWake;
+}
+
+/**
+ * Starts listening to this thread's libuv loop; undefined when the loop's
+ * completion port cannot be found (then the thread polls).
+ *
+ * @param options - `isPortWaitable`: whether the message wait can include the
+ * port itself; tried on this system by default, and false starts the helper thread.
+ */
+export function startLibuvWake({ isPortWaitable = isCompletionPortWaitable }: {
+  readonly isPortWaitable?: () => boolean;
+} = {}) {
+  const iocp = findLoopCompletionPort();
+  const isMissing = iocp === undefined;
+  if (isMissing) {
+    return undefined;
+  }
+
+  return isPortWaitable() ? waitOnPort(iocp) : watchFromThread(iocp);
 }

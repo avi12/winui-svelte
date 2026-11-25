@@ -488,6 +488,8 @@ const MWMO_INPUTAVAILABLE = 4;
 const HANDLE_BYTES = 8;
 const WAIT_FAILED = 0xffffffff;
 const WAIT_OBJECT_0 = 0;
+// INVALID_HANDLE_VALUE: CreateIoCompletionPort makes a port tied to no file.
+const NO_FILE_HANDLE = 0xffffffffffffffffn;
 const TIMER_PERIOD_MILLISECONDS = 1;
 
 // ContentPreTranslateMessage is exported by the Windows App SDK's
@@ -535,7 +537,7 @@ export function createMessageSource({ wake, hostExit }: {
   const removeFromQueue = DynWin32.u32(PM_REMOVE);
   const anyInput = DynWin32.u32(QS_ALLINPUT);
   const inputAvailable = DynWin32.u32(MWMO_INPUTAVAILABLE);
-  const events = [wake?.event, hostExit?.event].filter(event => event !== undefined);
+  const events = [wake?.handle, hostExit?.event].filter(handle => handle !== undefined);
   const wakeHandles = DynComRawMemory.allocate(HANDLE_BYTES * 2, HANDLE_BYTES);
   for (const [iEvent, event] of events.entries()) {
     wakeHandles.writeU64(iEvent * HANDLE_BYTES, event);
@@ -766,6 +768,57 @@ export function createNamedEvent({ name, isSet, isAutoReset }: {
   }
 }
 
+/**
+ * Whether a wait can listen to an I/O completion port: signalled while a packet is queued, not while the port is
+ * empty. Windows' own CoreMessaging relies on it and Microsoft documents it nowhere, so it is tried on a port of
+ * its own before libuv's is waited on.
+ */
+export function isCompletionPortWaitable() {
+  const create = bind({
+    dll: "kernel32.dll",
+    entryPoint: "CreateIoCompletionPort",
+    parameters: ["pointer", "pointer", "u64", "u32"],
+    returnType: "pointer"
+  });
+  const post = bind({
+    dll: "kernel32.dll",
+    entryPoint: "PostQueuedCompletionStatus",
+    parameters: ["pointer", "u32", "u64", "pointer"],
+    returnType: "i32"
+  });
+  const close = bind({
+    dll: "kernel32.dll",
+    entryPoint: "CloseHandle",
+    parameters: ["pointer"],
+    returnType: "i32"
+  });
+  const created = create.invoke([
+    DynWin32Unsafe.pointer(NO_FILE_HANDLE),
+    pointerOf(null),
+    DynWin32.u64(0n),
+    DynWin32.u32(1)
+  ]).returnValue;
+  const port = addressOf(created);
+  if (!port) {
+    return false;
+  }
+
+  function isSignalled() {
+    return waitForHandle({
+      handle: port,
+      milliseconds: 0
+    });
+  }
+
+  try {
+    const wasSignalledEmpty = isSignalled();
+    post.invoke([DynWin32Unsafe.pointer(port), DynWin32.u32(0), DynWin32.u64(0n), pointerOf(null)]);
+    return !wasSignalledEmpty && isSignalled();
+  } finally {
+    close.invoke([DynWin32Unsafe.pointer(port)]);
+  }
+}
+
 /** The named event `name` if some thread of this process made it; 0n when none did. */
 export function openNamedEvent(name: string) {
   const open = bind({
@@ -796,9 +849,9 @@ export function changeEvent({ event, isSet }: {
   change.invoke([DynWin32Unsafe.pointer(event)]);
 }
 
-/** Waits for the event; true when it is signalled. */
-export function waitForEvent({ event, milliseconds }: {
-  event: bigint;
+/** Waits for a waitable handle, an event for one; true when it is signalled. */
+export function waitForHandle({ handle, milliseconds }: {
+  handle: bigint;
   milliseconds: number;
 }) {
   const wait = bind({
@@ -807,6 +860,6 @@ export function waitForEvent({ event, milliseconds }: {
     parameters: ["pointer", "u32"],
     returnType: "u32"
   });
-  const result = wait.invoke([DynWin32Unsafe.pointer(event), DynWin32.u32(milliseconds)]).returnValue;
+  const result = wait.invoke([DynWin32Unsafe.pointer(handle), DynWin32.u32(milliseconds)]).returnValue;
   return numberOf(result) === WAIT_OBJECT_0;
 }
