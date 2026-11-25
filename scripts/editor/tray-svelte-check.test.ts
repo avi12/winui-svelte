@@ -1,3 +1,4 @@
+import { TSRS } from "#scripts/tsrs.ts";
 import { lowerTraySvelte } from "#src/vite/entrypoints/lower-tray-svelte.js";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
@@ -87,7 +88,7 @@ test("the lowered code of the example type-checks against defineTray", { timeout
     })
   );
   const result = spawnSync(process.execPath, [
-    require.resolve("typescript/bin/tsc"),
+    TSRS,
     "--noEmit",
     "--project",
     path.join(CLI_FOLDER, "tsconfig.lowered.json")

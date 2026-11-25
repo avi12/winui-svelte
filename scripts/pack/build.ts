@@ -10,7 +10,9 @@ import {
   SOURCE_FOLDER,
   writeIfChanged
 } from "#scripts/pack/dist-files.ts";
+import { TSRS } from "#scripts/tsrs.ts";
 import { WINAPP_BINARIES, WINAPP_BINDINGS } from "#scripts/winapp-paths.ts";
+import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import {
   copyFileSync,
@@ -26,10 +28,9 @@ import {
 } from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
-import typescript from "typescript";
 
 // Builds dist/, what is published: the TypeScript compiled to JavaScript with
-// its declarations (tsc), and the Svelte pieces shipped as source, the way
+// its declarations (tsrs), and the Svelte pieces shipped as source, the way
 // Svelte libraries are, for the app's own Vite to compile with the custom
 // renderer:
 //
@@ -41,13 +42,14 @@ import typescript from "typescript";
 //   .json          data the code reads next to itself.
 //
 // (@sveltejs/package, the usual tool, hands a *.d.svelte.ts file to TypeScript
-// as source and fails, so tsc and a copy do it.)
+// as source and fails, so tsrs and a copy do it.)
 
 // What `pnpm bindings` (winapp) generates from WinUI's metadata, and where
 // package.json's `#winui/*` finds it once built. Shipped whole: they declare
 // `"sideEffects": false`, so an app's bundler keeps only the controls it uses.
 const GENERATED_BINDINGS = WINAPP_BINDINGS;
 const SHIPPED_BINDINGS = path.join(OUTPUT_FOLDER, "bindings");
+const EMIT_FOLDER = path.join(PACKAGE_ROOT, ".emit");
 // The Windows App SDK bootstrapper `winapp restore` puts in .winapp/bin, per
 // architecture, and where initWindowsAppSdk finds it once built.
 const RESTORED_BOOTSTRAPPERS = WINAPP_BINARIES;
@@ -177,36 +179,33 @@ function resolveSourceAliases() {
 // The type check belongs to `pnpm check` (and so to lint, which every release
 // runs), so the build only fails when nothing was emitted: that way an area's
 // refactor can be built and tested while another area still has type errors to
-// fix. Each output goes through writeIfChanged, so a file the change did not
-// alter keeps its bytes and its time.
-const ERROR_SEPARATOR = "\n";
-
+// fix. tsrs emits into a folder beside dist/, as deep as it so that source maps
+// point the same way, and each output goes through writeIfChanged, so a file the
+// change did not alter keeps its bytes and its time.
 function compile() {
+  clearFolder(EMIT_FOLDER);
   const configPath = path.join(PACKAGE_ROOT, "tsconfig.build.json");
-  const config = typescript.getParsedCommandLineOfConfigFile(configPath, {}, {
-    ...typescript.sys,
-    onUnRecoverableConfigFileDiagnostic(diagnostic) {
-      throw new Error(typescript.flattenDiagnosticMessageText(diagnostic.messageText, ERROR_SEPARATOR));
-    }
+  spawnSync(process.execPath, [TSRS, "-p", configPath, "--outDir", EMIT_FOLDER], {
+    cwd: PACKAGE_ROOT,
+    stdio: "inherit"
   });
-  const isUnreadable = config === undefined;
-  if (isUnreadable) {
-    throw new Error(`${configPath} could not be read`);
+  const emitted = existsSync(EMIT_FOLDER) ? filesIn(EMIT_FOLDER) : [];
+  const isNothingEmitted = emitted.length === 0;
+  if (isNothingEmitted) {
+    throw new Error("tsrs emitted nothing");
   }
 
-  const program = typescript.createProgram({
-    rootNames: config.fileNames,
-    options: config.options
-  });
-  const result = program.emit(undefined, (file, content) => {
+  for (const file of emitted) {
     writeIfChanged({
-      file,
-      content
+      file: path.join(OUTPUT_FOLDER, path.relative(EMIT_FOLDER, file)),
+      content: readFileSync(file, "utf8")
     });
-  });
-  if (result.emitSkipped) {
-    throw new Error("tsc emitted nothing");
   }
+
+  rmSync(EMIT_FOLDER, {
+     force: true,
+     recursive: true 
+  });
 }
 
 // Whether a file of dist/ still has a source: itself a shipped copy, or the
@@ -263,8 +262,8 @@ function filesOf(input: string) {
 
 function inputsStamp() {
   const hash = createHash("sha256");
-  const typescriptVersion = createRequire(import.meta.url)("typescript/package.json").version;
-  hash.update(`${process.version} ${typescriptVersion}\n`);
+  const compilerVersion = createRequire(import.meta.url)("tsrs/package.json").version;
+  hash.update(`${process.version} ${compilerVersion}\n`);
   for (const file of BUILD_INPUTS.flatMap(filesOf)) {
     const stat = statSync(file, { throwIfNoEntry: false });
     hash.update(`${file} ${stat?.size} ${stat?.mtimeMs}\n`);

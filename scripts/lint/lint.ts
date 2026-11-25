@@ -1,15 +1,22 @@
 import { pnpmInvocation } from "#scripts/package-manager.ts";
 import { spawn } from "node:child_process";
+import { availableParallelism, freemem } from "node:os";
 import path from "node:path";
 
 // `pnpm lint`: every check, whether or not another failed, so a single run
-// lists everything to fix. Exits 1 if any step failed. Steps run side by side
-// (at most MAX_PARALLEL at once), each after the steps it needs; a step's
-// output is printed whole when it ends, so the lines of two never interleave.
+// lists everything to fix. Exits 1 if any step failed. As many steps run side
+// by side as the free memory and the processors allow, each after the steps it
+// needs; a step's output is printed whole when it ends, with the time it took,
+// so the lines of two never interleave.
 // `pnpm lint:summary` counts what they report per rule and folder.
 
 const PACKAGE_ROOT = path.join(import.meta.dirname, "..", "..");
-const MAX_PARALLEL = 4;
+const BYTES_PER_GIGABYTE = 1024 ** 3;
+// The share of the free memory the steps may take together; the rest is left to the machine.
+const MEMORY_SHARE = 0.8;
+const MEMORY_BUDGET = freemem() / BYTES_PER_GIGABYTE * MEMORY_SHARE;
+const LIGHT_GIGABYTES = 0.5;
+const MILLISECONDS_PER_SECOND = 1000;
 const BUILD = "build";
 const IS_FULL = process.argv.includes("--full");
 
@@ -22,15 +29,17 @@ interface Step {
   name: string;
   needs: string[];
   isAlone?: true;
-  isHeavy?: true;
+
+  /** The memory the step holds at its peak; a light step's when left out. */
+  gigabytes?: number;
   isFullOnly?: true;
 }
 
 // `isAlone`: WebStorm resolves types under a timeout, so a loaded machine makes
 // it underline code that is fine; it runs last, with nothing beside it.
-// `isHeavy`: a step that holds gigabytes (a TypeScript program, many checker
-// processes); at most one runs at a time, so the peak is the largest of them,
-// not their sum.
+// `gigabytes`: what a TypeScript program or many checker processes hold; the
+// steps running at once stay within the budget, and a step larger than the
+// whole budget runs alone.
 // `isFullOnly`: the IDE inspections (WebStorm about 5 GB) and the packed-
 // tarball check (about 3.7 GB, 8 minutes) hold the most memory, so only
 // `pnpm lint:full`, which CI and a release run, includes them.
@@ -58,20 +67,25 @@ const ALL_STEPS: Step[] = [
     needs: [BUILD]
   },
   {
-    name: "check",
+    name: "check:svelte",
     needs: [BUILD],
-    isHeavy: true
+    gigabytes: 3
+  },
+  {
+    name: "check:types",
+    needs: [BUILD],
+    gigabytes: 2
   },
   {
     name: "check:editor",
     needs: [BUILD],
-    isHeavy: true,
+    gigabytes: 3,
     isFullOnly: true
   },
   {
     name: "check:package",
     needs: [BUILD],
-    isHeavy: true,
+    gigabytes: 4,
     isFullOnly: true
   },
   {
@@ -85,7 +99,7 @@ const ALL_STEPS: Step[] = [
   {
     name: "lint:kotlin",
     needs: [],
-    isHeavy: true
+    gigabytes: 2
   },
   {
     name: "fallow",
@@ -110,6 +124,10 @@ const ALL_STEPS: Step[] = [
 ];
 
 const STEPS = ALL_STEPS.filter(({ isFullOnly }) => IS_FULL || isFullOnly !== true);
+
+function gigabytesOf({ gigabytes = LIGHT_GIGABYTES }: Step) {
+  return gigabytes;
+}
 
 function runStep(name: string) {
   const invocation = pnpmInvocation(["run", name]);
@@ -137,7 +155,7 @@ async function main() {
   const finished = new Set<string>();
   const started = new Set<string>();
   let running = 0;
-  let heavyRunning = 0;
+  let heldGigabytes = 0;
   await new Promise<void>(done => {
     function schedule() {
       const isAllStarted = started.size === STEPS.length;
@@ -151,22 +169,25 @@ async function main() {
         const isWaiting = step.needs.some(need => !finished.has(need));
         const isWaitingForTheRest = step.isAlone === true
           && (running > 0 || STEPS.some(other => other.isAlone !== true && !finished.has(other.name)));
-        const isWaitingForHeavy = step.isHeavy === true && heavyRunning > 0;
+        const isWaitingForMemory = running > 0 && heldGigabytes + gigabytesOf(step) > MEMORY_BUDGET;
         const isStartable = !started.has(step.name) && !isWaiting && !isWaitingForTheRest
-          && !isWaitingForHeavy && running < MAX_PARALLEL;
+          && !isWaitingForMemory && running < availableParallelism();
         if (isStartable) {
           void start(step);
         }
       }
     }
 
-    async function start({ name, isHeavy }: Step) {
+    async function start(step: Step) {
+      const { name } = step;
       started.add(name);
       running += 1;
-      heavyRunning += isHeavy === true ? 1 : 0;
+      heldGigabytes += gigabytesOf(step);
       console.log(`==> pnpm ${name}`);
+      const startedAt = performance.now();
       const { isOk, output } = await runStep(name);
-      process.stdout.write(`\n==> pnpm ${name}: ${isOk ? "passed" : "FAILED"}\n${output}`);
+      const seconds = Math.round((performance.now() - startedAt) / MILLISECONDS_PER_SECOND);
+      process.stdout.write(`\n==> pnpm ${name}: ${isOk ? "passed" : "FAILED"} in ${seconds} s\n${output}`);
 
       if (!isOk) {
         failed.push(name);
@@ -174,7 +195,7 @@ async function main() {
 
       finished.add(name);
       running -= 1;
-      heavyRunning -= isHeavy === true ? 1 : 0;
+      heldGigabytes -= gigabytesOf(step);
       schedule();
     }
 

@@ -2,6 +2,8 @@
 node_modules/
 # pnpm build: the published output.
 dist/
+# What tsrs emits before the build copies it into dist/.
+.emit/
 # The tarballs pnpm pack makes for the package check.
 *.tgz
 .claude/worktrees/

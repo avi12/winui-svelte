@@ -141,7 +141,7 @@ function tscViolations() {
   const violations: Violation[] = [];
   for (const project of TSC_PROJECTS) {
     const output = run({
-      binary: "typescript/bin/tsc",
+      binary: "tsrs/bin/tsrs",
       argumentList: ["--noEmit", "--pretty", "false", "-p", project]
     });
     for (const line of output.split("\n")) {

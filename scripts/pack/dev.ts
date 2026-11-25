@@ -8,15 +8,15 @@ import {
   shippedTarget,
   SOURCE_FOLDER
 } from "#scripts/pack/dist-files.ts";
+import { TSRS } from "#scripts/tsrs.ts";
 import { spawn, spawnSync } from "node:child_process";
 import { existsSync, rmSync, watch } from "node:fs";
-import { createRequire } from "node:module";
 import path from "node:path";
 
 // Keeps dist/ current while the sources change, for an app that links this
-// package: one build, then tsc's own watcher for the TypeScript and, for what
-// tsc does not emit, a copy of each .svelte, declaration and .json file the
-// moment it is saved. tsc writes `#src/` imports that dist/ cannot resolve, so
+// package: one build, then tsrs's own watcher for the TypeScript and, for what
+// tsrs does not emit, a copy of each .svelte, declaration and .json file the
+// moment it is saved. tsrs writes `#src/` imports that dist/ cannot resolve, so
 // each file it emits is rewritten as the full build does.
 
 const BUILD_SCRIPT = path.join(import.meta.dirname, "build.ts");
@@ -27,7 +27,7 @@ function isReadError(error: unknown) {
   return error instanceof Error && "code" in error && ["EBUSY", "ENOENT", "EPERM"].includes(String(error.code));
 }
 
-// A file tsc is still writing, or an editor is saving, cannot be read yet.
+// A file tsrs is still writing, or an editor is saving, cannot be read yet.
 function retrying(action: () => void) {
   try {
     action();
@@ -110,8 +110,7 @@ if (IS_BUILD_FAILED) {
   process.exit(built.status ?? 1);
 }
 
-const TSC = createRequire(import.meta.url).resolve("typescript/bin/tsc");
-const compiler = spawn(process.execPath, [TSC, "-p", path.join(PACKAGE_ROOT, "tsconfig.build.json"), "--watch", "--preserveWatchOutput"], {
+const compiler = spawn(process.execPath, [TSRS, "-p", path.join(PACKAGE_ROOT, "tsconfig.build.json"), "--watch", "--preserveWatchOutput"], {
   cwd: PACKAGE_ROOT,
   stdio: "inherit"
 });
