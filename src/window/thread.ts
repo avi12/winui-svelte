@@ -2,7 +2,7 @@ import { installUiTimers } from "./install-timers.ts";
 import { roInitialize } from "@microsoft/dynwinrt";
 
 // The UI thread: a worker, so the host's main thread stays its own (WinUI's
-// messages and libuv take turns here, see message-pump.ts). Its apartment
+// messages and libuv take turns here, see loop/message-pump.ts). Its apartment
 // comes first, so everything loaded after it may create WinRT objects as it
 // loads. This file imports nothing of WinRT for that reason (the timers it
 // installs are plain JavaScript): `main` loads the rest.

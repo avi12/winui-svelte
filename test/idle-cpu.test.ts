@@ -5,7 +5,7 @@ import { test } from "node:test";
 
 // A window with nothing to do costs next to nothing, and never a full core.
 // The UI thread sleeps in the message wait until a message arrives or libuv
-// has work (src/window/libuv-wake.ts), the tray icon reads the pointer only
+// has work (src/window/loop/libuv-wake.ts), the tray icon reads the pointer only
 // near the taskbar, and a message from the host still reaches the window at
 // once. The windows sit idle on the test's own desktop and the processor time
 // of their process is read over many short stretches in every run, because a

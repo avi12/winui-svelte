@@ -1,4 +1,4 @@
-import { createNamedEvent, findLoopCompletionPort, isCompletionPortWaitable } from "./native.ts";
+import { createNamedEvent, findLoopCompletionPort, isCompletionPortWaitable } from "#src/window/native.js";
 import { createRequire } from "node:module";
 import { Worker } from "node:worker_threads";
 

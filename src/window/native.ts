@@ -1,8 +1,8 @@
 import type { HostExitRequest } from "./host-exit.ts";
-import type { LibuvWake } from "./libuv-wake.ts";
+import type { LibuvWake } from "./loop/libuv-wake.ts";
 import { runMessageHooks } from "./message-hooks.ts";
-import type { MessageQueue, MessageSource } from "./message-pump.ts";
-import { dispatchNextMessage } from "./message-pump.ts";
+import type { MessageQueue, MessageSource } from "./loop/message-pump.ts";
+import { dispatchNextMessage } from "./loop/message-pump.ts";
 import { DynComRawMemory } from "@microsoft/dynwinrt/com/unsafe/raw";
 import { DynWin32, DynWin32Unsafe } from "@microsoft/dynwinrt/win32/unsafe";
 import {

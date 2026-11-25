@@ -8,7 +8,7 @@ import { test } from "node:test";
 // to the content of the keys example (examples/keys) through its own message
 // queue, the one the real keyboard's messages arrive in. The message pump
 // offers each message to ContentPreTranslateMessage before TranslateMessage
-// and DispatchMessage, as WinUI's own loop does (src/window/message-pump.ts):
+// and DispatchMessage, as WinUI's own loop does (src/window/loop/message-pump.ts):
 // accelerators, access keys, focus navigation and the text input path are
 // handled there. Skipped where the Windows App SDK was not restored.
 

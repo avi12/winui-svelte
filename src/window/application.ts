@@ -1,6 +1,6 @@
 import { publishWindowLoop } from "./host-exit.ts";
-import { startLibuvWake } from "./libuv-wake.ts";
-import { createMessagePump } from "./message-pump.ts";
+import { startLibuvWake } from "./loop/libuv-wake.ts";
+import { createMessagePump } from "./loop/message-pump.ts";
 import { createMessageSource, requestFineTimerResolution } from "./native.ts";
 import { runTeardown } from "./teardown.ts";
 import { stopAllTimers, useDispatcherTimers } from "./timers.ts";
@@ -52,7 +52,7 @@ export interface RunWindowOptions {
  * promise settles when the application exits, and rejects with what `onStart`
  * threw.
  *
- * The thread's loop is the message pump (message-pump.ts), not
+ * The thread's loop is the message pump (loop/message-pump.ts), not
  * `Application.Start`'s own: WinUI's messages and libuv's callbacks take
  * turns, so everything Node does in the background (timers, `fs`, sockets,
  * `fetch`, `WebSocket`, worker messages, child processes) completes on this

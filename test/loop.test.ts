@@ -5,7 +5,7 @@ import { test } from "node:test";
 // The loop example (examples/loop) in a real WinUI window, off screen and
 // never activated: every kind of background work Node has completes on the UI
 // thread, whose libuv loop turns between WinUI's messages (src/window/
-// message-pump.ts), and the control shows what each one brought while an
+// loop/message-pump.ts), and the control shows what each one brought while an
 // interval keeps animating. Skipped where the Windows App SDK was not restored.
 
 const TIMEOUT_MILLISECONDS = 300_000;

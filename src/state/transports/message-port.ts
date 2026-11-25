@@ -3,7 +3,7 @@ import type { Frame as MessagingFrame } from "#src/messaging/frame.js";
 import type { MessagePort } from "node:worker_threads";
 
 // A worker's MessagePort, as Edge+'s main thread and window thread use one.
-// The UI thread's libuv turns between WinUI's messages (window/message-pump.ts),
+// The UI thread's libuv turns between WinUI's messages (window/loop/message-pump.ts),
 // so the port's own events fire there.
 
 /** A transport over a worker's MessagePort. */

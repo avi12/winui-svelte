@@ -8227,7 +8227,7 @@ entry point is named nowhere in the docs
 
 `runWindow` does not hand the UI thread to `Application.Start`, whose message
 loop blocks inside a libuv callback and keeps the thread's libuv from ever
-turning again; it runs a pump of its own (`src/window/message-pump.ts`)
+turning again; it runs a pump of its own (`src/window/loop/message-pump.ts`)
 Each turn of the pump dispatches one WinUI message, then gives libuv a turn
 (an immediate), so every callback Node delivers fires on the UI thread, between
 two messages, with no JavaScript under it: the promise continuations a handler
@@ -8235,7 +8235,7 @@ queued run before the next message, as they do for a browser's events
 
 When no message is waiting the pump sleeps in `MsgWaitForMultipleObjectsEx`,
 which ends the moment a message arrives
-The wait includes libuv's own I/O completion port (`src/window/libuv-wake.ts`),
+The wait includes libuv's own I/O completion port (`src/window/loop/libuv-wake.ts`),
 which is signalled when a file read, a socket, a port or worker message or a
 child process has something for libuv, so the pump wakes to give libuv its turn
 Microsoft does not document waiting on a completion port, though Windows' own

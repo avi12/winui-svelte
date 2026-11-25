@@ -1,5 +1,5 @@
 import { idleMillisecondsFor, startLibuvWake } from "./libuv-wake.ts";
-import { findLoopCompletionPort, isCompletionPortWaitable, waitForHandle } from "./native.ts";
+import { findLoopCompletionPort, isCompletionPortWaitable, waitForHandle } from "#src/window/native.js";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs";
 import { test } from "node:test";

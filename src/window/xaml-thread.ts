@@ -2,7 +2,7 @@ import { DynWinRtMethodSig, DynWinRtType, DynWinRtValue, WinGuid } from "@micros
 import { reportUiError } from "#src/ui-errors.js";
 
 // What `Application.Start` does before its loop, done by hand because the
-// loop is ours (message-pump.ts): a dispatcher queue on this thread, then the
+// loop is ours (loop/message-pump.ts): a dispatcher queue on this thread, then the
 // XAML framework on that queue. Neither class is in the generated bindings
 // (the app's `winapp.jsBindings` list does not carry them), so each is the one
 // method the setup needs, by its vtable slot: the first method of an
