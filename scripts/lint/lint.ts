@@ -44,7 +44,8 @@ interface Step {
 // tarball check (about 3.7 GB, 8 minutes) hold the most memory, so only
 // `pnpm lint:full`, which CI and a release run, includes them.
 // Longest first, so the slow ones start while the short ones fill the gaps.
-// Those that import `winui-svelte` read dist/, so they wait for the build.
+// Those that read dist/ (an import of `winui-svelte`, a `#winui/*` binding, a
+// generator's types) wait for the build: a fresh checkout has none.
 const ALL_STEPS: Step[] = [
   {
     name: "check:webstorm",
@@ -103,23 +104,23 @@ const ALL_STEPS: Step[] = [
   },
   {
     name: "fallow",
-    needs: []
+    needs: [BUILD]
   },
   {
     name: "gen:components:check",
-    needs: []
+    needs: [BUILD]
   },
   {
     name: "gen:css-data:check",
-    needs: []
+    needs: [BUILD]
   },
   {
     name: "gen:accessibility-rules:check",
-    needs: []
+    needs: [BUILD]
   },
   {
     name: "gen:ide-data:check",
-    needs: []
+    needs: [BUILD]
   }
 ];
 
