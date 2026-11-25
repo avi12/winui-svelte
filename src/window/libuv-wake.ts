@@ -122,11 +122,20 @@ function watchCompletionPort(data: WatcherData) {
   const { awake, sleeping, stopped } = data.states;
   // A wait that fails (the port is closed) returns at once, a timeout takes its time.
   const failedWithin = data.watchMilliseconds / 2;
-  while (Atomics.load(data.mode, 0) !== stopped) {
-    const isAwake = Atomics.load(data.mode, 0) === awake;
+  // One wait per turn of this worker's loop: the native objects a call makes are freed only
+  // between turns, so a loop that never returns keeps every one of them.
+  function watch() {
+    const current = Atomics.load(data.mode, 0);
+    const isStopped = current === stopped;
+    if (isStopped) {
+      return;
+    }
+
+    const isAwake = current === awake;
     if (isAwake) {
       Atomics.wait(data.mode, 0, awake);
-      continue;
+      setImmediate(watch);
+      return;
     }
 
     const started = performance.now();
@@ -135,11 +144,11 @@ function watchCompletionPort(data: WatcherData) {
     const isTimeout = received === 0;
     if (isTimeout) {
       const hasFailed = performance.now() - started < failedWithin;
-      if (hasFailed) {
-        return;
+      if (!hasFailed) {
+        setImmediate(watch);
       }
 
-      continue;
+      return;
     }
 
     for (let i = 0; i < received; i += 1) {
@@ -154,7 +163,10 @@ function watchCompletionPort(data: WatcherData) {
 
     signal.invoke([event]);
     Atomics.wait(data.mode, 0, sleeping, data.resumeMilliseconds);
+    setImmediate(watch);
   }
+
+  watch();
 }
 
 const WATCHER_SOURCE = `(${watchCompletionPort.toString()})(require("node:worker_threads").workerData)`;
