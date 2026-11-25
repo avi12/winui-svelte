@@ -169,7 +169,7 @@ After anything that removes or rewires code, run the dead-code audit (`pnpm fall
 # Commits and releases
 - Digestible commits: one self-contained logical change each, with a message saying what and why; large work lands as a sequence
 - `main` is the default branch
-- Releases go out only when asked: bump the version, `pnpm build`, `pnpm pack --dry-run` (check the file list and size), commit `chore(release): X.Y.Z` and push `main`, then create the GitHub release; never a local `pnpm publish`
+- Releases go out only when asked: bump the version, `pnpm gen:components` (`web-types.json` carries it), `pnpm build`, `pnpm pack --dry-run` (check the file list and size), commit `chore(release): X.Y.Z` and push `main`, then create the GitHub release; never a local `pnpm publish`
 - Creating the GitHub release is what publishes to npm: `.github/workflows/publish.yml` runs on `release: published`, checks the tag equals `package.json`'s version and runs `pnpm publish --provenance` (npm trusted publishing; a version already on npm is skipped)
   `gh release create vX.Y.Z --target main --title X.Y.Z --notes-file <notes>`: the notes list the highlights of the change log, grouped by what a user of the package sees, and link the commit range (`vPREVIOUS...vX.Y.Z`) for the rest
   When Claude writes the release, the notes end with the line `🤖 Generated with [Claude Code](https://claude.com/claude-code)`, so readers can see it was made with Claude
