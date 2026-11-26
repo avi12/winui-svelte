@@ -52,7 +52,7 @@ async function uploadField({ upload, blob }: {
     const bytes = new Uint8Array(await blob.arrayBuffer());
     return {
       name: upload.field,
-      value: bytes.toBase64(),
+      value: Buffer.from(bytes).toString("base64"),
       fileName: undefined
     };
   }
