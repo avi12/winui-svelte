@@ -8,6 +8,7 @@ import {
   rmSync,
   statSync
 } from "node:fs";
+import { availableParallelism, freemem } from "node:os";
 import path from "node:path";
 import { gunzipSync } from "node:zlib";
 import { z } from "zod";
@@ -54,7 +55,10 @@ const PREFIX_BYTES = 155;
 const OCTAL = 8;
 const BYTES_PER_KILOBYTE = 1024;
 const FORBIDDEN_LISTED = 20;
-const ATTW_PROCESSES = 2;
+// A checker process holds about this much; as many run as the free memory and the processors allow.
+const ATTW_GIGABYTES = 2;
+const BYTES_PER_GIGABYTE = BYTES_PER_KILOBYTE ** 3;
+const ATTW_PROCESSES = Math.max(1, Math.min(availableParallelism(), Math.floor(freemem() / BYTES_PER_GIGABYTE / ATTW_GIGABYTES)));
 const MILLISECONDS_PER_MINUTE = 60 * 1000;
 const PACK_TIMEOUT_MILLISECONDS = 5 * MILLISECONDS_PER_MINUTE;
 // attw spends about 30 seconds per entry point and prints nothing until a
