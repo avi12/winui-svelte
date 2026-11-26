@@ -1,6 +1,6 @@
 import { startModuleServer } from "./server.ts";
 import assert from "node:assert/strict";
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { test } from "node:test";
@@ -43,7 +43,8 @@ test("the watcher skips build output, worktrees (also an agent session's) and th
 });
 
 test("a root inside a worktrees folder is still watched", async () => {
-  const outer = mkdtempSync(path.join(tmpdir(), "winui-server-"));
+  // The watcher reports long names, and a runner's temp folder is a short one (RUNNER~1).
+  const outer = realpathSync.native(mkdtempSync(path.join(tmpdir(), "winui-server-")));
   const root = path.join(outer, ".worktrees", "branch");
   mkdirSync(path.join(root, "src"), { recursive: true });
   writeFileSync(path.join(root, "src", "file.ts"), "export const a = 1;\n");

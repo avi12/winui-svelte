@@ -1,7 +1,7 @@
 import { createWindowsRegistry } from "#src/app/activation/native.js";
 import assert from "node:assert/strict";
 import { randomBytes } from "node:crypto";
-import { existsSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { test } from "node:test";
@@ -15,7 +15,8 @@ const { createShortcut, readShortcut } = await import("./shortcut.ts");
 const { trash } = await import("./trash.ts");
 
 test("a temp file goes to the Recycle Bin and a shortcut reads back", () => {
-  const directory = mkdtempSync(path.join(tmpdir(), "wsv-shell-"));
+  // A runner's temp folder is a short name (RUNNER~1); Windows reads a shortcut back with the long one.
+  const directory = realpathSync.native(mkdtempSync(path.join(tmpdir(), "wsv-shell-")));
   try {
     const file = path.join(directory, "target.txt");
     const link = path.join(directory, "target.lnk");
