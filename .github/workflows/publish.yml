@@ -30,12 +30,7 @@ jobs:
           cache: pnpm
           registry-url: https://registry.npmjs.org
       - run: pnpm install --frozen-lockfile
-      - name: Cache the restored SDK and bindings
-        uses: actions/cache@v6
-        with:
-          path: .winapp
-          key: winapp-${{ hashFiles('winapp.yaml', 'package.json') }}
-      - run: pnpm restore
+      - uses: ./.github/actions/restore-windows-sdk
       - run: pnpm build
       - name: The release tag must match package.json
         shell: pwsh

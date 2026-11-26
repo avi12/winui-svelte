@@ -1,0 +1,37 @@
+name: Restore the Windows App SDK
+description: >-
+  Fetches the Windows App SDK and generates the WinUI bindings the components
+  import (.winapp/bindings, which is not committed), or takes both from the
+  cache. The cache is saved right away, so a later failure does not lose it.
+
+runs:
+  using: composite
+  steps:
+    # The key holds only what changes the result: the SDK versions, the
+    # bindings asked for, the tools that generate them and their fix-ups.
+    - name: Describe what restore reads from package.json
+      shell: pwsh
+      run: |
+        $manifest = Get-Content package.json -Raw | ConvertFrom-Json
+        $tools = $manifest.devDependencies.'@microsoft/winappcli', $manifest.dependencies.'@microsoft/dynwinrt'
+        @($manifest.winapp, $tools) | ConvertTo-Json -Depth 20 | Set-Content .winapp-inputs.json
+    - name: Look for a restored SDK
+      id: cache
+      uses: actions/cache/restore@v6
+      with:
+        path: |
+          .winapp
+          ~/.nuget/packages
+        key: winapp-${{ hashFiles('winapp.yaml', '.winapp-inputs.json', 'scripts/bindings/**') }}
+    - name: Restore the SDK and generate the bindings
+      if: steps.cache.outputs.cache-hit != 'true'
+      shell: pwsh
+      run: pnpm restore
+    - name: Keep the restored SDK
+      if: steps.cache.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v6
+      with:
+        path: |
+          .winapp
+          ~/.nuget/packages
+        key: ${{ steps.cache.outputs.cache-primary-key }}

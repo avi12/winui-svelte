@@ -1,4 +1,6 @@
 .winapp/
+# What CI hashes to key its cache of .winapp.
+.winapp-inputs.json
 node_modules/
 # pnpm build: the published output.
 dist/
